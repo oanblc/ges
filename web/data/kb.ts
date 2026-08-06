@@ -1,14 +1,18 @@
 /**
  * Bilgi tabanı verileri — kaynak: ~/Developer/gesdanismani/kb/
- * Sitede gösterilen hiçbir rakam koda gömülmez; bu dosya kb'nin derleme
- * zamanı yansımasıdır. Rakam güncellemesi = kb güncellemesi + bu dosyanın
- * yeniden üretimi (ileride otomatik export'a bağlanacak).
+ * Sitede gösterilen hiçbir rakam koda gömülmez. Piyasa verisi
+ * data/piyasa-canli.json'dan gelir; o dosyayı yalnız ajan/epias_veri.py yazar
+ * (tek yazar ilkesi — elle düzenleme yok). Tarife sabitleri kb/tarifeler.md
+ * ve ajan/asistan.py EPDK_* sözlükleriyle birebir senkron tutulur
+ * (bekçi: ajan/test_hesap.py parite testleri).
  */
+import canli from "./piyasa-canli.json";
 
 export const META = {
   tarifeGecerlilik: "4 Nisan 2026", // EPDK resmi tarife tablosu
-  kbGuncelleme: "6 Ağustos 2026",
+  kbGuncelleme: "7 Ağustos 2026",
   piyasaKaynak: "EPİAŞ Şeffaflık (gerçekleşen veri, otomatik çekim)",
+  piyasaCekimZamani: canli.cekim_zamani,
 };
 
 /** EPDK 4 Nisan 2026 tarife tablosu — kr/kWh, vergiler HARİÇ */
@@ -29,6 +33,10 @@ export const TARIFE = {
     kdv: 0.20,
   },
   sanayiAG: { enerji: 298.5253, dagitim: 182.9503, btv: 0.01, kdv: 0.20 },
+  // OG grupları — ajan/asistan.py EPDK_DAGITIM/EPDK_ENERJI ile birebir
+  sanayiOG: { enerji: 290.9687, dagitimTek: 118.2457, dagitimCift: 107.0498, btv: 0.01, kdv: 0.20 },
+  ticarethaneOG: { enerjiK1: 287.3087, dagitimTek: 208.1065, dagitimCift: 166.8345, btv: 0.05, kdv: 0.20 },
+  tarimsalAG: { enerji: 233.3838, dagitim: 203.7247, kdv: 0.20 }, // BTV muafiyeti teyit bekliyor
   fon: 0.01, // Enerji Fonu, enerji bedeli üzerinden
 };
 
@@ -47,12 +55,14 @@ export const MALIYET_KADEMELERI: Array<[number, number]> = [
   [Infinity, 22500],
 ];
 
-/** EPİAŞ gerçekleşen veriler (kb/veri/piyasa-canli.json — günlük cron) */
+/** EPİAŞ gerçekleşen veriler — data/piyasa-canli.json'dan (cron her gün tazeler) */
 export const PIYASA = {
-  ptfOrtalama: 2700, // ₺/MWh, Temmuz 2026 (son tam ay)
-  ptfGunesSaatleri: 1770, // 10:00-17:00 ortalaması
-  gunesOrani: 0.66, // duck curve düzeltme katsayısı
-  yekdemGerceklesenSon: 1083.63, // ₺/MWh, Haziran 2026
+  ay: canli.site_ozet.ay, // örn. "2026-07" (son tam ay)
+  ptfOrtalama: canli.site_ozet.ptfOrtalama, // ₺/MWh
+  ptfGunesSaatleri: canli.site_ozet.ptfGunesSaatleri, // 10:00-17:00 ortalaması
+  gunesOrani: canli.site_ozet.gunesOrani, // duck curve düzeltme katsayısı
+  yekdemGerceklesenSon: canli.site_ozet.yekdemGerceklesenSon ?? 1083.63, // ₺/MWh
+  yekdemAyi: canli.site_ozet.yekdemAyi ?? "2026-06",
 };
 
 /** İl bazlı özgül üretim (kWh/kW·yıl) — GEPA bölge ortalamalarından */

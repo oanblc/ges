@@ -107,7 +107,7 @@ def main() -> None:
         for ay, k in sorted(aylar.items())
     }
 
-    yekdem_ozet: dict | str
+    yekdem_durum = "canli"
     try:
         yekdem_ham = _sorgula(YEKDEM_URL, tgt, {
             "startDate": tarih(baslangic.replace(day=1), "00:00:00"),
@@ -116,9 +116,31 @@ def main() -> None:
         yekdem_ozet = {
             dt.datetime.fromisoformat(k["period"]).strftime("%Y-%m"): round(float(k["unitCost"]), 2)
             for k in yekdem_ham
-        } or "veri boş — uç nokta teyit edilecek"
-    except Exception as hata:  # uç nokta adı farklıysa akışı durdurma
-        yekdem_ozet = f"çekilemedi ({hata}) — YEKDEM_URL, Şeffaflık API dokümanından teyit edilecek"
+        }
+        if not yekdem_ozet:
+            raise ValueError("YEKDEM verisi boş döndü")
+    except Exception as hata:
+        # Hata mesajını bilgi tabanına BASMA — önceki geçerli veriyi koru
+        yekdem_ozet, yekdem_durum = {}, f"cekilemedi: {type(hata).__name__}"
+        eski_dosya = VERI / "piyasa-canli.json"
+        if eski_dosya.exists():
+            eski = json.loads(eski_dosya.read_text()).get("yekdem_gerceklesen_aylik")
+            if isinstance(eski, dict) and eski:
+                yekdem_ozet, yekdem_durum = eski, "onceki veri korundu (yeni cekim basarisiz)"
+
+    # Sitenin (web/data/kb.ts) doğrudan tükettiği özet — son TAM ay tercih edilir
+    ay_anahtarlari = sorted(ptf_ozet)
+    site_ayi = next((a for a in reversed(ay_anahtarlari) if a < bugun.strftime("%Y-%m")),
+                    ay_anahtarlari[-1])
+    son_yekdem = max(yekdem_ozet.items()) if yekdem_ozet else (None, None)
+    site_ozet = {
+        "ay": site_ayi,
+        "ptfOrtalama": ptf_ozet[site_ayi]["ortalama"],
+        "ptfGunesSaatleri": ptf_ozet[site_ayi]["gunes_saatleri_ortalama"],
+        "gunesOrani": ptf_ozet[site_ayi]["gunes_orani"],
+        "yekdemGerceklesenSon": son_yekdem[1],
+        "yekdemAyi": son_yekdem[0],
+    }
 
     VERI.mkdir(parents=True, exist_ok=True)
     cikti = {
@@ -126,11 +148,16 @@ def main() -> None:
         "kaynak": "EPİAŞ Şeffaflık Platformu (birincil kaynak, gerçekleşen veri)",
         "ptf_aylik": ptf_ozet,
         "yekdem_gerceklesen_aylik": yekdem_ozet,
+        "yekdem_durum": yekdem_durum,
+        "site_ozet": site_ozet,
         "birim": "TL/MWh",
     }
-    (VERI / "piyasa-canli.json").write_text(
-        json.dumps(cikti, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    json_metin = json.dumps(cikti, ensure_ascii=False, indent=2)
+    (VERI / "piyasa-canli.json").write_text(json_metin, encoding="utf-8")
+    # Tek yazar ilkesi: aynı veriyi web'e de bu betik yazar (elle kopya yok)
+    web_veri = ROOT / "web" / "data" / "piyasa-canli.json"
+    if web_veri.parent.exists():
+        web_veri.write_text(json_metin, encoding="utf-8")
 
     satirlar = [
         "---",
@@ -147,7 +174,7 @@ def main() -> None:
     ]
     for ay, d in ptf_ozet.items():
         satirlar.append(f"| {ay} | {d['ortalama']:,.0f} | {d['gunes_saatleri_ortalama']:,.0f} | %{d['gunes_orani']*100:.0f} |")
-    satirlar += ["", f"YEKDEM gerçekleşen: {yekdem_ozet}", ""]
+    satirlar += ["", f"YEKDEM gerçekleşen ({yekdem_durum}): {yekdem_ozet}", ""]
     (VERI / "piyasa-canli.md").write_text("\n".join(satirlar), encoding="utf-8")
 
     print(f"Yazıldı: {VERI/'piyasa-canli.json'}")
@@ -156,4 +183,15 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as hata:
+        # Cron'da sessiz ölme: masaüstü bildirimi bırak, log için yeniden fırlat
+        try:
+            import subprocess
+            subprocess.run(["osascript", "-e",
+                            'display notification "EPİAŞ veri çekimi BAŞARISIZ — kb/veri/cekim.log kontrol et" '
+                            'with title "gesdanışmanı"'], timeout=10)
+        except Exception:
+            pass
+        raise

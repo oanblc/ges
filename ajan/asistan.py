@@ -12,6 +12,7 @@ Kullanım:
   python3 ajan/asistan.py                 → etkileşimli sohbet (çıkış: q)
 """
 
+import datetime
 import json
 import os
 import sys
@@ -41,7 +42,17 @@ def _kb_yukle() -> str:
         parcalar.append(f"\n<dosya ad=\"{d.name}\">\n{d.read_text(encoding='utf-8')}\n</dosya>")
     canli = KB / "veri" / "piyasa-canli.json"
     if canli.exists():
-        parcalar.append(f"\n<dosya ad=\"piyasa-canli.json\">\n{canli.read_text()}\n</dosya>")
+        icerik = canli.read_text()
+        uyari = ""
+        try:
+            cekim = datetime.datetime.fromisoformat(json.loads(icerik)["cekim_zamani"])
+            yas_gun = (datetime.datetime.now() - cekim).days
+            if yas_gun > 3:
+                uyari = (f"\nUYARI: Bu piyasa verisi {yas_gun} gün önce çekildi (bayat olabilir). "
+                         "PTF/YEKDEM'e dayanan cevaplarda veri tarihini açıkça belirt.")
+        except (KeyError, ValueError):
+            uyari = "\nUYARI: Veri çekim zamanı okunamadı; PTF/YEKDEM güncelliğini garanti etme."
+        parcalar.append(f"\n<dosya ad=\"piyasa-canli.json\">\n{icerik}{uyari}\n</dosya>")
     return "".join(parcalar)
 
 
