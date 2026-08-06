@@ -155,3 +155,15 @@ export const Sohbet = (p: P) => (
     <path d="M8.8 12.5h.01M12.5 12.5h.01M16.2 12.5h.01" strokeWidth="2.4" />
   </I>
 );
+export const Grafik = (p: P) => (
+  <I {...p}>
+    <path d="M21 21H4.5A1.5 1.5 0 0 1 3 19.5V3" />
+    <path d="m6.5 15 4-5 3.5 3 4.5-6" />
+  </I>
+);
+export const Soru = (p: P) => (
+  <I {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.4 9.2a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.4-2.6 2.4M12 16.2h.01" />
+  </I>
+);

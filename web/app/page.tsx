@@ -1,32 +1,16 @@
 import Journey from "@/components/Journey";
 import Roi from "@/components/Roi";
+import SiteHead from "@/components/SiteHead";
 import { META } from "@/data/kb";
 import {
-  Sun, SunDolu, Ok, Ara, Kalkan, Saat, Arti, Ev, Fabrika, Filiz,
+  SunDolu, Ok, Ara, Kalkan, Saat, Arti, Ev, Fabrika, Filiz,
   Rota, SaatYenile, Ayarlar, Sohbet,
 } from "@/components/Icons";
 
 export default function Anasayfa() {
   return (
     <div className="wrap">
-      <header className="site-head">
-        <div className="brand">
-          <span className="sun">
-            <Sun />
-          </span>
-          gesdanışmanı
-        </div>
-        <nav className="nav">
-          <a className="on" href="#">Asistan</a>
-          <a href="#surec">Süreç Rehberi</a>
-          <a href="#hesaplama">Hesaplama</a>
-          <a href="#">Rehber</a>
-          <a href="#">Kurulum Sonrası</a>
-        </nav>
-        <a className="gt-btn small" href="#">
-          Asistana Sorun <Ok className="i" />
-        </a>
-      </header>
+      <SiteHead aktif="anasayfa" />
 
       <section className="hero">
         <div className="hero-inner">
@@ -45,17 +29,24 @@ export default function Anasayfa() {
             gerektirmez; elektrik faturanız yeterli.
           </p>
 
-          <form className="ask" action="#">
+          <form className="ask" action="/asistan" method="get">
             <Ara className="i" />
-            <input placeholder="Sorunuzu kendi cümlelerinizle yazın…" aria-label="Asistana soru" />
+            <input
+              name="soru"
+              placeholder="Sorunuzu kendi cümlelerinizle yazın…"
+              aria-label="Asistana soru"
+            />
             <button className="send" aria-label="Gönder">
               <Ok className="i" />
             </button>
           </form>
           <div className="chips">
-            <span className="chip">Evim güneş enerjisine uygun mu?</span>
-            <span className="chip">Saatlik mahsuplaşma nedir?</span>
-            <span className="chip">Hangi desteklerden yararlanabilirim?</span>
+            {["Evim güneş enerjisine uygun mu?", "Saatlik mahsuplaşma nedir?",
+              "Hangi desteklerden yararlanabilirim?"].map((s) => (
+              <a key={s} className="chip" href={`/asistan?soru=${encodeURIComponent(s)}`}>
+                {s}
+              </a>
+            ))}
           </div>
           <div className="trust">
             <span>
@@ -82,9 +73,9 @@ export default function Anasayfa() {
             Çatı uygunluğu, yatırım geri dönüşü ve apartmanlarda kat maliki süreçleri dahil uçtan
             uca yönlendirme.
           </p>
-          <span className="more">
+          <a className="more" href={`/asistan?soru=${encodeURIComponent("Evime güneş paneli kurmak mantıklı mı?")}`}>
             Detaylı bilgi <Ok className="i" />
-          </span>
+          </a>
         </div>
         <div className="pcard">
           <span className="ic">
@@ -95,9 +86,9 @@ export default function Anasayfa() {
             Fabrika ve ticari çatılarda fizibilite analizi, KOSGEB destekleri ve ihale
             süreçlerinde danışmanlık.
           </p>
-          <span className="more">
+          <a className="more" href={`/asistan?soru=${encodeURIComponent("İşletmem için GES fizibilitesi yapar mısın?")}`}>
             Detaylı bilgi <Ok className="i" />
-          </span>
+          </a>
         </div>
         <div className="pcard">
           <span className="ic">
@@ -108,9 +99,9 @@ export default function Anasayfa() {
             Sulama amaçlı GES yatırımları, IPARD ve TKDK hibe programları ile tarımsal tarife
             uygulamaları.
           </p>
-          <span className="more">
+          <a className="more" href={`/asistan?soru=${encodeURIComponent("Tarımsal sulama için GES kurabilir miyim?")}`}>
             Detaylı bilgi <Ok className="i" />
-          </span>
+          </a>
         </div>
       </section>
 
