@@ -145,9 +145,9 @@ export default function Anasayfa() {
             <SunDolu />
             Nasıl çalışır
           </span>
-          <h3>
+          <h2>
             Karardan <span className="hl-g">devreye almaya</span> dört aşamalı yol haritası
-          </h3>
+          </h2>
           <p className="desc">
             Projenize özel geri dönüş süresini soldaki araçla anında görün; hesaplamalar resmî EPDK
             tarifeleri ve EPİAŞ gerçekleşen piyasa verileriyle, analiz motorumuzda yapılır.

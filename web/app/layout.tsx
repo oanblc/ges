@@ -15,15 +15,48 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "GES Danışmanı — Türkiye'nin Güncel Mevzuatlı GES Danışmanlık Platformu",
+  metadataBase: new URL("https://gesdanismani.com"),
+  title: {
+    default: "GES Danışmanı — Türkiye'nin Güncel Mevzuatlı GES Danışmanlık Platformu",
+    template: "%s | GES Danışmanı",
+  },
   description:
     "Güneş enerjisi yatırımınızda tarafsız ve güncel rehberlik. Başvurudan mahsuplaşmaya, güncel mevzuata dayanan yapay zekâ destekli danışmanlık.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    siteName: "GES Danışmanı",
+    title: "GES Danışmanı — Güncel Mevzuatlı GES Danışmanlık Platformu",
+    description:
+      "Çatı güneş enerjisinde başvurudan mahsuplaşmaya güncel mevzuatlı rehberlik; hesaplar resmî EPDK tarifeleri ve EPİAŞ verileriyle.",
+    images: [{ url: "/hero-solar.jpg", width: 1200, height: 630, alt: "Çatı güneş enerjisi santrali" }],
+  },
+  twitter: { card: "summary_large_image" },
+  robots: { index: true, follow: true },
+};
+
+const kurulusSemasi = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "GES Danışmanı",
+  url: "https://gesdanismani.com",
+  description:
+    "Türkiye'de çatı güneş enerjisi (GES) süreçleri için güncel mevzuatlı danışmanlık platformu.",
+  areaServed: "TR",
+  knowsAbout: ["güneş enerjisi", "GES", "lisanssız elektrik üretimi", "mahsuplaşma", "EPDK tarifeleri"],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="tr" className={`${epilogue.variable} ${jost.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(kurulusSemasi) }}
+        />
+      </body>
     </html>
   );
 }

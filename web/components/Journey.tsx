@@ -111,9 +111,9 @@ export default function Journey() {
           </svg>
           GES Süreci
         </span>
-        <h3>
+        <h2>
           Başvurudan üretime <span className="hl-g">yedi aşama</span>
-        </h3>
+        </h2>
         <p>
           Süreci hiç bilmiyorsanız endişelenmeyin — hangi aşamada ne yapılacağını, hangi kuruma
           başvurulacağını ve ne kadar süreceğini adım adım gösteriyoruz.
