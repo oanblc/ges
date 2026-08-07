@@ -1,7 +1,7 @@
 ---
 konu: PTF, YEKDEM, saatlik mahsuplaşma ekonomisi, yatırım maliyetleri, hesap metodolojisi
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 
 # Elektrik Piyasa Fiyatları ve GES Mahsuplaşma Ekonomisi
@@ -61,7 +61,7 @@ Dayanak: RG 2 Nisan 2026 sayı 33212 + 11415 sayılı CB Kararı (RG 13 Haziran 
 - Tarife artışı: "her yıl %X zam" varsayımı riskli (2026'da PTF nominal düştü) → taban/orta/iyimser üç senaryo.
 
 ## ÇELİŞKİ KAYDI (onayda çözülecek)
-1. Mesken KDV: bir kaynak %10, ajan taraması %20 diyor → EPDK/GİB'den kesinleştirilecek.
+1. Mesken KDV: ÇÖZÜLDÜ (7 Ağu 2026, 2 bağımsız kaynak) — mesken ve tarımsal sulama %10, ticarethane/sanayi %20 (10 Temmuz 2023'ten beri). kb/tarifeler.md doğruydu.
 2. Ticarethane nihai fiyatı: 4,78 vs 6,6–7,3 ₺/kWh → 4,78 muhtemelen eski tablo; teyit edilecek.
 
 ## Kaynaklar

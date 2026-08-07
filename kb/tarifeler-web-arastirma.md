@@ -1,5 +1,9 @@
-Araştırmaya başlıyorum — EPDK mesken tarifesi için hedefli aramalar yapacağım.Araştırma tamamlandı (3 arama). Aşağıda bulguları, çelişkileri ve doğrulanamayan noktaları işaretleyerek sunuyorum.
-
+---
+konu: EPDK mesken tarifesi web taraması — kademe sınırı, KDV, birim fiyatlar
+guncelleme: 2026-08-06
+kaynak: web araması (kısa tarama); birincil teyit kb/tarifeler.md (EPDK XLSX)
+durum: yayin (Ozan onayi 6 Agu 2026)
+teyit: mesken KDV %10/%20 çelişkisi AÇIK — INDEKS teyit listesinde
 ---
 
 # Güncel EPDK Mesken Elektrik Tarifesi — Kademe Sınırı ve Birim Fiyatlar

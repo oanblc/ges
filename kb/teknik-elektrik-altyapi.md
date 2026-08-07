@@ -1,7 +1,7 @@
 ---
 konu: Elektrik altyapısı — AG/OG bağlantı, gerilim yükselmesi, koruma, güç kalitesi, trafo, kablo
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 teyit: AG tahsis oranları (%10/7,5 kW) tek kaynak (Entegro) — Yönetmelik md.7 + EDAŞ usulleriyle teyit; RG 33212 asıl metin teyidi
 ---
 # Elektrik Altyapısı ve Bağlantı (2026)

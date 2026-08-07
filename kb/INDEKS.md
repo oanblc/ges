@@ -69,8 +69,14 @@ Tüm dosyalar kb kökünde yayında (6 Ağustos 2026 onay turu: 21 taslak onayla
 | 23 | ikili-anlasma-fiyatlama.md | 5 fiyatlama tipi, teşhis sırası, SKTT KBK, AOPTF, uzlaştırma düzeltmesi |
 
 ## Teyit bekleyen maddeler (haftalık tarama kapatacak)
+Son tarife penceresi kontrolü: 1 Temmuz 2026'da YENİ TARİFE YAYIMLANMADI; 4 Nisan 2026 geçerli (7 Ağu 2026, dağıtım şirketi ulusal tarife sayfasından teyit). Sonraki kontrol: Ekim 2026 penceresi.
 - GVK esnaf muaflığı sınırı 25 vs 50 kW (konsolide metin 50 gösteriyor)
 - Küçük abonelerde reaktif sınır eşikleri (%33/%20 aktarımı)
 - SKTT mesken limiti kesin değeri (4.000 — EPDK karar metninden teyit)
 - 50 kW ticari ₺/kW (tek EPC kaynağı)
 - AG kişi başı trafo tahsis oranları (tek kaynak)
+- ~~Mesken KDV %10 vs %20~~ ÇÖZÜLDÜ (7 Ağu): mesken+tarımsal sulama %10, ticarethane/sanayi %20
+- Ticarethane nihai fiyat 4,78 vs 6,6-7,3 TL/kWh (kaynaklar ayrışıyor)
+- Veriş yönlü dağıtım bedeli (208,1 / 65,6 / ~28,3 kr — üç farklı değer dolaşımda)
+- Serbest tüketici limiti 500 kWh/yıl (tek kaynak GENSED; güncel EPDK kararıyla teyit)
+- Tarımsal sulama BTV muafiyeti (kb.ts tarimsalAG için işaretli)

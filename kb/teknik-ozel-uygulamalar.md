@@ -1,7 +1,7 @@
 ---
 konu: Özel uygulamalar — carport, agrivoltaik, yüzer GES, BIPV/balkon, off-grid, sulama, ısı pompası, sıcak su
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 # Özel Uygulama Tipleri (2026)
 ## Carport

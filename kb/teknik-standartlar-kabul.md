@@ -1,7 +1,7 @@
 ---
 konu: Standartlar (IEC 61215/61730/62446, EN 50549), TEDAŞ şartları, kabul testleri, datasheet okuma, işçilik
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 # Standartlar, Kabul Testleri, Datasheet (2026)
 ## Panel standartları

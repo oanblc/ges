@@ -1,7 +1,7 @@
 ---
 konu: GES ekipman türleri ve güncel fiyatlar (panel, inverter, batarya, montaj, anahtar teslim)
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 not: TL fiyatlara "Ağustos 2026 itibarıyla" damgası; 3 ayda bir güncelleme önerilir
 ---
 

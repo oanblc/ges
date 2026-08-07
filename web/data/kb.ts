@@ -36,7 +36,7 @@ export const TARIFE = {
   // OG grupları — ajan/asistan.py EPDK_DAGITIM/EPDK_ENERJI ile birebir
   sanayiOG: { enerji: 290.9687, dagitimTek: 118.2457, dagitimCift: 107.0498, btv: 0.01, kdv: 0.20 },
   ticarethaneOG: { enerjiK1: 287.3087, dagitimTek: 208.1065, dagitimCift: 166.8345, btv: 0.05, kdv: 0.20 },
-  tarimsalAG: { enerji: 233.3838, dagitim: 203.7247, kdv: 0.20 }, // BTV muafiyeti teyit bekliyor
+  tarimsalAG: { enerji: 233.3838, dagitim: 203.7247, kdv: 0.10 }, // KDV meskenle aynı indirimli oran; BTV muafiyeti teyit bekliyor
   fon: 0.01, // Enerji Fonu, enerji bedeli üzerinden
 };
 

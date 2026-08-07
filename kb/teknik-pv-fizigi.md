@@ -1,7 +1,7 @@
 ---
 konu: PV fiziği ve üretim hesabı — ışınım, sıcaklık, kayıp zinciri, PR, degradasyon
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 not: Ankara/Antalya aylık tabloları PVGIS v5.2 API'den canlı çekildi (1 kWp, 30°, güney, %14 kayıp)
 ---
 

@@ -1,7 +1,7 @@
 ---
 konu: Arıza teşhisi — panel arızaları, inverter hataları, teşhis ağacı, testler, çevresel
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 # Arıza Teşhisi (2026)
 ## Panel arızaları

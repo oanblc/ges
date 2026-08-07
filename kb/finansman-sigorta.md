@@ -1,7 +1,7 @@
 ---
 konu: GES finansman (kredi, KOSGEB, leasing, ESCO) ve sigorta
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 teyit: banka faizleri ilansız (rakam verme, yapı ver); genel satışta panel KDV oranı GİB'den; sigorta primi teklife bağlı
 ---
 

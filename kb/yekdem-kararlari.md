@@ -1,4 +1,11 @@
-YEKDEM öngörülen birim maliyet duyurularını araştırıyorum. Birkaç paralel arama başlatıyorum.Bugün 6 Ağustos 2026. En güncel revizyon Temmuz 2026 başında yapılmış görünüyor. Rakamları ve kurul kararı numarasını çıkarıyorum.# Öngörülen (Tahmini) YEKDEM Birim Maliyetleri — Türkiye
+---
+konu: Öngörülen (tahmini) YEKDEM birim maliyet kararları (14718/14460 zinciri)
+guncelleme: 2026-08-06
+kaynak: EPDK kurul kararları + Resmî Gazete (ajan web araştırması; 14718 bağımsız doğrulandı)
+durum: yayin (Ozan onayi 6 Agu 2026)
+---
+
+# Öngörülen (Tahmini) YEKDEM Birim Maliyetleri — Türkiye
 
 **Güncelleme tarihi:** 6 Ağustos 2026
 **Hazırlayan:** gesdanismani.com bilgi tabanı — enerji piyasası araştırma notu

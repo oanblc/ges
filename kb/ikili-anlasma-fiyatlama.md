@@ -1,7 +1,7 @@
 ---
 konu: İkili anlaşma fiyatlama tipleri, SKTT, çift terimli, tedarikçi değiştirme, GES etkileşimi
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 teyit: SKTT tüketim limitlerinin 2026 kesin değerleri EPDK karar metninden; GTŞ fazla alım fiyatı aylık parametrik
 ---
 

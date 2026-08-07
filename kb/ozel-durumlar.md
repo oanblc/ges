@@ -1,7 +1,7 @@
 ---
 konu: Apartman/site, kiracı, arazi, tarımsal sulama, imar, OSB, EV şarj — özel durumlar
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 
 # GES Özel Durumları (2026)

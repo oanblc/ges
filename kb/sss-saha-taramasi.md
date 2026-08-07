@@ -1,7 +1,7 @@
 ---
 konu: Sahadan derlenen 46 gerçek kullanıcı sorusu + cevaplar + 7 yaygın yanlış (mit)
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 not: Asistanın SSS çekirdeği; cevaplar Ağustos 2026 mevzuat çıpasıyla yazıldı
 ---
 

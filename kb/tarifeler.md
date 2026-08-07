@@ -1,4 +1,5 @@
 ---
+sonraki_kontrol: 2026-10-01 (EPDK çeyreklik tarife penceresi; 1 Temmuz 2026 penceresinde değişiklik YAPILMADI — 7 Ağu 2026 dağıtım şirketi tarife sayfasından teyit)
 konu: EPDK elektrik tarife tablosu — RESMİ birincil kaynak
 guncelleme: 2026-08-06
 gecerlilik: 4 Nisan 2026'dan itibaren

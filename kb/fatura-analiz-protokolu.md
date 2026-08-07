@@ -1,7 +1,7 @@
 ---
 konu: Fatura analiz protokolü — asistanın "fatura yükle, analiz edeyim" yeteneğinin algoritması
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 dogrulama: Gerçek Enerjisa AYESAŞ sanayi OG ikili anlaşma faturasında test edildi (Temmuz 2026) — tüm çapraz kontroller tuttu
 ---
 

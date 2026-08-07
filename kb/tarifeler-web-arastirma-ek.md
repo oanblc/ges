@@ -1,7 +1,7 @@
 ---
 konu: Elektrik tarife yapısı (EPDK perakende tarifeleri, kademe, SKTT, vergiler)
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 
 # Türkiye Elektrik Tarife Yapısı — GES Fizibilite Hesap Verileri

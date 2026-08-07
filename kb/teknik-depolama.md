@@ -1,7 +1,7 @@
 ---
 konu: Depolama tekniği — kimya, mimari, backup, boyutlandırma, TR mevzuatı, ekonomi
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 ---
 # Depolama Tekniği (2026)
 ## Kimya

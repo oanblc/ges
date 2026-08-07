@@ -1,7 +1,7 @@
 ---
 konu: Sistem tasarımı — string hesabı, DC/AC oranı, gölge, yerleşim, tasarım yazılımları
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 not: örnek hesaplar illüstratif; kesin değerler datasheet'ten
 ---
 

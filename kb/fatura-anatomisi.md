@@ -1,7 +1,7 @@
 ---
 konu: Elektrik faturası anatomisi + GES'li üretici faturası, mahsup, itiraz, reaktif
 guncelleme: 2026-08-06
-durum: taslak-onay-bekliyor
+durum: yayin (Ozan onayi 6 Agu 2026)
 teyit: (1) GVK muafiyet sınırı 25 vs 50 kW; (2) EPDK tarife çeyrek güncellemesi; (3) 2026 THH parasal sınırı
 ---
 
