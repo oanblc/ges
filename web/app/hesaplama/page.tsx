@@ -36,6 +36,20 @@ export default function Hesaplama() {
       </div>
 
       <div className="calc-grid">
+        <a className="dk-cta" href="/fatura-analizi" style={{ gridColumn: "1/-1", margin: 0, textDecoration: "none", color: "inherit" }}>
+          <Grafik className="i" />
+          <div>
+            <b>Yeni: Faturanızdan GES planınıza</b>
+            <p>
+              Faturanızın fotoğrafını yükleyin; tüketiminiz okunsun, maliyet + satış geliri +
+              geri ödeme tek ekranda çıksın.
+            </p>
+          </div>
+          <div className="dk-cta-btn">
+            <span className="gt-btn small">Fatura Analizini Deneyin</span>
+          </div>
+        </a>
+
         <section className="tool genis" id="maliyet" aria-labelledby="maliyetBaslik">
           <h2 id="maliyetBaslik">
             <Kalkan className="i" /> Kurulum Maliyeti

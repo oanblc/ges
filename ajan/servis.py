@@ -220,6 +220,70 @@ async def sohbet_ucu(istek: Request):
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
+AYIKLAMA_ARACI = [{
+    "name": "fatura_alanlari",
+    "description": "Fatura görselinden okunan alanları yapılandırılmış olarak döndür.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "belge_fatura_mi": {"type": "boolean",
+                                "description": "Belge gerçekten bir elektrik faturası mı"},
+            "abone_grubu": {"type": "string",
+                            "enum": ["mesken", "ticarethane", "sanayi", "tarimsal", "belirsiz"]},
+            "donem_ay": {"type": "string", "description": "YYYY-AA; okunamadıysa boş"},
+            "tuketim_kwh": {"type": "number", "minimum": 0},
+            "aktif_enerji_tl": {"type": "number", "minimum": 0},
+            "dagitim_tl": {"type": "number", "minimum": 0},
+            "toplam_tutar_tl": {"type": "number", "minimum": 0,
+                                "description": "Vergiler dahil ödenecek tutar"},
+            "il": {"type": "string", "description": "Faturadan okunabiliyorsa il adı; yoksa boş"},
+            "okunamayanlar": {"type": "array", "items": {"type": "string"},
+                              "description": "Okunamayan/bulanık alan adları"},
+        },
+        "required": ["belge_fatura_mi", "abone_grubu", "tuketim_kwh",
+                     "aktif_enerji_tl", "dagitim_tl", "toplam_tutar_tl"],
+        "additionalProperties": False,
+    },
+}]
+
+
+@app.post("/fatura-ayikla")
+async def fatura_ayikla(istek: Request):
+    """Fatura görseli/PDF'inden alanları okur — fatura sihirbazının ilk adımı."""
+    ip = (istek.headers.get("x-forwarded-for", "").split(",")[0].strip()
+          or (istek.client.host if istek.client else "?"))
+    if _sinirli_mi(ip):
+        return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
+                            status_code=429)
+    ham = await istek.body()
+    if len(ham) > 13_000_000:
+        return JSONResponse({"hata": "Dosya çok büyük; en fazla 6 MB yükleyin."}, status_code=413)
+    govde = json.loads(ham)
+    bloklar = _temiz_bloklar([govde.get("ek") or {}])
+    if not any(b["type"] in ("image", "document") for b in bloklar):
+        return JSONResponse({"hata": "Geçerli bir fatura görseli (JPEG/PNG/WebP) veya PDF gönderin."},
+                            status_code=400)
+    bloklar.append({"type": "text", "text": "Bu elektrik faturasındaki alanları oku ve "
+                                            "fatura_alanlari aracıyla döndür."})
+    try:
+        yanit = _istemci().messages.create(
+            model="claude-sonnet-5",
+            max_tokens=1500,
+            system=("Türk elektrik faturalarını okuyan bir ayıklayıcısın. Yalnız görselde "
+                    "gördüğünü yaz; emin olmadığın alanı okunamayanlar listesine ekle, asla "
+                    "tahmin etme. Tüketim kWh, aktif enerji bedeli ve dağıtım bedeli satırlarını "
+                    "vergisiz tutarlarıyla; toplam tutarı vergiler dahil oku."),
+            tools=AYIKLAMA_ARACI,
+            tool_choice={"type": "tool", "name": "fatura_alanlari"},
+            messages=[{"role": "user", "content": bloklar}],
+        )
+        alanlar = next(b.input for b in yanit.content if b.type == "tool_use")
+    except Exception as e:
+        return JSONResponse({"hata": f"Fatura okunamadı ({type(e).__name__}); daha net bir "
+                                     "fotoğrafla deneyin."}, status_code=502)
+    return alanlar
+
+
 @app.post("/lead")
 async def lead_ucu(istek: Request):
     ip = (istek.headers.get("x-forwarded-for", "").split(",")[0].strip()

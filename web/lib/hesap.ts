@@ -41,6 +41,11 @@ export interface HesapSonuc {
   maliyet: number;
   yillikDeger: number;
   geriOdemeYil: number;
+  /** Mahsup/öz tüketimle değerlenen enerji (kWh/yıl) */
+  ozKwh: number;
+  /** Şebekeye bedelli satılan enerji (kWh/yıl) ve geliri (₺/yıl) */
+  satisKwh: number;
+  satisGeliri: number;
   notlar: string[];
 }
 
@@ -87,6 +92,9 @@ export function konutHesap(aylikFatura: number, ilVerimi: number): HesapSonuc {
     maliyet,
     yillikDeger,
     geriOdemeYil: maliyet / yillikDeger,
+    ozKwh: Math.round(mahsup),
+    satisKwh: Math.round(Math.max(0, bedelliFazla)),
+    satisGeliri,
     notlar,
   };
 }
@@ -124,6 +132,9 @@ export function isletmeHesap(
     maliyet,
     yillikDeger,
     geriOdemeYil: maliyet / yillikDeger,
+    ozKwh: Math.round(ozKwh),
+    satisKwh: Math.round(Math.max(0, satisKwh)),
+    satisGeliri,
     notlar: [
       "1 Mayıs 2026'dan itibaren işletmeler saatlik mahsuplaşmaya tabidir; öz tüketim oranı sonucu belirler.",
       "İkili anlaşmanız varsa enerji bileşeniniz farklıdır — kesin analiz için asistana sözleşme fiyatınızı iletin.",
