@@ -168,15 +168,24 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
     setLeadDurum(res.ok ? "gonderildi" : "form");
   }
 
+  const yapistir = (e: React.ClipboardEvent) => {
+    const dosya = Array.from(e.clipboardData.files).find((f) => IZINLI_EKLER.includes(f.type));
+    if (dosya) {
+      e.preventDefault();
+      void dosyaSec(dosya);
+    }
+  };
+
   return (
-    <div className="as-main">
+    <div className="as-main" onPaste={yapistir}>
       <div className="chat" ref={kayanRef} aria-live="polite">
         {mesajlar.length === 0 && (
           <div className="as-bos">
             <p>
               Çatı güneş enerjisiyle ilgili her sorunuzu sorun — cevaplar resmî kaynaklara
-              dayanır, hesaplar güncel tarifelerle yapılır. Ataç düğmesiyle elektrik faturanızın
-              fotoğrafını ya da PDF'ini ekleyin; kalem kalem analiz edelim.
+              dayanır, hesaplar güncel tarifelerle yapılır. Fatura fotoğrafınızı ataç
+              düğmesiyle ekleyin ya da doğrudan buraya yapıştırın (Cmd/Ctrl+V); kalem kalem
+              analiz edelim.
             </p>
             <div className="as-ornekler">
               {ORNEKLER.map((o) => (

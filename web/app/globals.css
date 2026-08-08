@@ -468,8 +468,8 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 @media(max-width:920px){.as-side{border-left:0; border-top:1px solid var(--border)}}
 
 .chat{flex:1; padding:20px 26px 8px; display:flex; flex-direction:column; gap:14px;
-  overflow-y:auto; max-height:62vh; min-height:340px}
-.as-bos{max-width:56ch; margin:12px auto; text-align:center}
+  overflow-y:auto; min-height:340px}
+.as-bos{max-width:56ch; margin:auto; text-align:center; padding:24px 0}
 .as-bos p{font-size:14.5px}
 .as-ornekler{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px}
 .as-chip{border:1px solid var(--theme); color:var(--theme); background:var(--surface); border-radius:999px;
