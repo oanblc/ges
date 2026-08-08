@@ -207,7 +207,7 @@ export default function Journey() {
       )}
 
       <div className="journey-foot">
-        <a className="gt-btn small" href="#">
+        <a className="gt-btn small" href="/surec">
           Süreç Rehberini İnceleyin <Ok className="i" />
         </a>
         <p>

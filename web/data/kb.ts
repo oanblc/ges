@@ -11,7 +11,7 @@ import canli from "./piyasa-canli.json";
 export const META = {
   tarifeGecerlilik: "4 Nisan 2026", // EPDK resmi tarife tablosu
   kbGuncelleme: "7 Ağustos 2026",
-  piyasaKaynak: "EPİAŞ Şeffaflık (gerçekleşen veri, otomatik çekim)",
+  piyasaKaynak: "EPİAŞ Şeffaflık Platformu",
   piyasaCekimZamani: canli.cekim_zamani,
 };
 
@@ -54,6 +54,44 @@ export const MALIYET_KADEMELERI: Array<[number, number]> = [
   [1000, 25500],
   [Infinity, 22500],
 ];
+
+/**
+ * Kurulum maliyeti aracı — piyasa bantları [maksKw, alt ₺/kW, üst ₺/kW].
+ * Kaynak: kb/taslak/2026-08-08-maliyet-arastirmasi.md (Azimut Nis-May 2026 EPC,
+ * Türkiye Solar Market 2026, saha teklifi). Konut bandı KDV dahil piyasa,
+ * ticari bant KDV hariç EPC fiyatıdır.
+ */
+export const MALIYET_BANT = {
+  konut: [
+    [4, 26000, 40000],
+    [7, 24000, 36000],
+    [25, 20000, 32000],
+  ] as Array<[number, number, number]>,
+  ticari: [
+    [50, 32000, 42000],
+    [100, 27000, 36000],
+    [250, 22000, 28000],
+    [500, 22000, 27500],
+    [Infinity, 20000, 25500],
+  ] as Array<[number, number, number]>,
+};
+
+/** Çatı tipine göre montaj çarpanı (kanca/balast işçilik farkı) */
+export const CATI_CARPANI = { trapez: 1.0, teras: 1.04, kiremit: 1.06 } as const;
+
+/** Maliyet kalemi dağılımı (%) — iki bağımsız 2026 kaynağının ortak bandından */
+export const MALIYET_KALEMLERI: Array<[string, number]> = [
+  ["Güneş panelleri", 38],
+  ["İnverter", 15],
+  ["Konstrüksiyon", 12],
+  ["Montaj ve işçilik", 13],
+  ["Kablo ve elektrik", 9],
+  ["Proje, izin, devreye alma", 7],
+  ["Nakliye ve diğer", 6],
+];
+
+/** Ev tipi LFP batarya, kurulum hariç liste fiyatı (5 kWh ≈ 113.000 ₺, 2026) */
+export const BATARYA_TL_KWH = 22600;
 
 /** EPİAŞ gerçekleşen veriler — data/piyasa-canli.json'dan (cron her gün tazeler) */
 export const PIYASA = {

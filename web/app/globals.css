@@ -87,6 +87,10 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 @media(max-width:760px){.counters{grid-template-columns:repeat(2,1fr)}}
 .counters > div{padding:28px; border-right:1px solid rgba(255,255,255,.14); display:flex; flex-direction:column; gap:12px}
 .counters > div:last-child{border-right:0}
+@media(min-width:761px){
+  .counters > div:first-child{padding-left:0}
+  .counters > div:last-child{padding-right:0}
+}
 .counters .cic{width:52px; height:52px; border-radius:999px; flex:none;
   background:rgba(255,225,117,.10); border:1px solid rgba(255,225,117,.35);
   display:flex; align-items:center; justify-content:center; color:var(--theme2)}
@@ -108,6 +112,7 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .jstepper{width:100%}
 .jprogress{display:flex; align-items:center; margin-bottom:26px}
 .jdot{width:34px;height:34px;border-radius:999px; border:1.5px solid var(--border); background:var(--surface);
+  position:relative; z-index:1;
   color:var(--text); font-family:var(--font-epilogue), sans-serif; font-weight:700; font-size:12.5px; cursor:pointer;
   display:flex;align-items:center;justify-content:center; flex:none; transition:all .3s; padding:0}
 .jdot.done{border-color:var(--theme); color:var(--theme)}
@@ -128,10 +133,7 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
   display:flex;align-items:center;justify-content:center;color:var(--theme)}
 .jslide .big svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .jslide .jtxt{max-width:560px}
-.jart{flex:0 1 380px; min-width:260px; align-self:center;
-  background:color-mix(in srgb, var(--theme2) 16%, var(--soft));
-  border:1px solid color-mix(in srgb, var(--theme2) 55%, var(--border));
-  border-radius:20px; padding:14px 18px}
+.jart{flex:0 1 400px; min-width:260px; align-self:center}
 .jart svg{width:100%; height:auto; display:block}
 .jslide .stage-tag{font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--theme); margin-bottom:6px; display:block}
 .jslide h4{margin:0 0 8px; font-size:22px; letter-spacing:-.5px}
@@ -178,9 +180,38 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .jstep .jt{margin-top:auto}
 .journey-foot{display:flex; align-items:center; gap:16px; margin-top:26px; flex-wrap:wrap}
 .journey-foot p{margin:0; font-size:13.5px}
+/* ---------- sahne mikro-animasyonları ---------- */
+.jart .a-rays,.jart .a-scan,.jart .a-slide,.jart .a-bob,.jart .a-pulse,.jart .a-drop{
+  transform-box:fill-box; transform-origin:center}
+.jart .a-rays{animation:aRays 22s linear infinite}
+@keyframes aRays{to{transform:rotate(360deg)}}
+.jart .a-scan{animation:aScan 4.2s ease-in-out infinite}
+@keyframes aScan{0%,100%{transform:translate(-8px,3px)}50%{transform:translate(8px,-4px)}}
+.jart .a-slide{animation:aSlide 1.8s ease-in-out infinite}
+@keyframes aSlide{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+.jart .a-bob{animation:aBob 3.2s ease-in-out infinite}
+@keyframes aBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.jart .a-pulse{animation:aPulse 2.6s ease-in-out infinite}
+@keyframes aPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.jart .a-drop{animation:aDrop 4s ease-in-out infinite}
+@keyframes aDrop{
+  0%{transform:translate(12px,-14px); opacity:0}
+  18%{opacity:1}
+  55%,88%{transform:translate(0,0); opacity:1}
+  100%{transform:translate(0,0); opacity:0}
+}
+.jart .a-needle{transform-box:fill-box; transform-origin:0% 100%; animation:aNeedle 2.4s ease-in-out infinite}
+@keyframes aNeedle{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-38deg)}}
+.jart .a-draw{stroke-dasharray:44; animation:aDraw 2.6s ease-in-out infinite}
+@keyframes aDraw{0%{stroke-dashoffset:44}45%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.jart .a-draw-loop{stroke-dasharray:130; animation:aDrawLoop 3.6s ease-in-out infinite}
+@keyframes aDrawLoop{0%{stroke-dashoffset:130}55%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:-130}}
+
 @media (prefers-reduced-motion: reduce){
   .jslide,.jline i,.jdot{transition:none}
   .jstep{animation:none}
+  .jart .a-rays,.jart .a-scan,.jart .a-slide,.jart .a-bob,.jart .a-pulse,.jart .a-drop,
+  .jart .a-needle,.jart .a-draw,.jart .a-draw-loop{animation:none; stroke-dashoffset:0}
 }
 
 /* ---------- nasıl çalışır + ROI ---------- */
@@ -241,11 +272,152 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .site-foot{background:var(--theme); color:rgba(255,255,255,.85); padding:34px 32px; display:flex; gap:24px; flex-wrap:wrap; align-items:center; justify-content:space-between; font-size:13px}
 .site-foot b{color:#fff; font-family:var(--font-epilogue), sans-serif}
 .site-foot .cols{display:flex; gap:28px; flex-wrap:wrap}
+.site-foot .denetim{display:inline-flex; align-items:center; gap:7px; margin-top:6px;
+  color:var(--theme2); font-size:12.5px}
+.site-foot .denetim svg.i{width:15px; height:15px}
 
-/* ---------- tam genişlik: bölümler kenardan kenara, içerik geniş ekranda ortalanır ---------- */
-.site-head,.hero,.personas,.journey,.how,.site-foot{
+/* ---------- hesaplama sayfası ---------- */
+.calc-ust{padding:44px 32px 6px}
+.calc-ust h1{font-size:clamp(26px,3.4vw,34px); letter-spacing:-1px; margin:0 0 8px; color:var(--title)}
+.calc-ust p{margin:0; font-size:14.5px; max-width:64ch}
+.calc-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; padding:28px 32px 56px; align-items:start}
+@media(max-width:880px){.calc-grid{grid-template-columns:1fr}}
+.tool{background:var(--surface); border:1px solid var(--border); border-radius:20px; box-shadow:var(--shadow);
+  padding:22px; display:flex; flex-direction:column; gap:14px}
+.tool.genis{grid-column:1/-1}
+.tool h2{margin:0; font-size:19px; letter-spacing:-.4px; display:flex; align-items:center; gap:10px}
+.tool h2 svg.i{color:var(--theme)}
+.tool .tanim{margin:-4px 0 0; font-size:13.5px}
+.tool .roi-card{border:none; box-shadow:none; border-radius:0}
+.tool .rtoggle button{display:inline-flex; align-items:center; gap:6px}
+.tool .rtoggle svg.i{width:15px;height:15px}
+.d-soru{display:flex; align-items:center; gap:9px; font-size:13.5px; color:var(--title);
+  background:var(--soft); border:1px solid var(--border); border-radius:12px; padding:10px 14px; cursor:pointer}
+.d-soru input{accent-color:var(--theme); width:16px; height:16px}
+.d-list{display:flex; flex-direction:column}
+.d-item{display:flex; gap:11px; padding:11px 0; border-top:1px dashed var(--border); align-items:flex-start}
+.d-item:first-child{border-top:none}
+.d-item b{display:block; font-size:13.5px; margin-bottom:2px}
+.d-item p{margin:0; font-size:12.5px; line-height:1.55}
+.d-item .dot{width:10px; height:10px; border-radius:999px; flex:none; margin-top:5px}
+.d-ok .dot{background:var(--good)}
+.d-sart .dot{background:var(--theme2); box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--theme2) 40%, #8a7414)}
+.d-yok .dot{background:var(--border)}
+.d-yok b,.d-yok p{opacity:.7}
+.tool-cta{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:auto}
+.tool-cta p{margin:0; font-size:12px; flex:1; min-width:200px}
+.b-grid{display:grid; grid-template-columns:1fr; gap:20px; align-items:start}
+.tool.genis .b-grid{grid-template-columns:1fr 1.1fr; gap:28px}
+@media(max-width:820px){.tool.genis .b-grid{grid-template-columns:1fr}}
+
+/* ---------- destekler sayfası ---------- */
+.dk-bolum{padding:26px 32px 6px}
+.dk-bolum:last-of-type{padding-bottom:26px}
+.dk-bolum h2{margin:0 0 14px; font-size:20px; letter-spacing:-.5px}
+.dk-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+@media(max-width:980px){.dk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.dk-grid{grid-template-columns:1fr}}
+.dk-kart{background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:8px}
+.dk-kart.soluk{opacity:.6}
+.dk-ust{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.dk-kurum{font-size:11.5px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--text)}
+.dk-durum{font-size:11px; font-weight:600; border-radius:999px; padding:3px 10px; white-space:nowrap}
+.dk-durum.aktif{color:var(--good); background:var(--good-soft)}
+.dk-durum.donemsel{color:#8a6d00; background:color-mix(in srgb, var(--theme2) 35%, var(--surface))}
+.dk-durum.teyit{color:var(--text); background:var(--soft); border:1px dashed var(--border)}
+.dk-durum.pasif{color:#9a3b3b; background:#F7E9E9}
+.dk-kart b{font-size:15px; letter-spacing:-.2px}
+.dk-kart p{margin:0; font-size:13px; line-height:1.55}
+.dk-not{color:#8a6d00; font-size:12.5px; border-left:3px solid var(--theme2); padding-left:10px}
+.dk-alt{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:auto; padding-top:8px}
+.dk-kitle{display:flex; gap:12px; font-size:12px; color:var(--text)}
+.dk-kitle > span{display:inline-flex; align-items:center; gap:5px}
+.dk-kitle svg.i{width:14px;height:14px; color:var(--theme)}
+.dk-alt > a{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600;
+  color:var(--theme); text-decoration:none}
+.dk-alt > a svg.i{width:14px;height:14px}
+.dk-cta{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin:26px 32px 48px;
+  background:var(--soft); border:1px solid var(--border); border-radius:20px; padding:22px 26px}
+.dk-cta > svg.i{width:34px;height:34px; color:var(--theme); flex:none}
+.dk-cta b{display:block; font-size:15.5px; margin-bottom:2px}
+.dk-cta p{margin:0; font-size:13.5px; max-width:56ch}
+.dk-cta > div:first-of-type{flex:1; min-width:240px}
+.dk-cta-btn{display:flex; gap:10px; flex-wrap:wrap}
+
+/* ---------- süreç rehberi sayfası ---------- */
+.sr-list{padding:10px 32px 40px; display:flex; flex-direction:column}
+.sr-item{display:grid; grid-template-columns:56px 1fr; gap:0 22px; position:relative; padding-bottom:34px}
+.sr-item::before{content:""; position:absolute; left:27px; top:56px; bottom:6px; width:0;
+  border-left:2px dashed color-mix(in srgb, var(--theme) 30%, var(--border))}
+.sr-item:last-child::before{display:none}
+.sr-num{width:56px; height:56px; border-radius:999px; background:var(--theme); color:var(--theme2);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-epilogue), sans-serif;
+  font-weight:700; font-size:20px; flex:none}
+.sr-item h2{margin:4px 0 6px; font-size:21px; letter-spacing:-.5px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.sr-item .jt{margin:0}
+.sr-item > div > p{margin:0 0 12px; font-size:14px; max-width:72ch}
+.sr-kutu{display:grid; grid-template-columns:1fr 1fr; gap:14px; max-width:860px}
+@media(max-width:760px){.sr-kutu{grid-template-columns:1fr}}
+.sr-kutu > div{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px}
+.sr-kutu b{display:block; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--theme); margin-bottom:8px}
+.sr-kutu ul{margin:0; padding-left:16px; font-size:13px; line-height:1.6}
+.sr-kutu li{margin-bottom:4px}
+
+/* ---------- blog ---------- */
+.yazi{padding-top:44px; padding-bottom:48px; display:grid;
+  grid-template-columns:minmax(0,1fr) 280px; gap:64px; align-items:start}
+@media(max-width:1000px){.yazi{grid-template-columns:1fr; gap:36px}}
+.yazi-ana{min-width:0}
+.yazi-yan{position:sticky; top:86px; display:flex; flex-direction:column; gap:16px}
+@media(max-width:1000px){.yazi-yan{position:static}}
+.yazi h1{font-size:clamp(26px,3.6vw,36px); letter-spacing:-1px; margin:0 0 10px; color:var(--title); max-width:30ch}
+.yazi h2{font-size:22px; letter-spacing:-.5px; margin:36px 0 12px}
+.yazi h2[id]{scroll-margin-top:90px}
+.yazi-ana > p{max-width:76ch; font-size:15px; margin:0 0 14px}
+.blog-meta{display:flex; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--text); margin:6px 0 26px}
+.callout{border-left:4px solid var(--theme2); background:color-mix(in srgb, var(--theme2) 18%, var(--surface));
+  padding:14px 18px; border-radius:0 14px 14px 0; max-width:70ch; margin:18px 0; font-size:14px}
+.adim{display:grid; grid-template-columns:44px 1fr; gap:14px; padding:14px 0; border-top:1px dashed var(--border); max-width:76ch}
+.adim .no{width:34px; height:34px; border-radius:999px; background:var(--theme); color:var(--theme2);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-epilogue), sans-serif;
+  font-weight:700; font-size:14px}
+.adim b{display:block; font-size:15px; margin-bottom:3px}
+.adim p{margin:0; font-size:13.5px; max-width:70ch}
+.yazi .fig{margin:22px 0 26px; background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:20px 22px 16px; box-shadow:var(--shadow)}
+.yazi .fig svg{width:100%; height:auto; display:block}
+.yazi .fig figcaption{font-size:12.5px; color:var(--text); margin-top:12px; line-height:1.5}
+.yazi .dk-cta{margin-left:0; margin-right:0}
+.yazi-yan .cta p{font-size:13px}
+.chart-legend{display:flex; gap:18px; font-size:12.5px; color:var(--text); margin-bottom:12px; flex-wrap:wrap}
+.chart-legend span{display:inline-flex; align-items:center}
+.chart-legend i{width:12px; height:12px; border-radius:3px; display:inline-block; margin-right:6px}
+.chart-wrap{position:relative}
+.chart-tip{position:absolute; pointer-events:none; z-index:5; background:var(--title); color:#fff;
+  font-size:12px; line-height:1.5; padding:7px 11px; border-radius:9px; white-space:nowrap;
+  transform:translate(-50%,-118%); box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.b-link{color:inherit; text-decoration:none}
+.b-link:hover{color:var(--theme)}
+.blog-kart .kapak{display:block; margin:-16px -18px 10px; border-radius:16px 16px 0 0; overflow:hidden;
+  border-bottom:1px solid var(--border)}
+.blog-kart .kapak img{width:100%; height:150px; object-fit:cover; display:block; transition:transform .4s ease}
+.blog-kart:hover .kapak img{transform:scale(1.04)}
+@media (prefers-reduced-motion: reduce){.blog-kart .kapak img{transition:none}}
+
+/* ---------- rehber: mit kartları ---------- */
+.mit-kart .mit{font-size:12.5px; color:#9a3b3b; text-decoration:line-through; text-decoration-thickness:1.5px}
+.mit-kart b{font-size:14.5px}
+
+/* ---------- container: bölüm arka planları kenardan kenara, içerik 1280px'te ortalanır ---------- */
+.site-head,.hero,.personas,.counters,.journey,.how,.site-foot,.as-ust,.as-wrap,.calc-ust,.calc-grid,.dk-bolum,.sr-list,.yazi{
   padding-left:max(32px, calc((100% - 1280px)/2));
   padding-right:max(32px, calc((100% - 1280px)/2));
+}
+@media(max-width:640px){
+  .site-head,.hero,.personas,.counters,.journey,.how,.site-foot,.as-ust,.as-wrap,.calc-ust,.calc-grid,.dk-bolum,.sr-list,.yazi{
+    padding-left:20px; padding-right:20px}
 }
 
 /* ---------- /asistan sohbet sayfası ---------- */
@@ -306,9 +478,9 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .q:first-of-type{border-top:none}
 .q svg.i{width:14px;height:14px; color:var(--theme); margin-top:3px}
 .q:hover{color:var(--theme)}
-.how{display:flex; gap:10px; padding:7px 0; font-size:13px; align-items:flex-start; border-top:1px dashed var(--border)}
-.how:first-of-type{border-top:none}
-.how .k{display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; flex:none;
+.as-how{display:flex; gap:10px; padding:7px 0; font-size:13px; align-items:flex-start; border-top:1px dashed var(--border)}
+.as-how:first-of-type{border-top:none}
+.as-how .k{display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; flex:none;
   border-radius:999px; background:var(--theme); color:var(--on-theme); font-size:10.5px; font-weight:700; margin-top:2px;
   font-family:var(--font-epilogue), sans-serif}
 .cta{background:var(--theme); border:none; color:var(--on-theme); border-radius:16px; padding:18px 16px}

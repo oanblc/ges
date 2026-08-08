@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SiteHead from "@/components/SiteHead";
+import SiteFoot from "@/components/SiteFoot";
 import AsistanSohbet from "@/components/AsistanSohbet";
 import { META, PIYASA } from "@/data/kb";
 import { Ok, Kalkan, Grafik, Soru } from "@/components/Icons";
@@ -79,15 +80,15 @@ export default async function AsistanSayfa({
             <h3>
               <Kalkan className="i" /> Nasıl çalışır
             </h3>
-            <div className="how">
+            <div className="as-how">
               <span className="k">1</span>
               <span>Cevaplar EPDK/EPİAŞ kaynaklı bilgi tabanından gelir</span>
             </div>
-            <div className="how">
+            <div className="as-how">
               <span className="k">2</span>
               <span>Hesaplar deterministik araçla yapılır — asistan rakam uydurmaz</span>
             </div>
-            <div className="how">
+            <div className="as-how">
               <span className="k">3</span>
               <span>Her cevap yayınlanmadan bağımsız denetimden geçer</span>
             </div>
@@ -103,16 +104,7 @@ export default async function AsistanSayfa({
         </aside>
       </div>
 
-      <footer className="site-foot">
-        <div>
-          <b>gesdanışmanı</b> — GES danışmanlık platformu
-          <br />
-          Tarife verisi: EPDK, {META.tarifeGecerlilik} · Piyasa verisi: {META.piyasaKaynak}
-        </div>
-        <div className="cols">
-          <span>Yanıtlar bilgilendirme amaçlıdır; bağlayıcı görüş niteliği taşımaz.</span>
-        </div>
-      </footer>
+      <SiteFoot yol="/asistan" />
     </div>
   );
 }

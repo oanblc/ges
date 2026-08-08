@@ -1,0 +1,78 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import SiteHead from "@/components/SiteHead";
+import SiteFoot from "@/components/SiteFoot";
+import { META } from "@/data/kb";
+import { Ok, SunDolu } from "@/components/Icons";
+
+export const metadata: Metadata = {
+  title: "Blog — Veriye Dayalı GES Yazıları",
+  description:
+    "Mevzuat değişiklikleri, piyasa verileri ve saha deneyimiyle GES yazıları: saatlik mahsuplaşma, tarifeler, teşvikler ve daha fazlası.",
+  alternates: { canonical: "/blog" },
+};
+
+const YAZILAR = [
+  {
+    yol: "/blog/saatlik-mahsuplasma-rehberi",
+    baslik: "Saatlik mahsuplaşma adım adım: yeni dönemde işletme GES'i nasıl kazandırır?",
+    ozet:
+      "1 Mayıs 2026'da başlayan saatlik mahsuplaşmayı beş adımda, interaktif gün profili ve güncel EPİAŞ verileriyle anlatıyoruz. Öz tüketim-satış makası neden artık her şey?",
+    tarih: "8 Ağustos 2026",
+    etiket: "Mevzuat + Veri",
+    gorsel: "/roof-solar.jpg",
+    gorselAlt: "Çatı üzerinde güneş paneli dizisi",
+  },
+];
+
+export default function Blog() {
+  return (
+    <div className="wrap">
+      <SiteHead aktif="blog" />
+
+      <div className="calc-ust">
+        <span className="sub-title">
+          <SunDolu />
+          Blog
+        </span>
+        <h1>
+          Mevzuattan sahaya, <span className="hl-g">GES gündemi</span>
+        </h1>
+        <p>
+          Mevzuat değişiklikleri, piyasa gelişmeleri ve sahada sık karşılaştığımız sorular
+          üzerine yazıyoruz. Son güncelleme: {META.kbGuncelleme}.
+        </p>
+      </div>
+
+      <section className="dk-bolum" aria-label="Yazılar" style={{ paddingBottom: 48 }}>
+        <div className="dk-grid">
+          {YAZILAR.map((y) => (
+            <article key={y.yol} className="dk-kart blog-kart">
+              <a href={y.yol} className="kapak" aria-hidden="true" tabIndex={-1}>
+                <Image src={y.gorsel} alt={y.gorselAlt} width={480} height={280} />
+              </a>
+              <div className="dk-ust">
+                <span className="dk-kurum">{y.etiket}</span>
+                <span className="dk-durum aktif">{y.tarih}</span>
+              </div>
+              <b>
+                <a className="b-link" href={y.yol}>
+                  {y.baslik}
+                </a>
+              </b>
+              <p>{y.ozet}</p>
+              <div className="dk-alt">
+                <span />
+                <a href={y.yol}>
+                  Yazıyı Okuyun <Ok className="i" />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <SiteFoot yol="/blog" />
+    </div>
+  );
+}

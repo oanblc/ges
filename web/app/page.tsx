@@ -1,6 +1,7 @@
 import Journey from "@/components/Journey";
 import Roi from "@/components/Roi";
 import SiteHead from "@/components/SiteHead";
+import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import {
   SunDolu, Ok, Ara, Kalkan, Saat, Arti, Ev, Fabrika, Filiz,
@@ -24,9 +25,9 @@ export default function Anasayfa() {
             <span className="hl-y">güvenilir</span> rehberlik.
           </h1>
           <p className="lead">
-            Fizibiliteden başvuruya, kurulumdan mahsuplaşmaya — sürecin her aşamasında güncel
-            mevzuata dayanan, kaynak gösteren yapay zekâ destekli danışmanlık. Teknik bilgi
-            gerektirmez; elektrik faturanız yeterli.
+            Fizibiliteden başvuruya, kurulumdan mahsuplaşmaya — sürecin her aşamasında
+            güncel mevzuata dayanan danışmanlık. Teknik bilgi gerektirmez; elektrik
+            faturanız yeterli.
           </p>
 
           <form className="ask" action="/asistan" method="get">
@@ -174,6 +175,12 @@ export default function Anasayfa() {
               <p>Fatura ve mahsup kontrolü, performans takibi ve garanti süreçleri.</p>
             </div>
           </div>
+          <div className="journey-foot">
+            <a className="gt-btn small" href="/hesaplama">
+              Tüm Hesaplama Araçları <Ok className="i" />
+            </a>
+            <p>Batarya boyutlandırma aracı da hesaplama sayfasında; destek uygunluğu Destekler sayfasında.</p>
+          </div>
         </div>
       </section>
 
@@ -183,16 +190,7 @@ export default function Anasayfa() {
         Canlı Asistan
       </a>
 
-      <footer className="site-foot">
-        <div>
-          <b>gesdanışmanı</b> — GES danışmanlık platformu
-          <br />
-          Tarife verisi: EPDK, {META.tarifeGecerlilik} · Piyasa verisi: {META.piyasaKaynak}
-        </div>
-        <div className="cols">
-          <span>Yanıtlar bilgilendirme amaçlıdır; bağlayıcı görüş niteliği taşımaz.</span>
-        </div>
-      </footer>
+      <SiteFoot yol="/" />
     </div>
   );
 }
