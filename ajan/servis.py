@@ -205,7 +205,12 @@ async def sohbet_ucu(istek: Request):
             return
         try:
             istemci = _al()
-            soru = mesajlar[-1]["content"]
+            son_icerik = mesajlar[-1]["content"]
+            ekli = isinstance(son_icerik, list)
+            # denetçiye görsel base64'ü değil yalnız metin kısmı gider
+            soru = (son_icerik if isinstance(son_icerik, str)
+                    else " ".join(b.get("text", "") for b in son_icerik
+                                  if isinstance(b, dict) and b.get("type") == "text"))
             # Kapı: yalnız sohbetin ilk, ek içermeyen mesajında (takip mesajları
             # bağlam gerektirdiğinden her zaman ana akışa gider)
             if len(mesajlar) == 1 and isinstance(soru, str):
@@ -255,7 +260,7 @@ async def sohbet_ucu(istek: Request):
                 return
 
             yield _sse("durum", {"mesaj": "denetleniyor"})
-            karar = _denetle(soru, metin, istemci)
+            karar = _denetle(soru, metin, istemci, ekli=ekli)
             if karar.startswith("SORUN"):
                 # Tek revizyon hakkı (akışsız), sonra yeniden denetim; geçmezse güvenli yanıt
                 duzeltme_istegi = gecmis + [
