@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${kok}/hesaplama`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${kok}/fatura-analizi`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${kok}/destekler`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${kok}/mevzuat`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${kok}/surec`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${kok}/rehber`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${kok}/kurulum-sonrasi`, changeFrequency: "monthly", priority: 0.7 },

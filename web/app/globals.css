@@ -439,6 +439,42 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .blog-kart:hover .kapak img{transform:scale(1.04)}
 @media (prefers-reduced-motion: reduce){.blog-kart .kapak img{transition:none}}
 
+/* ---------- mevzuat kütüphanesi ---------- */
+.mv-ask{box-shadow:var(--shadow); border:1px solid var(--border); max-width:760px}
+.mv-ask svg.i{color:var(--text)}
+.mv-ipucu{font-size:12.5px; color:var(--text); margin:10px 0 0}
+.mv-cevap{max-width:760px; margin:18px 0 0; background:color-mix(in srgb, var(--theme2) 16%, var(--surface));
+  border:1px solid color-mix(in srgb, var(--theme2) 60%, var(--border)); border-radius:16px; padding:16px 20px}
+.mv-cevap b{font-size:13px; color:var(--theme); display:block; margin-bottom:4px}
+.mv-cevap p{margin:0 0 6px; font-size:14px}
+.mv-cevap span{font-size:12px; color:var(--text)}
+.mv-filtre{display:flex; gap:6px; flex-wrap:wrap; margin:22px 0 16px}
+.mv-filtre button{border:1px solid var(--border); background:var(--surface); color:var(--text);
+  border-radius:999px; padding:7px 16px; font:inherit; font-size:13px; font-weight:500; cursor:pointer}
+.mv-filtre button.on{background:var(--theme); border-color:var(--theme); color:var(--theme2); font-weight:600}
+.mv-liste{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media(max-width:880px){.mv-liste{grid-template-columns:1fr}}
+.mv-kart{background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:8px}
+.mv-kart.isaretli{border-color:var(--theme); box-shadow:0 0 0 2px color-mix(in srgb, var(--theme) 25%, transparent)}
+.mv-ust{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.mv-tur{font-size:11px; font-weight:600; border-radius:999px; padding:3px 10px;
+  background:var(--soft); color:var(--title); border:1px solid var(--border)}
+.mv-tur.t-kanun{background:color-mix(in srgb, var(--theme) 12%, var(--surface)); color:var(--theme); border-color:var(--theme)}
+.mv-tur.t-kurul-karari,.mv-tur.t-cb-karari{background:color-mix(in srgb, var(--theme2) 35%, var(--surface)); color:#8a6d00; border-color:color-mix(in srgb, var(--theme2) 70%, var(--border))}
+.mv-tarih{font-size:12px; color:var(--text); white-space:nowrap}
+.mv-kart b{font-size:14.5px; letter-spacing:-.2px}
+.mv-kart p{margin:0; font-size:13px; line-height:1.55}
+.mv-alt{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:auto; padding-top:6px}
+.mv-etki{display:flex; gap:6px}
+.mv-etki i{font-style:normal; font-size:11px; color:var(--text); background:var(--soft);
+  border:1px solid var(--border); border-radius:999px; padding:2px 9px}
+.mv-alt > a{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600;
+  color:var(--theme); text-decoration:none}
+.mv-alt > a svg.i{width:14px;height:14px}
+.mv-bos{font-size:13.5px; color:var(--text)}
+.mv-bos a{color:var(--theme)}
+
 /* ---------- lead kilidi ve sohbet kapısı ---------- */
 .kilit{position:relative}
 .kilit-icerik{filter:blur(7px); pointer-events:none; user-select:none; opacity:.75}

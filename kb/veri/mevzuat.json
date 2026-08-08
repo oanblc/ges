@@ -1,0 +1,141 @@
+{
+  "guncelleme": "2026-08-08",
+  "kaynak": "kb/*.md dosyalarındaki mevzuat çıpalarından derlendi; nöbetçi ajan yeni mevzuat buldukça onayla güncellenir",
+  "kayitlar": [
+    {
+      "id": "epdk-14718",
+      "baslik": "YEKDEM 2026 ikinci yarı fiyat revizyonu — EPDK Kurul Kararı 14718",
+      "tur": "kurul-karari",
+      "tarih": "Haziran 2026 · RG 33300",
+      "ozet": "YEKDEM kapsamındaki tesislere uygulanacak Temmuz–Aralık 2026 aylık fiyatları güncelledi. 10 yılını dolduran lisanssız tesislerin satış fiyatı min(0,9 × YEKDEM; saatlik PTF) formülüne dayandığı için bu rakamlar eski tesislerin gelirini doğrudan etkiler.",
+      "etki": ["isletme", "tarimsal"],
+      "kbKaynak": "yekdem-kararlari.md"
+    },
+    {
+      "id": "cb-11415",
+      "baslik": "Saatlik mahsuplaşmada fazla enerjinin fiyatlandırılması — 11415 sayılı Cumhurbaşkanı Kararı",
+      "tur": "cb-karari",
+      "tarih": "13 Haziran 2026 · RG",
+      "ozet": "YEKDEM süresi içindeki lisanssız tesislerde şebekeye verilen fazla enerjinin, piyasa fiyatından değil 'abone grubu perakende tarifesi − dağıtım bedeli' üzerinden ödenmesini düzenledi. İşletme GES'lerinin satış gelirinin dayanağıdır.",
+      "etki": ["isletme", "tarimsal"],
+      "kbKaynak": "piyasa-mahsuplasma.md"
+    },
+    {
+      "id": "epdk-14531",
+      "baslik": "Saatlik mahsuplaşma usul ve esasları — EPDK Kararı 14531",
+      "tur": "kurul-karari",
+      "tarih": "5 Mayıs 2026 · RG 33244",
+      "ozet": "1 Mayıs 2026'da başlayan saatlik mahsuplaşmanın uygulama detaylarını (ölçüm, netleştirme, fatura yansıtma) belirledi.",
+      "etki": ["isletme", "tarimsal"],
+      "kbKaynak": "piyasa-mahsuplasma.md"
+    },
+    {
+      "id": "rg-33212",
+      "baslik": "Saatlik mahsuplaşma ve üretim tavanı — Lisanssız Üretim Yönetmeliği değişikliği",
+      "tur": "yonetmelik",
+      "tarih": "2 Nisan 2026 · RG 33212",
+      "ozet": "Ticarethane, sanayi ve tarımsal sulama abonelerini saatlik mahsuplaşmaya geçirdi; MESKEN aboneleri muaf tutuldu (aylık mahsup sürer). Yıllık üretimin, önceki yıl tüketiminin 2 katını aşan kısmının bedelsiz YEKDEM'e devrini getirdi. Kapsam: 12 Mayıs 2019 sonrası çağrı mektuplu tesisler.",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "piyasa-mahsuplasma.md"
+    },
+    {
+      "id": "epdk-tarife-2026",
+      "baslik": "Perakende elektrik tarifeleri — EPDK tarife tablosu",
+      "tur": "kurul-karari",
+      "tarih": "4 Nisan 2026",
+      "ozet": "Mesken (kademeli, ~240 kWh/ay eşik), ticarethane, sanayi ve tarımsal abone gruplarının güncel enerji ve dağıtım bedellerini belirledi. Sitedeki tüm fizibilite ve fatura hesapları bu tabloya dayanır.",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "tarifeler.md"
+    },
+    {
+      "id": "rg-arazi-2026",
+      "baslik": "Arazi GES'te tarım arazisi kısıtı — yönetmelik + 2023/6 Genelge",
+      "tur": "yonetmelik",
+      "tarih": "4 Nisan 2026 · RG",
+      "ozet": "Bireysel/çiftçi arazi GES'lerine yalnız 'kuru marjinal tarım arazisi'nde izin verilir; mutlak, dikili, sulu ve özel ürün arazileri yasaktır. İlk adım İl Tarım Müdürlüğü'nden arazi sınıfı tespiti ve tarım dışı kullanım iznidir.",
+      "etki": ["tarimsal"],
+      "kbKaynak": "ozel-durumlar.md"
+    },
+    {
+      "id": "kkydp-2026-10",
+      "baslik": "Sulama + GES birleşik hibe — KKYDP 2026/10 Tebliği",
+      "tur": "teblig",
+      "tarih": "3 Nisan 2026",
+      "ozet": "Kırsal Kalkınma Destekleri kapsamında tarla içi sulama sistemi ile güneş enerjisi kurulumunu ilk kez tek projede birleşik hibe kapsamına aldı; başvurular İl Tarım ve Orman Müdürlüklerine yapılır.",
+      "etki": ["tarimsal"],
+      "kbKaynak": "destekler (bekçi teyidi)"
+    },
+    {
+      "id": "rg-depolama-2025",
+      "baslik": "Lisanssız tesislerde depolama kuralları — yönetmelik değişikliği",
+      "tur": "yonetmelik",
+      "tarih": "29 Aralık 2025 · RG",
+      "ozet": "Depolama kapasitesi üretim tesisinin kurulu gücünü aşamaz (md.37/6). Depodan şebekeye verilen enerjiye ödeme yapılmaz; depo çıkışı ölçülemiyorsa fazlanın tamamı bedelsiz sayılır. Mevcut GES'e batarya eklemek TEDAŞ tadilat projesi ve kabul gerektirir.",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "teknik-depolama.md"
+    },
+    {
+      "id": "rg-su-yuzeyi-2025",
+      "baslik": "Su yüzeyi GES (yüzer GES) çerçevesi — DSİ yönetmeliği",
+      "tur": "yonetmelik",
+      "tarih": "10 Aralık 2025 · RG",
+      "ozet": "Baraj ve gölet yüzeylerinde GES kurulumunu DSİ merkezli kiralama/izin düzenine bağladı; yüzer GES artık tanımlı bir yatırım alanı.",
+      "etki": ["isletme"],
+      "kbKaynak": "teknik-ozel-uygulamalar.md"
+    },
+    {
+      "id": "cb-9903",
+      "baslik": "Yatırım teşvik sisteminin yenilenmesi — 9903 sayılı Karar",
+      "tur": "cb-karari",
+      "tarih": "Mayıs 2025 · RG",
+      "ozet": "2012/3305 sayılı eski teşvik sistemini değiştirdi. YTB (e-TUYS) ile KDV istisnası, gümrük muafiyeti, indirimli kurumlar vergisi ve SGK desteği sağlanır; asgari sabit yatırım tutarı 2026 yeniden değerlemesiyle 1.-2. bölgede ~15,1 M₺, diğer bölgelerde ~7,5 M₺'dir. Başvurular 31.12.2030'a kadar.",
+      "etki": ["isletme"],
+      "kbKaynak": "destekler (bekçi teyidi)"
+    },
+    {
+      "id": "rg-sozlesme-gucu-2024",
+      "baslik": "Kurulu güç üst sınırı: sözleşme gücü kuralı",
+      "tur": "yonetmelik",
+      "tarih": "14 Mayıs 2024 · RG 32546",
+      "ozet": "Mesken ve ticarethane aboneleri sözleşme gücü KADAR, sanayi/tarımsal sulama/belediye aboneleri sözleşme gücünün 2 KATINA kadar lisanssız üretim tesisi kurabilir.",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "teknik-elektrik-altyapi.md"
+    },
+    {
+      "id": "lisanssiz-yonetmelik-2019",
+      "baslik": "Lisanssız Elektrik Üretim Yönetmeliği — temel çerçeve",
+      "tur": "yonetmelik",
+      "tarih": "12 Mayıs 2019 · RG",
+      "ozet": "Çatı GES sürecinin anayasası: bağlantı başvurusu, çağrı mektubu, proje onayı ve kabul adımlarını düzenler. Mesken tavanı bugün 25 kW'tır; şebekeye bağlı her tesis için bu süreç zorunludur (muafiyet yalnız off-grid/balkon tipi).",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "sss-saha-taramasi.md"
+    },
+    {
+      "id": "gvk-md9",
+      "baslik": "Konut çatı GES satış gelirinde vergi muafiyeti — GVK md. 9",
+      "tur": "kanun",
+      "tarih": "Yürürlükte",
+      "ozet": "Sahip olunan veya kiralanan konutların çatı/cephesinde kurulan azami 50 kW tesislerde, şebekeye satılan fazla üretimin geliri gelir vergisinden muaftır; fatura veya şirket kurma gerekmez.",
+      "etki": ["konut"],
+      "kbKaynak": "finansman-sigorta.md"
+    },
+    {
+      "id": "kanun-7346",
+      "baslik": "Elektrik faturasından TRT payının kaldırılması — 7346 sayılı Kanun",
+      "tur": "kanun",
+      "tarih": "2022",
+      "ozet": "TRT payı elektrik faturalarından tamamen kaldırıldı; güncel faturada enerji, dağıtım, BTV ve KDV kalemleri kalır. Fatura analizlerinde eski dönem kıyası yapılırken önemlidir.",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "fatura-kalem-sozlugu.md"
+    },
+    {
+      "id": "kanun-6446",
+      "baslik": "Elektrik Piyasası Kanunu — 6446 sayılı Kanun",
+      "tur": "kanun",
+      "tarih": "2013",
+      "ozet": "Türkiye elektrik piyasasının ve lisanssız üretim muafiyetinin yasal temeli; EPDK'nın tarife ve kurul kararı yetkileri bu kanuna dayanır.",
+      "etki": ["konut", "isletme", "tarimsal"],
+      "kbKaynak": "tarifeler.md"
+    }
+  ]
+}

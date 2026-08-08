@@ -6,7 +6,7 @@ import { Sun, Ok } from "./Icons";
 
 export type AktifSayfa =
   | "anasayfa" | "asistan" | "surec" | "hesaplama" | "fatura"
-  | "destekler" | "rehber" | "kurulum" | "blog" | "diger";
+  | "destekler" | "mevzuat" | "rehber" | "kurulum" | "blog" | "diger";
 
 const BAGLANTILAR: Array<[AktifSayfa, string, string]> = [
   ["asistan", "/asistan", "Asistan"],
@@ -14,6 +14,7 @@ const BAGLANTILAR: Array<[AktifSayfa, string, string]> = [
   ["hesaplama", "/hesaplama", "Hesaplama"],
   ["fatura", "/fatura-analizi", "Fatura Analizi"],
   ["destekler", "/destekler", "Destekler"],
+  ["mevzuat", "/mevzuat", "Mevzuat"],
   ["rehber", "/rehber", "Rehber"],
   ["kurulum", "/kurulum-sonrasi", "Kurulum Sonrası"],
   ["blog", "/blog", "Blog"],
