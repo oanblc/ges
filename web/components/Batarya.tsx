@@ -23,11 +23,11 @@ export default function Batarya() {
   return (
     <div className="b-grid">
       <div className="roi-form" style={{ padding: 0 }}>
-        <div className="rtoggle" role="tablist" aria-label="Kullanım tipi">
-          <button className={mod === "konut" ? "on" : ""} onClick={() => setMod("konut")}>
+        <div className="rtoggle" aria-label="Kullanım tipi">
+          <button className={mod === "konut" ? "on" : ""} aria-pressed={mod === "konut"} onClick={() => setMod("konut")}>
             Konut
           </button>
-          <button className={mod === "isletme" ? "on" : ""} onClick={() => setMod("isletme")}>
+          <button className={mod === "isletme" ? "on" : ""} aria-pressed={mod === "isletme"} onClick={() => setMod("isletme")}>
             İşletme
           </button>
         </div>
@@ -94,7 +94,7 @@ export default function Batarya() {
                   "İşletmem için batarya boyutlandırması yapar mısın? Sayaç profilimi paylaşabilirim."
                 )}`}
               >
-                Profilinizle Hesaplatın <Ok className="i" />
+                Asistanla Hesaplayın <Ok className="i" />
               </a>
             </div>
           </>

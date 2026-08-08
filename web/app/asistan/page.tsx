@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "GES Asistanı — Güncel Mevzuatla Soru-Cevap",
   description:
     "Çatı güneş enerjisiyle ilgili sorularınızı sorun: EPDK/EPİAŞ kaynaklı, denetimden geçen, hesapları güncel tarifelerle yapan yapay zekâ destekli GES asistanı.",
+  alternates: { canonical: "/asistan" },
 };
 
 const YAN_SORULAR = [
@@ -29,6 +30,7 @@ export default async function AsistanSayfa({
   return (
     <div className="wrap">
       <SiteHead aktif="asistan" />
+      <main id="icerik">
       <div className="as-ust">
         <h1>
           GES Asistanı <span className="pulse">Güncel mevzuat · {META.kbGuncelleme}</span>
@@ -48,15 +50,15 @@ export default async function AsistanSayfa({
             </h3>
             <div className="live">
               <span>PTF ({PIYASA.ay} ort.)</span>
-              <span className="v mono">{(PIYASA.ptfOrtalama / 1000).toFixed(2)} ₺/kWh</span>
+              <span className="v mono">{(PIYASA.ptfOrtalama / 1000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺/kWh</span>
             </div>
             <div className="live">
               <span>PTF güneş saatleri</span>
-              <span className="v mono">{(PIYASA.ptfGunesSaatleri / 1000).toFixed(2)} ₺/kWh</span>
+              <span className="v mono">{(PIYASA.ptfGunesSaatleri / 1000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺/kWh</span>
             </div>
             <div className="live">
               <span>YEKDEM ({PIYASA.yekdemAyi})</span>
-              <span className="v mono">{(PIYASA.yekdemGerceklesenSon / 1000).toFixed(3)} ₺/kWh</span>
+              <span className="v mono">{(PIYASA.yekdemGerceklesenSon / 1000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺/kWh</span>
             </div>
             <div className="live">
               <span>Kaynak</span>
@@ -86,7 +88,7 @@ export default async function AsistanSayfa({
             </div>
             <div className="as-how">
               <span className="k">2</span>
-              <span>Hesaplar deterministik araçla yapılır — asistan rakam uydurmaz</span>
+              <span>Hesaplamalar güncel tarifelerle, hesap araçlarıyla yapılır</span>
             </div>
             <div className="as-how">
               <span className="k">3</span>
@@ -104,6 +106,7 @@ export default async function AsistanSayfa({
         </aside>
       </div>
 
+      </main>
       <SiteFoot yol="/asistan" />
     </div>
   );

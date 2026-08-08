@@ -119,6 +119,7 @@ export default function Surec() {
   return (
     <div className="wrap">
       <SiteHead aktif="surec" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -130,7 +131,7 @@ export default function Surec() {
         </h1>
         <p>
           Her aşamanın gerekli belgeleri, gerçekçi süreleri ve en sık gecikme nedenleri.
-          Uçtan uca süreç çoğunlukla 3-6 ay sürer; bölgeye ve dönem yoğunluğuna göre
+          Uçtan uca süreç çoğunlukla 3-6 ay sürer; yoğun bölge ve dönemlerde 8 aya kadar
           uzayabilir. (Mevzuat güncelliği: {META.kbGuncelleme})
         </p>
       </div>
@@ -186,6 +187,7 @@ export default function Surec() {
         </div>
       </section>
 
+      </main>
       <SiteFoot yol="/surec" />
     </div>
   );

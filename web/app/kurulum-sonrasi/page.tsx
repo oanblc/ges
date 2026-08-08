@@ -16,6 +16,7 @@ export default function KurulumSonrasi() {
   return (
     <div className="wrap">
       <SiteHead aktif="kurulum" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -75,7 +76,7 @@ export default function KurulumSonrasi() {
               className="gt-btn small"
               href={`/asistan?soru=${encodeURIComponent("GES sonrası faturamı analiz eder misin? Kalemleri paylaşacağım.")}`}
             >
-              Faturanızı Analiz Ettirin <Ok className="i" />
+              Asistanla Fatura Analizi <Ok className="i" />
             </a>
           </div>
         </section>
@@ -224,13 +225,14 @@ export default function KurulumSonrasi() {
               className="gt-btn small"
               href={`/asistan?soru=${encodeURIComponent("GES'imde arıza var sanırım, teşhis için yardım eder misin?")}`}
             >
-              Arıza Teşhisi Yaptırın <Ok className="i" />
+              Asistanla Arıza Teşhisi <Ok className="i" />
             </a>
             <p>Servise gitmeden önce: hata kodu fotoğrafı, üretim grafiği ve geçen yıl kıyası hazırlayın.</p>
           </div>
         </section>
       </div>
 
+      </main>
       <SiteFoot yol="/kurulum-sonrasi" />
     </div>
   );

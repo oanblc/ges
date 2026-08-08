@@ -148,14 +148,14 @@ export default function Destek() {
 
   return (
     <>
-      <div className="rtoggle" role="tablist" aria-label="Profil seçimi">
-        <button className={profil === "konut" ? "on" : ""} onClick={() => setProfil("konut")}>
+      <div className="rtoggle" aria-label="Profil seçimi">
+        <button className={profil === "konut" ? "on" : ""} aria-pressed={profil === "konut"} onClick={() => setProfil("konut")}>
           <Ev className="i" /> Konut
         </button>
-        <button className={profil === "isletme" ? "on" : ""} onClick={() => setProfil("isletme")}>
+        <button className={profil === "isletme" ? "on" : ""} aria-pressed={profil === "isletme"} onClick={() => setProfil("isletme")}>
           <Fabrika className="i" /> İşletme
         </button>
-        <button className={profil === "tarimsal" ? "on" : ""} onClick={() => setProfil("tarimsal")}>
+        <button className={profil === "tarimsal" ? "on" : ""} aria-pressed={profil === "tarimsal"} onClick={() => setProfil("tarimsal")}>
           <Filiz className="i" /> Tarımsal
         </button>
       </div>

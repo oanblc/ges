@@ -13,5 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${kok}/kurulum-sonrasi`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${kok}/blog`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${kok}/blog/saatlik-mahsuplasma-rehberi`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${kok}/gizlilik`, changeFrequency: "yearly", priority: 0.2 },
   ];
 }

@@ -84,6 +84,7 @@ export default function SaatlikMahsuplasma() {
   return (
     <div className="wrap">
       <SiteHead aktif="blog" />
+      <main id="icerik">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <div className="yazi">
@@ -188,9 +189,9 @@ export default function SaatlikMahsuplasma() {
             ]}
           />
           <figcaption>
-            Kaynak: EPİAŞ Şeffaflık Platformu, gerçekleşen piyasa takas fiyatı. Haziran
-            2026'da güneş saatleri ortalaması 404 ₺/MWh'e kadar düştü; 15 Haziran 2025'te
-            öğle saatlerinde 0 ₺ görüldü.
+            Kaynak: EPİAŞ Şeffaflık Platformu, gerçekleşen piyasa takas fiyatı. Güneş
+            saatleri ortalaması ilkbahar-yaz döneminde tüm gün ortalamasının belirgin
+            altında kalır; 15 Haziran 2025'te öğle saatlerinde 0 ₺ bile görüldü.
           </figcaption>
         </figure>
         <p>
@@ -279,6 +280,7 @@ export default function SaatlikMahsuplasma() {
         </aside>
       </div>
 
+      </main>
       <SiteFoot yol="/blog/saatlik-mahsuplasma-rehberi" />
     </div>
   );

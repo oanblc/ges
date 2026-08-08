@@ -71,11 +71,11 @@ export default function Maliyet() {
   return (
     <div className="b-grid">
       <div className="roi-form" style={{ padding: 0 }}>
-        <div className="rtoggle" role="tablist" aria-label="Sistem tipi">
-          <button className={segment === "konut" ? "on" : ""} onClick={() => segDegistir("konut")}>
+        <div className="rtoggle" aria-label="Sistem tipi">
+          <button className={segment === "konut" ? "on" : ""} aria-pressed={segment === "konut"} onClick={() => segDegistir("konut")}>
             Konut çatısı
           </button>
-          <button className={segment === "ticari" ? "on" : ""} onClick={() => segDegistir("ticari")}>
+          <button className={segment === "ticari" ? "on" : ""} aria-pressed={segment === "ticari"} onClick={() => segDegistir("ticari")}>
             Ticari / sanayi çatısı
           </button>
         </div>
@@ -207,7 +207,7 @@ export default function Maliyet() {
               `${kw} kW'lık ${segment === "konut" ? "konut" : "ticari"} çatı GES için aldığım teklif makul mü? Kalemleri paylaşacağım.`
             )}`}
           >
-            Teklifinizi Değerlendirtin <Ok className="i" />
+            Teklifinizi Asistana Sorun <Ok className="i" />
           </a>
           <p>Elinizde teklif varsa asistan kalem kalem makul fiyat kontrolü yapar.</p>
         </div>

@@ -40,6 +40,31 @@ _istekler = {}           # ip -> [zaman damgaları]
 _eszamanli = threading.Semaphore(ESZAMANLI_LIMIT)
 
 
+def _gercek_ip(istek):
+    """XFF sahteciliğine karşı: zincirin SON değeri (edge'in eklediği gerçek IP) esas alınır."""
+    xff = istek.headers.get("x-forwarded-for", "")
+    if xff:
+        return xff.split(",")[-1].strip() or "?"
+    return istek.client.host if istek.client else "?"
+
+
+# Günlük global tavanlar — kötüye kullanımda API faturasını sınırlar (UTC gün bazlı)
+GUNLUK_SOHBET_TAVANI = int(os.environ.get("GUNLUK_SOHBET_TAVANI", "400"))
+GUNLUK_LEAD_TAVANI = int(os.environ.get("GUNLUK_LEAD_TAVANI", "100"))
+_gunluk = {"gun": "", "sohbet": 0, "lead": 0}
+
+
+def _gunluk_asildi_mi(tur, tavan):
+    bugun = time.strftime("%Y-%m-%d")
+    with _kilit:
+        if _gunluk["gun"] != bugun:
+            _gunluk.update(gun=bugun, sohbet=0, lead=0)
+        if _gunluk[tur] >= tavan:
+            return True
+        _gunluk[tur] += 1
+        return False
+
+
 def _sinirli_mi(ip):
     simdi = time.time()
     with _kilit:
@@ -49,6 +74,10 @@ def _sinirli_mi(ip):
             return True
         gecmis.append(simdi)
         _istekler[ip] = gecmis
+        # eski IP anahtarlarını ayıkla (bellek şişmesini önler)
+        if len(_istekler) > 5000:
+            for k in [k for k, v in _istekler.items() if not v or simdi - v[-1] > 3600]:
+                _istekler.pop(k, None)
         return False
 
 
@@ -151,8 +180,7 @@ def saglik():
 
 @app.post("/sohbet")
 async def sohbet_ucu(istek: Request):
-    ip = (istek.headers.get("x-forwarded-for", "").split(",")[0].strip()
-          or (istek.client.host if istek.client else "?"))
+    ip = _gercek_ip(istek)
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "Saatlik soru sınırına ulaşıldı; lütfen daha sonra deneyin."},
                             status_code=429)
@@ -160,7 +188,13 @@ async def sohbet_ucu(istek: Request):
     if len(ham_govde) > 13_000_000:
         return JSONResponse({"hata": "Dosya çok büyük; en fazla 6 MB'lık bir fatura yükleyin."},
                             status_code=413)
-    govde = json.loads(ham_govde)
+    if _gunluk_asildi_mi("sohbet", GUNLUK_SOHBET_TAVANI):
+        return JSONResponse({"hata": "Günlük kapasitemiz doldu; yarın yeniden deneyin."},
+                            status_code=503)
+    try:
+        govde = json.loads(ham_govde)
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek gövdesi."}, status_code=400)
     mesajlar = _temiz_mesajlar(govde.get("mesajlar", []))
     if not mesajlar or mesajlar[-1]["role"] != "user":
         return JSONResponse({"hata": "Geçerli bir soru gönderin."}, status_code=400)
@@ -293,15 +327,20 @@ AYIKLAMA_ARACI = [{
 @app.post("/fatura-ayikla")
 async def fatura_ayikla(istek: Request):
     """Fatura görseli/PDF'inden alanları okur — fatura sihirbazının ilk adımı."""
-    ip = (istek.headers.get("x-forwarded-for", "").split(",")[0].strip()
-          or (istek.client.host if istek.client else "?"))
+    ip = _gercek_ip(istek)
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
                             status_code=429)
     ham = await istek.body()
     if len(ham) > 13_000_000:
         return JSONResponse({"hata": "Dosya çok büyük; en fazla 6 MB yükleyin."}, status_code=413)
-    govde = json.loads(ham)
+    if _gunluk_asildi_mi("sohbet", GUNLUK_SOHBET_TAVANI):
+        return JSONResponse({"hata": "Günlük kapasitemiz doldu; yarın yeniden deneyin."},
+                            status_code=503)
+    try:
+        govde = json.loads(ham)
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek gövdesi."}, status_code=400)
     bloklar = _temiz_bloklar([govde.get("ek") or {}])
     if not any(b["type"] in ("image", "document") for b in bloklar):
         return JSONResponse({"hata": "Geçerli bir fatura görseli (JPEG/PNG/WebP) veya PDF gönderin."},
@@ -329,13 +368,23 @@ async def fatura_ayikla(istek: Request):
 
 @app.post("/lead")
 async def lead_ucu(istek: Request):
-    ip = (istek.headers.get("x-forwarded-for", "").split(",")[0].strip()
-          or (istek.client.host if istek.client else "?"))
+    ip = _gercek_ip(istek)
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "sınır"}, status_code=429)
-    govde = await istek.json()
+    if _gunluk_asildi_mi("lead", GUNLUK_LEAD_TAVANI):
+        return JSONResponse({"hata": "Günlük talep kapasitemiz doldu; yarın deneyin."},
+                            status_code=503)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek gövdesi."}, status_code=400)
     mesajlar = _temiz_mesajlar(govde.get("mesajlar", []))
-    iletisim = str(govde.get("iletisim", ""))[:200]
+    iletisim = str(govde.get("iletisim", ""))[:200].strip()
+    # basit biçim doğrulaması: e-posta ya da en az 10 haneli telefon
+    import re as _re
+    if iletisim and not (_re.search(r"[^@\s]+@[^@\s]+\.[^@\s]{2,}", iletisim)
+                         or len(_re.sub(r"\D", "", iletisim)) >= 10):
+        return JSONResponse({"hata": "Geçerli bir telefon veya e-posta girin."}, status_code=400)
     if not mesajlar:
         return JSONResponse({"hata": "Sohbet geçmişi boş."}, status_code=400)
     try:

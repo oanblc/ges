@@ -105,6 +105,7 @@ export default function Rehber() {
   return (
     <div className="wrap">
       <SiteHead aktif="rehber" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -168,6 +169,7 @@ export default function Rehber() {
         </div>
       </section>
 
+      </main>
       <SiteFoot yol="/rehber" />
     </div>
   );

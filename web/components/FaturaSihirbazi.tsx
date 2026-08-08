@@ -165,11 +165,11 @@ export default function FaturaSihirbazi() {
               Faturadan okunamayanlar: {okunamayan.join(", ")} — lütfen aşağıda tamamlayın.
             </p>
           )}
-          <div className="rtoggle" role="tablist" aria-label="Abone tipi">
-            <button type="button" className={tip === "konut" ? "on" : ""} onClick={() => setTip("konut")}>
+          <div className="rtoggle" aria-label="Abone tipi">
+            <button type="button" className={tip === "konut" ? "on" : ""} aria-pressed={tip === "konut"} onClick={() => setTip("konut")}>
               Konut
             </button>
-            <button type="button" className={tip === "isletme" ? "on" : ""} onClick={() => setTip("isletme")}>
+            <button type="button" className={tip === "isletme" ? "on" : ""} aria-pressed={tip === "isletme"} onClick={() => setTip("isletme")}>
               İşletme
             </button>
           </div>

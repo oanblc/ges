@@ -1,7 +1,4 @@
 # Sayfa denetimi uyarıları — 2026-08-08
 
-### /
-- Aşama süreleri toplamı bilgi tabanındaki uçtan uca süreyle çelişiyor: sayfadaki aşama süreleri (Ön değerlendirme 1–2 hafta + Bağlantı başvurusu 1–3 ay + Proje onayı 2–6 ay + Kurulum 1–3 gün + Kabul 2–8 hafta) üst uçta ~11 aya çıkıyor. ESKİ: 'Aşama 4 Proje Onayı ≈ 2–6 ay' (toplamı 3–6 ayın çok üstüne taşıyor) → DOĞRU: bilgi tabanı uçtan uca gerçekçi toplam süreyi 3–6 ay olarak veriyor; proje onayı adımı bu tavanla uyumlu (hafta ölçeğinde) gösterilmeli veya toplam süre açıkça revize edilmeli.
-
-### /surec
-- Sayfa 'uçtan uca gerçekçi toplam 3-6 aydır' derken listelediği aşama süreleri bununla çelişiyor: 1–2 hafta + 1–3 ay + 2–6 ay + 1–3 gün + 2–8 hafta = ~3,8–11,5 ay. ESKİ: 'Aşama 4 Proje Onayı ≈ 2–6 ay' → DOĞRU: bilgi tabanına göre uçtan uca süreç 3–6 ay; tek başına proje onayına 6 ay verilmesi bu çıpayı geçersiz kılıyor, aşama süreleri toplam 3–6 ay ile uyumlulaştırılmalı.
+### /asistan
+- Canlı piyasa kutusunda birim hatası: 'YEKDEM (2026-06) 1.084 ₺/kWh' ESKİ/YANLIŞ → DOĞRU: 1.084 ₺/MWh (= 1,084 ₺/kWh). Bilgi tabanında YEKDEM birim maliyetleri ₺/MWh cinsindendir (2026 tahmini ~434 ₺/MWh; aylık bant 163–1.038 ₺/MWh) ve aynı rakam /blog/saatlik-mahsuplasma-rehberi sayfasında doğru şekilde '1.084 ₺/MWh (Haziran 2026)' olarak verilmiştir; sayfalar arası tutarsızlık mevcut.

@@ -6,7 +6,7 @@ import { META } from "@/data/kb";
 import { Ok, SunDolu } from "@/components/Icons";
 
 export const metadata: Metadata = {
-  title: "Blog — Veriye Dayalı GES Yazıları",
+  title: "Blog — GES Rehber Yazıları",
   description:
     "Mevzuat değişiklikleri, piyasa verileri ve saha deneyimiyle GES yazıları: saatlik mahsuplaşma, tarifeler, teşvikler ve daha fazlası.",
   alternates: { canonical: "/blog" },
@@ -29,6 +29,7 @@ export default function Blog() {
   return (
     <div className="wrap">
       <SiteHead aktif="blog" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -72,6 +73,7 @@ export default function Blog() {
         </div>
       </section>
 
+      </main>
       <SiteFoot yol="/blog" />
     </div>
   );

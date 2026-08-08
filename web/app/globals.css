@@ -51,6 +51,32 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .nav a.on{color:var(--theme); font-weight:600}
 @media(max-width:820px){.nav{display:none}}
 
+/* klavye erişilebilirliği: tüm etkileşimlilerde görünür odak halkası */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+label:focus-within input[type="file"]:focus-visible{
+  outline:2px solid var(--theme); outline-offset:2px; border-radius:4px}
+.skip{position:absolute; left:-9999px; top:8px; z-index:200; background:var(--theme);
+  color:var(--on-theme); padding:9px 18px; border-radius:999px; font-size:13px; text-decoration:none}
+.skip:focus-visible{left:12px}
+
+/* mobil menü */
+.menu-dugme{display:none; border:1px solid var(--border); background:var(--surface);
+  width:40px; height:40px; border-radius:10px; cursor:pointer; color:var(--title);
+  align-items:center; justify-content:center; padding:0}
+.menu-dugme svg.i{width:22px; height:22px}
+@media(max-width:820px){
+  .menu-dugme{display:flex; margin-left:auto}
+  .baslik-cta{display:none}
+}
+.mobil-menu{position:absolute; top:100%; left:0; right:0; background:var(--surface);
+  border-bottom:1px solid var(--border); box-shadow:0 18px 34px rgba(0,30,26,.12);
+  display:flex; flex-direction:column; gap:2px; padding:10px 20px 18px; z-index:60}
+.mobil-menu a{color:var(--title); text-decoration:none; padding:11px 8px; font-size:15px;
+  border-bottom:1px dashed var(--border)}
+.mobil-menu a.on{color:var(--theme); font-weight:600}
+.mobil-menu .gt-btn{margin-top:12px; justify-content:center; border-bottom:none}
+@media(min-width:821px){.mobil-menu{display:none}}
+
 /* ---------- hero ---------- */
 .hero{position:relative; padding:76px 40px 68px; color:#EAF2EE;
   background:
@@ -272,7 +298,13 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 /* ---------- alt bilgi ---------- */
 .site-foot{background:var(--theme); color:rgba(255,255,255,.85); padding:34px 32px; display:flex; gap:24px; flex-wrap:wrap; align-items:center; justify-content:space-between; font-size:13px}
 .site-foot b{color:#fff; font-family:var(--font-epilogue), sans-serif}
-.site-foot .cols{display:flex; gap:28px; flex-wrap:wrap}
+.site-foot .cols{display:flex; flex-direction:column; gap:8px}
+.site-foot .cols a{color:var(--theme2); text-decoration:none; font-size:12.5px}
+.site-foot .cols a:hover{text-decoration:underline}
+.foot-sutun{display:flex; flex-direction:column; gap:6px; min-width:130px}
+.foot-sutun b{color:#fff; font-family:var(--font-epilogue), sans-serif; font-size:13px; margin-bottom:2px}
+.foot-sutun a{color:rgba(255,255,255,.82); text-decoration:none; font-size:13px}
+.foot-sutun a:hover{color:var(--theme2)}
 .site-foot .denetim{display:inline-flex; align-items:center; gap:7px; margin-top:6px;
   color:var(--theme2); font-size:12.5px}
 .site-foot .denetim svg.i{width:15px; height:15px}

@@ -315,7 +315,9 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
 
       <div className="under">
         Asistan resmî kaynaklara dayanır; yatırım kararlarında bağlayıcı görüş vermez. Sohbetler
-        hizmet kalitesi için kaydedilir.
+        hizmet kalitesi için kaydedilir — ayrıntılar:{" "}
+        <a href="/gizlilik">KVKK Aydınlatma Metni</a>. İletişim bilgisi göndererek metni okuyup
+        kabul etmiş sayılırsınız.
       </div>
     </div>
   );

@@ -120,11 +120,11 @@ export default function Journey() {
         </p>
       </div>
 
-      <div className="jmode" role="tablist" aria-label="Görünüm seçimi">
-        <button className={mod === "adim" ? "on" : ""} onClick={() => modDegistir("adim")}>
+      <div className="jmode" aria-label="Görünüm seçimi">
+        <button className={mod === "adim" ? "on" : ""} aria-pressed={mod === "adim"} onClick={() => modDegistir("adim")}>
           Adım Adım
         </button>
-        <button className={mod === "tumu" ? "on" : ""} onClick={() => modDegistir("tumu")}>
+        <button className={mod === "tumu" ? "on" : ""} aria-pressed={mod === "tumu"} onClick={() => modDegistir("tumu")}>
           Tümünü Tek Ekranda Gör
         </button>
       </div>
@@ -136,6 +136,7 @@ export default function Journey() {
               <span key={a.ad} style={{ display: "contents" }}>
                 <button
                   className={`jdot ${i === idx ? "on" : ""} ${i < idx ? "done" : ""}`}
+                  aria-pressed={i === idx}
                   aria-label={`Aşama ${i + 1}: ${a.ad}`}
                   onClick={() => {
                     git(i);

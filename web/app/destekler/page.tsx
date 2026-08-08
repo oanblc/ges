@@ -52,6 +52,7 @@ export default function Destekler() {
   return (
     <div className="wrap">
       <SiteHead aktif="destekler" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -124,8 +125,8 @@ export default function Destekler() {
         <div>
           <b>Hangileri size uygun?</b>
           <p>
-            Profilinize göre uygunluk kontrolü için hesaplama sayfasındaki aracı kullanın ya da
-            durumunuzu asistana anlatın.
+            Profilinize göre uygunluk kontrolü için yukarıdaki aracı kullanın ya da durumunuzu
+            asistana anlatın.
           </p>
         </div>
         <div className="dk-cta-btn">
@@ -141,6 +142,7 @@ export default function Destekler() {
         </div>
       </section>
 
+      </main>
       <SiteFoot yol="/destekler" notu="Faiz oranları ilan edilmez; koşullar şube/proje bazlıdır. Liste bilgilendirme amaçlıdır." />
     </div>
   );

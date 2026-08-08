@@ -15,7 +15,8 @@ export const metadata: Metadata = {
 export default function FaturaAnalizi() {
   return (
     <div className="wrap">
-      <SiteHead aktif="hesaplama" />
+      <SiteHead aktif="fatura" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -39,6 +40,7 @@ export default function FaturaAnalizi() {
         </section>
       </div>
 
+      </main>
       <SiteFoot yol="/fatura-analizi" notu="Sonuçlar ön fizibilite niteliğindedir; bağlayıcı görüş değildir." />
     </div>
   );

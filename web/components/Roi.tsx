@@ -52,11 +52,11 @@ export default function Roi() {
       </div>
 
       <div className="roi-form">
-        <div className="rtoggle" role="tablist" aria-label="Abone tipi">
-          <button className={tip === "konut" ? "on" : ""} onClick={() => tipDegistir("konut")}>
+        <div className="rtoggle" aria-label="Abone tipi">
+          <button className={tip === "konut" ? "on" : ""} aria-pressed={tip === "konut"} onClick={() => tipDegistir("konut")}>
             Konut
           </button>
-          <button className={tip === "isletme" ? "on" : ""} onClick={() => tipDegistir("isletme")}>
+          <button className={tip === "isletme" ? "on" : ""} aria-pressed={tip === "isletme"} onClick={() => tipDegistir("isletme")}>
             İşletme
           </button>
         </div>

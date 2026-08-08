@@ -47,6 +47,14 @@ const kurulusSemasi = {
   knowsAbout: ["güneş enerjisi", "GES", "lisanssız elektrik üretimi", "mahsuplaşma", "EPDK tarifeleri"],
 };
 
+const siteSemasi = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "GES Danışmanı",
+  url: "https://gesdanismani.com",
+  inLanguage: "tr-TR",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="tr" className={`${epilogue.variable} ${jost.variable}`}>
@@ -55,6 +63,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(kurulusSemasi) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSemasi) }}
         />
       </body>
     </html>

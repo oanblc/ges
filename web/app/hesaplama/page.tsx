@@ -18,6 +18,7 @@ export default function Hesaplama() {
   return (
     <div className="wrap">
       <SiteHead aktif="hesaplama" />
+      <main id="icerik">
 
       <div className="calc-ust">
         <span className="sub-title">
@@ -83,6 +84,7 @@ export default function Hesaplama() {
         </section>
       </div>
 
+      </main>
       <SiteFoot yol="/hesaplama" notu="Sonuçlar ön fizibilite niteliğindedir; bağlayıcı görüş değildir." />
     </div>
   );

@@ -12,6 +12,7 @@ export default function Anasayfa() {
   return (
     <div className="wrap">
       <SiteHead aktif="anasayfa" />
+      <main id="icerik">
 
       <section className="hero">
         <div className="hero-inner">
@@ -125,8 +126,8 @@ export default function Anasayfa() {
           <span className="cic">
             <Ayarlar />
           </span>
-          <div className="v">3 araç</div>
-          <div className="k">Yatırım getirisi · Destek uygunluğu · Batarya</div>
+          <div className="v">4 araç</div>
+          <div className="k">Maliyet · Getiri · Batarya · Fatura analizi</div>
         </div>
         <div>
           <span className="cic">
@@ -151,7 +152,7 @@ export default function Anasayfa() {
           </h2>
           <p className="desc">
             Projenize özel geri dönüş süresini soldaki araçla anında görün; hesaplamalar resmî EPDK
-            tarifeleri ve EPİAŞ gerçekleşen piyasa verileriyle, analiz motorumuzda yapılır.
+            tarifeleri ve EPİAŞ gerçekleşen piyasa verileriyle yapılır.
           </p>
           <div className="steps-grid">
             <div className="step">
@@ -190,6 +191,7 @@ export default function Anasayfa() {
         Canlı Asistan
       </a>
 
+      </main>
       <SiteFoot yol="/" />
     </div>
   );
