@@ -5,6 +5,7 @@ import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import destekVeri from "@/data/destekler.json";
 import { Ev, Fabrika, Filiz, Kalkan, Ok, SunDolu } from "@/components/Icons";
+import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
   title: "Destekler — Devlet ve Banka GES Destekleri",
@@ -96,8 +97,8 @@ export default function Destekler() {
                     <span className={`dk-durum ${durum.sinif}`}>{durum.etiket}</span>
                   </div>
                   <b>{d.ad}</b>
-                  <p>{d.ozet}</p>
-                  {"not" in d && d.not && <p className="dk-not">{d.not}</p>}
+                  <p><Aciklamali>{d.ozet}</Aciklamali></p>
+                  {"not" in d && d.not && <p className="dk-not"><Aciklamali>{d.not}</Aciklamali></p>}
                   <div className="dk-alt">
                     <span className="dk-kitle">
                       {d.kitle.map((k) => {

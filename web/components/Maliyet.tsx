@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { BATARYA_TL_KWH, CATI_CARPANI, MALIYET_BANT, MALIYET_KALEMLERI } from "@/data/kb";
 import { Ok } from "./Icons";
+import { Aciklamali } from "./Terim";
 import LeadKilidi from "./LeadKilidi";
 
 /**
@@ -188,20 +189,16 @@ export default function Maliyet() {
             <span className="dot" aria-hidden="true" />
             <div>
               <b>Teklifler çoğunlukla EUR bazlıdır</b>
-              <p>
-                Panel ve inverter ithal olduğundan fiyatlar kura duyarlıdır; teklif geçerlilik
-                süresini ve kur sabitleme koşulunu sorun.
-              </p>
+              <p><Aciklamali>Panel ve inverter ithal olduğundan fiyatlar kura duyarlıdır; teklif geçerlilik
+                süresini ve kur sabitleme koşulunu sorun.</Aciklamali></p>
             </div>
           </div>
           <div className="d-item d-sart">
             <span className="dot" aria-hidden="true" />
             <div>
               <b>Banda girmeyen kalemler</b>
-              <p>
-                Çatı takviyesi (eski binada statik gerektirirse), trafo gücü artırımı (büyük
-                sistemlerde) ve batarya montaj bedeli ayrıca fiyatlanır.
-              </p>
+              <p><Aciklamali>Çatı takviyesi (eski binada statik gerektirirse), trafo gücü artırımı (büyük
+                sistemlerde) ve batarya montaj bedeli ayrıca fiyatlanır.</Aciklamali></p>
             </div>
           </div>
         </div>
@@ -214,7 +211,7 @@ export default function Maliyet() {
           >
             Teklifinizi Asistana Sorun <Ok className="i" />
           </a>
-          <p>Elinizde teklif varsa asistan kalem kalem makul fiyat kontrolü yapar.</p>
+          <p><Aciklamali>Elinizde teklif varsa asistan kalem kalem makul fiyat kontrolü yapar.</Aciklamali></p>
         </div>
       </div>
     </div>

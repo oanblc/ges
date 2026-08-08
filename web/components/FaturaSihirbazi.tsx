@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Atac, Ok } from "./Icons";
+import { Aciklamali } from "./Terim";
 import LeadKilidi from "./LeadKilidi";
 import { ILLER, MALIYET_BANT, CATI_CARPANI } from "@/data/kb";
 import { konutHesap, isletmeHesap, type HesapSonuc } from "@/lib/hesap";
@@ -145,10 +146,8 @@ export default function FaturaSihirbazi() {
               </>
             )}
           </label>
-          <p className="fs-not">
-            Fatura yalnız bu analiz için kullanılır; tüketim ve tutar satırları otomatik okunur,
-            bir sonraki adımda düzeltme şansınız olur.
-          </p>
+          <p className="fs-not"><Aciklamali>Fatura yalnız bu analiz için kullanılır; tüketim ve tutar satırları otomatik okunur,
+            bir sonraki adımda düzeltme şansınız olur.</Aciklamali></p>
           <button type="button" className="fs-geri" onClick={() => setAdim(2)}>
             Faturam yanımda değil — bilgileri elle gireyim →
           </button>
@@ -285,11 +284,9 @@ export default function FaturaSihirbazi() {
               ))}
             </ul>
           )}
-          <p className="roi-note">
-            Satış geliri "abone grubu çıplak enerji bedeli" esasıyla, EPDK tarifesiyle hesaplanır;
+          <p className="roi-note"><Aciklamali>Satış geliri "abone grubu çıplak enerji bedeli" esasıyla, EPDK tarifesiyle hesaplanır;
             yıllık üretimin tüketiminizin 2 katını aşan kısmı bedelsiz YEKDEM'e devredilir. Sonuçlar
-            ön fizibilitedir; kesin tasarım yerinde keşif ister.
-          </p>
+            ön fizibilitedir; kesin tasarım yerinde keşif ister.</Aciklamali></p>
           </LeadKilidi>
           <div className="tool-cta">
             <a

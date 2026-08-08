@@ -38,6 +38,11 @@ export function metniIsaretle(metin: string): React.ReactNode {
   );
 }
 
+/** Statik sayfalarda metin sarmalayıcı: içindeki sözlük terimlerini işaretler. */
+export function Aciklamali({ children }: { children: React.ReactNode }) {
+  return <>{cocuklariIsaretle(children)}</>;
+}
+
 /** React çocuklarındaki string düğümleri işaretler (markdown render'ı için). */
 export function cocuklariIsaretle(cocuklar: React.ReactNode): React.ReactNode {
   if (typeof cocuklar === "string") return metniIsaretle(cocuklar);

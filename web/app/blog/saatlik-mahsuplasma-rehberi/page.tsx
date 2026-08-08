@@ -5,6 +5,7 @@ import SiteFoot from "@/components/SiteFoot";
 import { META, PIYASA } from "@/data/kb";
 import { FIYATLAR } from "@/lib/hesap";
 import { Ok, SunDolu } from "@/components/Icons";
+import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
   title: "Saatlik Mahsuplaşma Adım Adım: 1 Mayıs 2026 Sonrası GES Ekonomisi",
@@ -133,12 +134,10 @@ export default function SaatlikMahsuplasma() {
         ))}
 
         <h2 id="grafik">Bir günü grafikte okuyalım</h2>
-        <p>
-          Aşağıdaki profil, mesai saatli bir işletmeye kurulmuş 10 kW'lık örnek bir sistemin
+        <p><Aciklamali>Aşağıdaki profil, mesai saatli bir işletmeye kurulmuş 10 kW'lık örnek bir sistemin
           gününü gösteriyor. Sarı bölge aynı saatte örtüşen üretim-tüketim (öz tüketim), yeşil
           taralı bölge satışa giden fazla, kahverengi taralı bölge şebekeden çekilen enerji.
-          İmleci saatlerin üzerinde gezdirin:
-        </p>
+          İmleci saatlerin üzerinde gezdirin:</Aciklamali></p>
         <figure className="fig">
           <SaatlikGrafik />
           <figcaption>
@@ -149,11 +148,9 @@ export default function SaatlikMahsuplasma() {
         </figure>
 
         <h2 id="makas">Neden öz tüketim her şeydir: alış-satış makası</h2>
-        <p>
-          Aynı kilovatsaatin iki fiyatı var. Anında tükettiğinizde tam perakende maliyetten
+        <p><Aciklamali>Aynı kilovatsaatin iki fiyatı var. Anında tükettiğinizde tam perakende maliyetten
           (enerji + dağıtım + vergiler) tasarruf edersiniz; şebekeye sattığınızda yalnız çıplak
-          enerji bedelini alırsınız. Ticarethane tarifesiyle güncel makas:
-        </p>
+          enerji bedelini alırsınız. Ticarethane tarifesiyle güncel makas:</Aciklamali></p>
         <figure className="fig">
           <Cubuklar
             birim="₺/kWh"
@@ -206,28 +203,28 @@ export default function SaatlikMahsuplasma() {
           <span className="no">1</span>
           <div>
             <b>Yükleri üretim saatlerine kaydırın</b>
-            <p>Soğutma, kompresör, pompa gibi kaydırılabilir yükleri öğle bandına alın; konutta bulaşık/çamaşır ve termosifonu üretim fazlasına zamanlayın.</p>
+            <p><Aciklamali>Soğutma, kompresör, pompa gibi kaydırılabilir yükleri öğle bandına alın; konutta bulaşık/çamaşır ve termosifonu üretim fazlasına zamanlayın.</Aciklamali></p>
           </div>
         </div>
         <div className="adim">
           <span className="no">2</span>
           <div>
             <b>EV'yi üretim fazlasıyla şarj edin</b>
-            <p>PV-surplus modlu akıllı wallbox, üretim fazlası oluştuğunda şarjı otomatik başlatır — saatlik mahsuptaki işletmelerde öz tüketimi artırmanın en etkili yolu.</p>
+            <p><Aciklamali>PV-surplus modlu akıllı wallbox, üretim fazlası oluştuğunda şarjı otomatik başlatır — saatlik mahsuptaki işletmelerde öz tüketimi artırmanın en etkili yolu.</Aciklamali></p>
           </div>
         </div>
         <div className="adim">
           <span className="no">3</span>
           <div>
             <b>Bataryayı "kurtarılan gelir" için kurun</b>
-            <p>Mahsuplaşamayan fazlayı depolayıp akşam kullanmak, bedelsizleşecek enerjiyi tam perakende değerine çevirir; işletmede tipik geri dönüş 3-5 yıldır. Boyutu 15 dakikalık sayaç profiliniz belirler.</p>
+            <p><Aciklamali>Mahsuplaşamayan fazlayı depolayıp akşam kullanmak, bedelsizleşecek enerjiyi tam perakende değerine çevirir; işletmede tipik geri dönüş 3-5 yıldır. Boyutu 15 dakikalık sayaç profiliniz belirler.</Aciklamali></p>
           </div>
         </div>
         <div className="adim">
           <span className="no">4</span>
           <div>
             <b>Sistemi profile göre boyutlandırın</b>
-            <p>Yıllık üretimin 2× tüketimi aşan kısmı bedelsizdir; tarımsal sulamada kış fazlası yaz tüketimiyle takas edilemez. Çoğu zaman biraz küçük sistem, büyüğünden daha kârlıdır.</p>
+            <p><Aciklamali>Yıllık üretimin 2× tüketimi aşan kısmı bedelsizdir; tarımsal sulamada kış fazlası yaz tüketimiyle takas edilemez. Çoğu zaman biraz küçük sistem, büyüğünden daha kârlıdır.</Aciklamali></p>
           </div>
         </div>
 
@@ -235,10 +232,8 @@ export default function SaatlikMahsuplasma() {
           <SunDolu className="i" />
           <div>
             <b>Kendi rakamlarınızı görün</b>
-            <p>
-              Yatırım getirisi aracı saatlik mahsuplaşma esasıyla hesaplar; öz tüketim oranınızı
-              kaydırarak makasın etkisini kendiniz izleyin.
-            </p>
+            <p><Aciklamali>Yatırım getirisi aracı saatlik mahsuplaşma esasıyla hesaplar; öz tüketim oranınızı
+              kaydırarak makasın etkisini kendiniz izleyin.</Aciklamali></p>
           </div>
           <div className="dk-cta-btn">
             <a className="gt-btn small line" href="/hesaplama#roi">Getiri Aracı</a>
@@ -265,10 +260,8 @@ export default function SaatlikMahsuplasma() {
           </div>
           <div className="side-card cta">
             <h3>Durumunuz özel mi?</h3>
-            <p>
-              İkili anlaşmanız, vardiyalı üretiminiz ya da tarımsal sulamanız varsa asistan
-              hesabı size göre kurar.
-            </p>
+            <p><Aciklamali>İkili anlaşmanız, vardiyalı üretiminiz ya da tarımsal sulamanız varsa asistan
+              hesabı size göre kurar.</Aciklamali></p>
             <a
               className="gt-btn small"
               style={{ marginTop: 12 }}

@@ -3,6 +3,7 @@ import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import { Ayarlar, Grafik, Kalkan, Ok, SaatYenile, SunDolu } from "@/components/Icons";
+import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
   title: "Kurulum Sonrası — Fatura Kontrolü, Bakım, Arıza ve Garanti",
@@ -26,10 +27,8 @@ export default function KurulumSonrasi() {
         <h1>
           İşletme dönemi: <span className="hl-g">takip, bakım ve garanti</span>
         </h1>
-        <p>
-          Sistem devreye girdikten sonra düzenli dört iş kalır: faturayı doğrulamak, üretimi
-          izlemek, temizliği aksatmamak ve arızada doğru sırayla hareket etmek.
-        </p>
+        <p><Aciklamali>Sistem devreye girdikten sonra düzenli dört iş kalır: faturayı doğrulamak, üretimi
+          izlemek, temizliği aksatmamak ve arızada doğru sırayla hareket etmek.</Aciklamali></p>
       </div>
 
       <div className="calc-grid">
@@ -42,32 +41,26 @@ export default function KurulumSonrasi() {
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Uygulama BRÜT, fatura NET gösterir</b>
-                <p>
-                  İzleme uygulamasındaki üretim ile faturadaki mahsup aynı sayı değildir:
+                <p><Aciklamali>İzleme uygulamasındaki üretim ile faturadaki mahsup aynı sayı değildir:
                   anında kendi tükettiğiniz enerji faturada hiç görünmez. &ldquo;Üretim var,
-                  mahsup yok&rdquo; şikâyetlerinin çoğunun açıklaması budur.
-                </p>
+                  mahsup yok&rdquo; şikâyetlerinin çoğunun açıklaması budur.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-ok">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Fatura sıfırlanmaz, %70-90 azalır</b>
-                <p>
-                  Dağıtım bedeli ve vergiler her durumda ödenir. İlk faturada çift yönlü
-                  sayacın verdiği/çektiği enerji satırlarını ve mahsup kalemini kontrol edin.
-                </p>
+                <p><Aciklamali>Dağıtım bedeli ve vergiler her durumda ödenir. İlk faturada çift yönlü
+                  sayacın verdiği/çektiği enerji satırlarını ve mahsup kalemini kontrol edin.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-sart">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Mahsup azaldıysa önce rejimi kontrol edin</b>
-                <p>
-                  İşletmelerde 1 Mayıs 2026 sonrası &ldquo;mahsubum düştü&rdquo;nün başlıca
+                <p><Aciklamali>İşletmelerde 1 Mayıs 2026 sonrası &ldquo;mahsubum düştü&rdquo;nün başlıca
                   nedeni saatlik mahsuplaşmaya geçiştir; sayaç parametresi ve kabul ayarları
-                  ikinci şüphelidir.
-                </p>
+                  ikinci şüphelidir.</Aciklamali></p>
               </div>
             </div>
           </div>
@@ -90,40 +83,32 @@ export default function KurulumSonrasi() {
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Ölçüt: kWh/kWp (özgül üretim)</b>
-                <p>
-                  Türkiye'de yıllık 1.300-1.700 kWh/kWp normaldir. Komşuyla kıyas da toplam
-                  kWh ile değil kWh/kWp ile yapılır.
-                </p>
+                <p><Aciklamali>Türkiye'de yıllık 1.300-1.700 kWh/kWp normaldir. Komşuyla kıyas da toplam
+                  kWh ile değil kWh/kWp ile yapılır.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-ok">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Kışın düşüş normaldir</b>
-                <p>
-                  Kış ayları yaza göre %25-50 düşük üretir. Doğru kıyas geçen yılın aynı
-                  ayıyladır; herkes düşükse neden havadır.
-                </p>
+                <p><Aciklamali>Kış ayları yaza göre %25-50 düşük üretir. Doğru kıyas geçen yılın aynı
+                  ayıyladır; herkes düşükse neden havadır.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-sart">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Yıllık %0,3-0,5 üzeri düşüş arızadır</b>
-                <p>
-                  Panel yaşlanması yılda en fazla binde 3-5'tir. Daha hızlı düşüşte sıra:
-                  hava → kirlilik → yeni gölge → string kıyası → termal + IV testi.
-                </p>
+                <p><Aciklamali>Panel yaşlanması yılda en fazla binde 3-5'tir. Daha hızlı düşüşte sıra:
+                  hava → kirlilik → yeni gölge → string kıyası → termal + IV testi.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-ok">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Garanti taahhüdünü veriyle belgeleyin</b>
-                <p>
-                  Sözleşmenizde yıllık kWh/PR taahhüdü varsa izleme verisi + ışınım
-                  düzeltmesiyle belgeleyip kurulumcuya yazılı bildirin.
-                </p>
+                <p><Aciklamali>Sözleşmenizde yıllık kWh/PR taahhüdü varsa izleme verisi + ışınım
+                  düzeltmesiyle belgeleyip kurulumcuya yazılı bildirin.</Aciklamali></p>
               </div>
             </div>
           </div>
@@ -138,31 +123,25 @@ export default function KurulumSonrasi() {
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Yılda 1-2 temizlik — yağmur yetmez</b>
-                <p>
-                  Yapışkan kir, polen ve kuş pisliği yağmurla çıkmaz; kirlilik %5-15 üretim
+                <p><Aciklamali>Yapışkan kir, polen ve kuş pisliği yağmurla çıkmaz; kirlilik %5-15 üretim
                   kaybettirir (tozlu bölgede %25+). Saf su ve yumuşak ekipman kullanın;
-                  deterjan/sirke kaplamayı bozar, panel sıcakken yıkanmaz.
-                </p>
+                  deterjan/sirke kaplamayı bozar, panel sıcakken yıkanmaz.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-sart">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Kuş pisliği en zararlı kirdir, kar kendiliğinden kayar</b>
-                <p>
-                  Nokta kirlenme hot-spot yapar, görünce temizletin. Karı kazımayın — 1-2
-                  günde kayar; kazıma mikro çatlak riskidir.
-                </p>
+                <p><Aciklamali>Nokta kirlenme hot-spot yapar, görünce temizletin. Karı kazımayın — 1-2
+                  günde kayar; kazıma mikro çatlak riskidir.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-ok">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Yıllık işletme gideri: yatırımın ~%1-2'si</b>
-                <p>
-                  Planlama varsayımı olarak bütçeleyin; sistem ömründeki en büyük kalem 1-2
-                  inverter değişimidir (garanti tipik 5-10 yıl).
-                </p>
+                <p><Aciklamali>Planlama varsayımı olarak bütçeleyin; sistem ömründeki en büyük kalem 1-2
+                  inverter değişimidir (garanti tipik 5-10 yıl).</Aciklamali></p>
               </div>
             </div>
           </div>
@@ -177,46 +156,38 @@ export default function KurulumSonrasi() {
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Üretim sıfırsa: 30 saniyelik ilk kontrol</b>
-                <p>
-                  Sıra: inverter ekran/LED → AC sigortayı kapat-aç (en sık çözüm) → şebeke
+                <p><Aciklamali>Sıra: inverter ekran/LED → AC sigortayı kapat-aç (en sık çözüm) → şebeke
                   var mı → AC/DC ayırıcı konumu → hata koduyla servis. Fan/sıcaklık
-                  hataları soğuyunca kendiliğinden düzelir.
-                </p>
+                  hataları soğuyunca kendiliğinden düzelir.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-yok">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>AFCI/ark hatasını asla resetleyip geçmeyin</b>
-                <p>
-                  Ark hatası yangın riskidir, kesin servis işidir. DC tarafının tamamı
+                <p><Aciklamali>Ark hatası yangın riskidir, kesin servis işidir. DC tarafının tamamı
                   (string, konnektör, panel sökme) kullanıcı işi değildir — string güneşliyken
-                  600-1500 V taşır.
-                </p>
+                  600-1500 V taşır.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-ok">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Garanti yapısını bilin</b>
-                <p>
-                  Panelde ürün garantisi markaya göre 10-15 yıl (malzeme/işçilik; yaygın bant
+                <p><Aciklamali>Panelde ürün garantisi markaya göre 10-15 yıl (malzeme/işçilik; yaygın bant
                   12-15), performans garantisi 25-30 yıl lineerdir. İnverter garantisi string
                   modellerde 5-10 yıldır ve ek ücretle uzatılabilir; mikro inverterde 12 yılın
                   üzerine çıkar. Kurulumcu iflas etse bile panel/inverter garantisi üreticide
-                  sürer — belgeleri ve seri numaralarını saklayın.
-                </p>
+                  sürer — belgeleri ve seri numaralarını saklayın.</Aciklamali></p>
               </div>
             </div>
             <div className="d-item d-sart">
               <span className="dot" aria-hidden="true" />
               <div>
                 <b>Hasarda 5 iş günü içinde sigorta ihbarı</b>
-                <p>
-                  Fırtına/dolu hasarında süreyi kaçırmayın; eksper ataması artık otomatik ve
+                <p><Aciklamali>Fırtına/dolu hasarında süreyi kaçırmayın; eksper ataması artık otomatik ve
                   bağımsızdır. Bataryalı sistemi sigortacıya yazılı bildirmemek ret
-                  gerekçesidir.
-                </p>
+                  gerekçesidir.</Aciklamali></p>
               </div>
             </div>
           </div>
@@ -227,7 +198,7 @@ export default function KurulumSonrasi() {
             >
               Asistanla Arıza Teşhisi <Ok className="i" />
             </a>
-            <p>Servise gitmeden önce: hata kodu fotoğrafı, üretim grafiği ve geçen yıl kıyası hazırlayın.</p>
+            <p><Aciklamali>Servise gitmeden önce: hata kodu fotoğrafı, üretim grafiği ve geçen yıl kıyası hazırlayın.</Aciklamali></p>
           </div>
         </section>
       </div>

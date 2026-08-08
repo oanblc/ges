@@ -3,6 +3,7 @@ import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import { Ok, SunDolu } from "@/components/Icons";
+import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
   title: "Süreç Rehberi — Başvurudan Üretime Yedi Aşama",
@@ -151,13 +152,13 @@ export default function Surec() {
               <h2>
                 {a.ad} <span className="jt">{a.sure}</span>
               </h2>
-              <p>{a.detay}</p>
+              <p><Aciklamali>{a.detay}</Aciklamali></p>
               <div className="sr-kutu">
                 <div>
                   <b>Belgeler ve çıktılar</b>
                   <ul>
                     {a.belgeler.map((x) => (
-                      <li key={x}>{x}</li>
+                      <li key={x}><Aciklamali>{x}</Aciklamali></li>
                     ))}
                   </ul>
                 </div>
@@ -165,7 +166,7 @@ export default function Surec() {
                   <b>Dikkat</b>
                   <ul>
                     {a.dikkat.map((x) => (
-                      <li key={x}>{x}</li>
+                      <li key={x}><Aciklamali>{x}</Aciklamali></li>
                     ))}
                   </ul>
                 </div>

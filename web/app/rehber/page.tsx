@@ -3,6 +3,7 @@ import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import { Ok, SunDolu } from "@/components/Icons";
+import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
   title: "Rehber — GES Bilgi Kütüphanesi ve Yaygın Yanlışlar",
@@ -129,7 +130,7 @@ export default function Rehber() {
             <article key={m.mit} className="dk-kart mit-kart">
               <span className="mit">&ldquo;{m.mit}&rdquo;</span>
               <b>Gerçek</b>
-              <p>{m.gercek}</p>
+              <p><Aciklamali>{m.gercek}</Aciklamali></p>
             </article>
           ))}
         </div>
@@ -141,7 +142,7 @@ export default function Rehber() {
           {KONULAR.map((k) => (
             <article key={k.baslik} className="dk-kart">
               <b>{k.baslik}</b>
-              <p>{k.ozet}</p>
+              <p><Aciklamali>{k.ozet}</Aciklamali></p>
               <div className="dk-alt">
                 <span />
                 <a href={`/asistan?soru=${encodeURIComponent(k.soru)}`}>

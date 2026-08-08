@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Ok } from "./Icons";
+import { Aciklamali } from "./Terim";
 import LeadKilidi from "./LeadKilidi";
 
 /**
@@ -111,40 +112,32 @@ export default function Batarya() {
           <span className="dot" aria-hidden="true" />
           <div>
             <b>Depodan şebekeye satış ödenmez</b>
-            <p>
-              Bataryadan şebekeye verilen enerjiye ödeme yapılmaz; depo çıkışı ölçülemiyorsa
-              fazlanın tamamı bedelsiz sayılır. Doğru iş modeli öz tüketimi büyütmektir.
-            </p>
+            <p><Aciklamali>Bataryadan şebekeye verilen enerjiye ödeme yapılmaz; depo çıkışı ölçülemiyorsa
+              fazlanın tamamı bedelsiz sayılır. Doğru iş modeli öz tüketimi büyütmektir.</Aciklamali></p>
           </div>
         </div>
         <div className="d-item d-yok">
           <span className="dot" aria-hidden="true" />
           <div>
             <b>Salt gece-puant arbitrajı konutta kârlı değil</b>
-            <p>
-              Üç zamanlı tarifede gece-puant farkı bataryanın çevrim maliyetinin altındadır;
-              batarya ancak GES fazlasını depolarken kendini öder.
-            </p>
+            <p><Aciklamali>Üç zamanlı tarifede gece-puant farkı bataryanın çevrim maliyetinin altındadır;
+              batarya ancak GES fazlasını depolarken kendini öder.</Aciklamali></p>
           </div>
         </div>
         <div className="d-item d-ok">
           <span className="dot" aria-hidden="true" />
           <div>
             <b>Yerleşim ve sigorta</b>
-            <p>
-              Garaj, teknik oda veya gölge dış cephe uygundur; yatak odasına kurulmaz. Kurulumu
-              sigortacıya yazılı bildirin — bildirilmemiş batarya ret gerekçesidir.
-            </p>
+            <p><Aciklamali>Garaj, teknik oda veya gölge dış cephe uygundur; yatak odasına kurulmaz. Kurulumu
+              sigortacıya yazılı bildirin — bildirilmemiş batarya ret gerekçesidir.</Aciklamali></p>
           </div>
         </div>
         <div className="d-item d-ok">
           <span className="dot" aria-hidden="true" />
           <div>
             <b>Sonradan eklenebilir</b>
-            <p>
-              "Battery-ready" hibrit inverter en ucuz yoldur; mevcut GES'e ekleme TEDAŞ tadilat
-              projesi ve kabul gerektirir.
-            </p>
+            <p><Aciklamali>"Battery-ready" hibrit inverter en ucuz yoldur; mevcut GES'e ekleme TEDAŞ tadilat
+              projesi ve kabul gerektirir.</Aciklamali></p>
           </div>
         </div>
       </div>

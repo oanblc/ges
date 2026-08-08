@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import mevzuat from "@/data/mevzuat.json";
 import { Ara, Ok } from "./Icons";
+import { metniIsaretle } from "./Terim";
 
 /**
  * Mevzuat kütüphanesi: anlık arama istemci tarafında (ücretsiz);
@@ -103,7 +104,7 @@ export default function MevzuatArama() {
       {aiCevap && (
         <div className="mv-cevap" role="region" aria-label="Yapay zekâ cevabı">
           <b>Kütüphaneye göre cevap</b>
-          <p>{aiCevap}</p>
+          <p>{metniIsaretle(aiCevap)}</p>
           {aiIlgili.length > 0 && <span>Dayanak kayıtlar aşağıda işaretlendi.</span>}
         </div>
       )}
@@ -138,7 +139,7 @@ export default function MevzuatArama() {
               <span className="mv-tarih">{k.tarih}</span>
             </div>
             <b>{k.baslik}</b>
-            <p>{k.ozet}</p>
+            <p>{metniIsaretle(k.ozet)}</p>
             <div className="mv-alt">
               <span className="mv-etki">
                 {k.etki.map((e: string) => (
