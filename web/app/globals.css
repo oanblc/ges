@@ -549,6 +549,20 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .mv-bos{font-size:13.5px; color:var(--text)}
 .mv-bos a{color:var(--theme)}
 
+/* ---------- malzeme listesi (bom) ---------- */
+.bom{margin-top:26px; border-top:1px dashed var(--border); padding-top:20px}
+.bom h3{margin:0 0 12px; font-size:16px; letter-spacing:-.3px}
+.bom table{width:100%; border-collapse:collapse; font-size:13px}
+.bom th,.bom td{border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top}
+.bom th{background:var(--soft); font-weight:600; color:var(--title); white-space:nowrap}
+.bom td:first-child{font-weight:600; color:var(--title); white-space:nowrap}
+.bom td.mono{white-space:nowrap; font-variant-numeric:tabular-nums}
+.bom tr:nth-child(even) td{background:color-mix(in srgb, var(--soft) 45%, var(--surface))}
+@media(max-width:760px){
+  .bom{overflow-x:auto}
+  .bom table{min-width:560px}
+}
+
 /* ---------- lead kilidi ve sohbet kapısı ---------- */
 /* grid istifi: kart, bulanık içerikten uzunsa konteyner büyür — komşu öğelere taşmaz */
 .kilit{display:grid}

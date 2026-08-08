@@ -90,6 +90,17 @@ export const MALIYET_KALEMLERI: Array<[string, number]> = [
   ["Nakliye ve diğer", 6],
 ];
 
+/**
+ * Malzeme listesi üretimi — kb/ekipman-fiyatlar.md (Ağustos 2026).
+ * Kalem payları sektör kırılımından; panel/inverter spesifikasyonları 2026 standardı.
+ */
+export const EKIPMAN = {
+  panelWp: 580,          // 2026 standardı N-Type TOPCon tipik güç
+  panelM2: 2.4,          // panel başına çatı alanı (m²)
+  dcAcOran: 1.2,         // önerilen DC/AC oranı
+  inverterBoylari: [5, 6, 8, 10, 15, 20, 25, 30, 50, 60, 75, 100, 110],
+};
+
 /** Ev tipi LFP batarya, kurulum hariç liste fiyatı (5 kWh ≈ 113.000 ₺, 2026) */
 export const BATARYA_TL_KWH = 22600;
 

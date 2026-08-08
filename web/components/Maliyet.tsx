@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BATARYA_TL_KWH, CATI_CARPANI, MALIYET_BANT, MALIYET_KALEMLERI } from "@/data/kb";
+import { BATARYA_TL_KWH, CATI_CARPANI, EKIPMAN, MALIYET_BANT, MALIYET_KALEMLERI } from "@/data/kb";
 import { Ok } from "./Icons";
 import { Aciklamali } from "./Terim";
 import LeadKilidi from "./LeadKilidi";
@@ -72,7 +72,32 @@ export default function Maliyet() {
 
   const ortalama = (sonuc.alt + sonuc.ust) / 2 + sonuc.batarya;
 
+  const panelAdet = Math.ceil((kw * 1000) / EKIPMAN.panelWp);
+  const catiAlani = Math.round(panelAdet * EKIPMAN.panelM2);
+  const invHedef = kw / EKIPMAN.dcAcOran;
+  const invKw = EKIPMAN.inverterBoylari.find((b) => b >= invHedef) ?? Math.round(invHedef);
+  const konstruksiyon = {
+    kiremit: "Eloksallı alüminyum ray + kiremit kancası (kiremit delinmez) + sızdırmazlık contaları",
+    trapez: "Eloksallı alüminyum ray + EPDM contalı trapez vidaları",
+    teras: "Balast ayaklı eğimli konstrüksiyon (çatı delinmez) + koruyucu şilte",
+  }[cati];
+  const malzemeler: Array<[string, string]> = [
+    ["Güneş panelleri",
+     `≈ ${panelAdet} adet ${EKIPMAN.panelWp} Wp N-Type TOPCon panel · ~${catiAlani} m² çatı alanı · ürün garantisi 12-15 yıl, performans 25-30 yıl lineer`],
+    ["İnverter",
+     `≈ ${invKw} kW ${bataryali ? "hibrit" : "string"} inverter (DC/AC ≈ 1,2) · EN 50549-1 uyumlu · garanti 5-10 yıl${bataryali ? " · batarya haberleşmesi (CAN/RS485) uyumlu" : ""}`],
+    ["Konstrüksiyon", konstruksiyon],
+    ["Montaj ve işçilik",
+     "Yetkili ekip montajı, kalibre MC4 kriplemesi, devreye alma ve IEC 62446-1 test raporu"],
+    ["Kablo ve elektrik",
+     "EN 50618 DC solar kablo (UV korumalı kanalda), tek marka MC4 konnektör, DC + AC panolar, parafudr (Tip 1+2), topraklama ve gerekiyorsa paratoner"],
+    ["Proje, izin, devreye alma",
+     "SMM elektrik projesi (tek hat + string planı + topraklama), TEDAŞ onayı, geçici kabul, çift yönlü sayaç"],
+    ["Nakliye ve diğer", "Nakliye, gerekirse vinç, sarf malzemeler ve etiketleme"],
+  ];
+
   return (
+    <>
     <div className="b-grid">
       <div className="roi-form" style={{ padding: 0 }} onChangeCapture={() => setDokundu(true)}>
         <div className="rtoggle" aria-label="Sistem tipi">
@@ -215,5 +240,37 @@ export default function Maliyet() {
         </div>
       </div>
     </div>
+
+    <div className="bom">
+      <h3>Bu sistemde neler var? — {kw.toLocaleString("tr-TR")} kW için malzeme listesi</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Kalem</th>
+            <th>İçerik</th>
+            <th>Pay</th>
+            <th>Tahmini bant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {MALIYET_KALEMLERI.map(([ad, oran], i) => (
+            <tr key={ad}>
+              <td>{ad}</td>
+              <td><Aciklamali>{malzemeler[i]?.[1]}</Aciklamali></td>
+              <td className="mono">%{oran}</td>
+              <td className="mono">
+                {binTl((sonuc.alt * oran) / 100)} – {binTl((sonuc.ust * oran) / 100)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="roi-note">
+        Kalem payları 2026 sektör kırılımıdır; ekipman spesifikasyonları güncel piyasa
+        standardına göredir (Ağustos 2026). Marka ve kesin kalem fiyatları teklifle netleşir —
+        teklifinizdeki kalemleri bu listeyle karşılaştırın, eksik kalemi sorun.
+      </p>
+    </div>
+    </>
   );
 }
