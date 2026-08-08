@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Atac, Ok, Kalkan, Sohbet } from "./Icons";
 
 type Mesaj = {
@@ -211,7 +213,15 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
               <div className="who">
                 <Sohbet className="i" /> GES Asistanı
               </div>
-              <p className="govde">{m.content || (durum ? `${durum}…` : "")}</p>
+              <div className="govde">
+                {m.content ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                ) : durum ? (
+                  `${durum}…`
+                ) : (
+                  ""
+                )}
+              </div>
               {m.denetim === "onay" && (
                 <div className="verified">
                   <Kalkan className="i" /> Bağımsız denetimden geçti
