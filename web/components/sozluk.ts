@@ -43,6 +43,18 @@ export const SOZLUK: Record<string, string> = {
     "Yatırım Teşvik Belgesi — KDV istisnası, gümrük muafiyeti ve SGK desteği gibi avantajlar sağlayan belge (e-TUYS üzerinden alınır).",
   "PR":
     "Performans oranı — santralin ışınımdan bağımsız kalite ölçütü; izleme ve garanti takibinde kullanılır.",
+  "KOSGEB":
+    "Küçük ve Orta Ölçekli İşletmeleri Geliştirme İdaresi — KOBİ'lere destek programları yürüten kamu kurumu; Yeşil Sanayi programı çatı GES'i kapsar.",
+  "IPARD":
+    "AB kaynaklı kırsal kalkınma destek programı — tarımsal yatırımlarda %40-70 hibe sağlar, TKDK üzerinden yürütülür.",
+  "TKDK":
+    "Tarım ve Kırsal Kalkınmayı Destekleme Kurumu — IPARD hibelerinin başvuru ve ödeme işlemlerini yürüten kurum.",
+  "ESCO":
+    "Enerji hizmet şirketi modeli — yatırımı firma yapar, siz ürettiği enerjiyi satın alırsınız; başlangıç sermayesi gerektirmez.",
+  "EPC":
+    "Mühendislik + tedarik + kurulum işini tek elden üstlenen anahtar teslim yüklenici modeli; ticari GES fiyatları genelde EPC bedeli olarak verilir.",
+  "e-TUYS":
+    "Sanayi ve Teknoloji Bakanlığı'nın elektronik teşvik başvuru sistemi — Yatırım Teşvik Belgesi buradan alınır.",
   "duck curve":
     "Ördek eğrisi — güneşin bol olduğu öğle saatlerinde elektrik fiyatının düşüp akşam yükselmesiyle oluşan günlük fiyat deseni.",
 };
