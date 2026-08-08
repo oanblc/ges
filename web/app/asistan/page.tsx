@@ -3,7 +3,8 @@ import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
 import AsistanSohbet from "@/components/AsistanSohbet";
 import { META, PIYASA } from "@/data/kb";
-import { Ok, Kalkan, Grafik, Soru } from "@/components/Icons";
+import { Kalkan, Grafik, Soru } from "@/components/Icons";
+import { YanSorular, DanismanlikDugmesi } from "@/components/AsistanYan";
 
 export const metadata: Metadata = {
   title: "GES Asistanı — Güncel Mevzuatla Soru-Cevap",
@@ -11,13 +12,6 @@ export const metadata: Metadata = {
     "Çatı güneş enerjisiyle ilgili sorularınızı sorun: EPDK/EPİAŞ kaynaklı, denetimden geçen, hesapları güncel tarifelerle yapan yapay zekâ destekli GES asistanı.",
   alternates: { canonical: "/asistan" },
 };
-
-const YAN_SORULAR = [
-  "Panel taktırdım, neden hâlâ fatura geliyor?",
-  "Saatlik mahsuplaşma beni etkiler mi?",
-  "Kiracıyım, çatıya panel taktırabilir miyim?",
-  "Elektrik kesilince panellerim evi besler mi?",
-];
 
 export default async function AsistanSayfa({
   searchParams,
@@ -70,12 +64,7 @@ export default async function AsistanSayfa({
             <h3>
               <Soru className="i" /> Örnek sorular
             </h3>
-            {YAN_SORULAR.map((s) => (
-              <a key={s} className="q" href={`/asistan?soru=${encodeURIComponent(s)}`}>
-                <Ok className="i" />
-                {s}
-              </a>
-            ))}
+            <YanSorular />
           </div>
 
           <div className="side-card">
@@ -100,8 +89,9 @@ export default async function AsistanSayfa({
             <h3>Projenizi birlikte planlayalım</h3>
             <p>
               Sorularınız netleşince süreç yönetimi ve teklif karşılaştırması için danışmanlık
-              talebi bırakın — sohbetin altındaki düğmeyi kullanmanız yeterli.
+              talebi bırakın.
             </p>
+            <DanismanlikDugmesi />
           </div>
         </aside>
       </div>

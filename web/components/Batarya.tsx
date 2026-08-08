@@ -16,6 +16,8 @@ export default function Batarya() {
   const [mod, setMod] = useState<"konut" | "isletme">("konut");
   const [aksamKwh, setAksamKwh] = useState(8);
   const [kwp, setKwp] = useState(6);
+  // kilit ancak kullanıcı araca dokunduktan sonra devreye girer
+  const [dokundu, setDokundu] = useState(false);
 
   const oneriKwh = Math.round(((aksamKwh * 1.15) / DOD) * 10) / 10;
   const bantAlt = Math.round(kwp * 1 * 10) / 10;
@@ -23,7 +25,7 @@ export default function Batarya() {
 
   return (
     <div className="b-grid">
-      <div className="roi-form" style={{ padding: 0 }}>
+      <div className="roi-form" style={{ padding: 0 }} onChangeCapture={() => setDokundu(true)}>
         <div className="rtoggle" aria-label="Kullanım tipi">
           <button className={mod === "konut" ? "on" : ""} aria-pressed={mod === "konut"} onClick={() => setMod("konut")}>
             Konut
@@ -63,7 +65,7 @@ export default function Batarya() {
                 onChange={(e) => setKwp(+e.target.value)}
               />
             </div>
-            <LeadKilidi kaynak="Batarya aracı">
+            <LeadKilidi kaynak="Batarya aracı" beklet={!dokundu}>
             <div className="roi-out">
               <div className="ro">
                 <div className="rv">≈ {oneriKwh.toLocaleString("tr-TR")} kWh</div>

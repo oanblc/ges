@@ -134,11 +134,18 @@ export default function Surec() {
           Uçtan uca süreç çoğunlukla 3-6 ay sürer; yoğun bölge ve dönemlerde 8 aya kadar
           uzayabilir. (Mevzuat güncelliği: {META.kbGuncelleme})
         </p>
+        <nav className="cip-nav" aria-label="Aşamalara git">
+          {ASAMALAR.map((a, i) => (
+            <a key={a.ad} href={`#asama-${i + 1}`}>
+              {i + 1}. {a.ad}
+            </a>
+          ))}
+        </nav>
       </div>
 
       <div className="sr-list">
         {ASAMALAR.map((a, i) => (
-          <section key={a.ad} className="sr-item" aria-label={`Aşama ${i + 1}: ${a.ad}`}>
+          <section key={a.ad} id={`asama-${i + 1}`} className="sr-item" aria-label={`Aşama ${i + 1}: ${a.ad}`}>
             <span className="sr-num">{i + 1}</span>
             <div>
               <h2>

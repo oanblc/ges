@@ -50,13 +50,15 @@ export interface HesapSonuc {
 }
 
 /** Konut: aylık fatura (₺, vergiler dahil) → fizibilite */
-export function konutHesap(aylikFatura: number, ilVerimi: number): HesapSonuc {
+export function konutHesap(aylikFatura: number, ilVerimi: number, aylikKwhGirdi?: number): HesapSonuc {
   const esik = TARIFE.mesken.kademeEsigiAylikKwh; // 240 kWh/ay
   const esikFatura = esik * FIYATLAR.meskenK1;
   const aylikKwh =
-    aylikFatura <= esikFatura
-      ? aylikFatura / FIYATLAR.meskenK1
-      : esik + (aylikFatura - esikFatura) / FIYATLAR.meskenK2;
+    aylikKwhGirdi && aylikKwhGirdi > 0
+      ? aylikKwhGirdi
+      : aylikFatura <= esikFatura
+        ? aylikFatura / FIYATLAR.meskenK1
+        : esik + (aylikFatura - esikFatura) / FIYATLAR.meskenK2;
   const yillikKwh = aylikKwh * 12;
 
   const kw = Math.min(LIMITLER.meskenKw, Math.max(2, yillikKwh / ilVerimi));
@@ -103,10 +105,12 @@ export function konutHesap(aylikFatura: number, ilVerimi: number): HesapSonuc {
 export function isletmeHesap(
   aylikFatura: number,
   ilVerimi: number,
-  ozTuketimOrani: number
+  ozTuketimOrani: number,
+  aylikKwhGirdi?: number
 ): HesapSonuc {
   const birim = FIYATLAR.ticarethane;
-  const yillikKwh = (aylikFatura / birim) * 12;
+  const yillikKwh =
+    aylikKwhGirdi && aylikKwhGirdi > 0 ? aylikKwhGirdi * 12 : (aylikFatura / birim) * 12;
 
   const kw = Math.min(LIMITLER.isletmeKw, Math.max(2, yillikKwh / ilVerimi));
   const uretim = kw * ilVerimi;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Epilogue, Jost } from "next/font/google";
 import "./globals.css";
+import AsistanFab from "@/components/AsistanFab";
 
 const epilogue = Epilogue({
   variable: "--font-epilogue",
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="tr" className={`${epilogue.variable} ${jost.variable}`}>
       <body>
         {children}
+        <AsistanFab />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(kurulusSemasi) }}

@@ -4,8 +4,8 @@ import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import {
-  SunDolu, Ok, Ara, Kalkan, Saat, Arti, Ev, Fabrika, Filiz,
-  Rota, SaatYenile, Ayarlar, Sohbet,
+  SunDolu, Ok, Ara, Kalkan, Saat, Arti, Atac, Ev, Fabrika, Filiz,
+  Rota, SaatYenile, Ayarlar,
 } from "@/components/Icons";
 
 export default function Anasayfa() {
@@ -50,6 +50,14 @@ export default function Anasayfa() {
               </a>
             ))}
           </div>
+          <a className="hero-fatura" href="/fatura-analizi">
+            <Atac className="i" />
+            <span>
+              <b>Faturanızı yükleyin, GES planınız çıksın</b> — maliyet, satış geliri ve geri
+              ödeme tek ekranda
+            </span>
+            <Ok className="i" />
+          </a>
           <div className="trust">
             <span>
               <Kalkan className="i" /> Kaynak gösterilen yanıtlar
@@ -148,7 +156,7 @@ export default function Anasayfa() {
             Nasıl çalışır
           </span>
           <h2>
-            Karardan <span className="hl-g">devreye almaya</span> dört aşamalı yol haritası
+            Platformu <span className="hl-g">dört adımda</span> kullanın
           </h2>
           <p className="desc">
             Projenize özel geri dönüş süresini soldaki araçla anında görün; hesaplamalar resmî EPDK
@@ -157,23 +165,23 @@ export default function Anasayfa() {
           <div className="steps-grid">
             <div className="step">
               <span className="num">1</span>
-              <b>Değerlendirme</b>
-              <p>Tüketim profilinize göre sistemin uygunluğunu ve kapasitesini belirleyin.</p>
+              <b>Sorunuzu Sorun</b>
+              <p>Asistan, durumunuza uygun cevabı güncel mevzuata dayanarak verir.</p>
             </div>
             <div className="step">
               <span className="num">2</span>
-              <b>Finansal Analiz</b>
-              <p>Yatırım maliyeti, geri ödeme süresi ve destek programlarını görün.</p>
+              <b>Faturanızı Yükleyin</b>
+              <p>Tüketiminiz okunur; size uygun güç, maliyet ve satış geliri hesaplanır.</p>
             </div>
             <div className="step">
               <span className="num">3</span>
-              <b>Başvuru Süreci</b>
-              <p>Dağıtım şirketi başvurusundan geçici kabule adım adım ilerleyin.</p>
+              <b>Planınızı Netleştirin</b>
+              <p>Destek uygunluğu, batarya kararı ve süreç adımlarını araçlarla görün.</p>
             </div>
             <div className="step">
               <span className="num">4</span>
-              <b>İşletme Dönemi</b>
-              <p>Fatura ve mahsup kontrolü, performans takibi ve garanti süreçleri.</p>
+              <b>Danışmanla İlerleyin</b>
+              <p>Talep bırakın; teklif karşılaştırma ve süreç yönetiminde yanınızda olalım.</p>
             </div>
           </div>
           <div className="journey-foot">
@@ -184,12 +192,6 @@ export default function Anasayfa() {
           </div>
         </div>
       </section>
-
-      <a className="gt-btn fab" href="/asistan" aria-label="Canlı asistanla sohbet edin">
-        <span className="dot" aria-hidden="true" />
-        <Sohbet className="i" />
-        Canlı Asistan
-      </a>
 
       </main>
       <SiteFoot yol="/" />

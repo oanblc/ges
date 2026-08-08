@@ -30,6 +30,8 @@ export default function SiteFoot({ notu }: { yol?: string; notu?: string }) {
         <b>gesdanışmanı</b> — GES danışmanlık platformu
         <br />
         Tarife verisi: EPDK, {META.tarifeGecerlilik} · Piyasa verisi: {META.piyasaKaynak}
+        <br />
+        İletişim: <a href="mailto:iletisim@gesdanismani.com">iletisim@gesdanismani.com</a>
       </div>
       {SUTUNLAR.map(([baslik, linkler]) => (
         <nav key={baslik} className="foot-sutun" aria-label={baslik}>

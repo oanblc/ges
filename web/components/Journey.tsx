@@ -70,15 +70,29 @@ export default function Journey() {
   const zamanlayici = useRef<ReturnType<typeof setInterval> | null>(null);
   const bolumRef = useRef<HTMLElement>(null);
 
-  const git = useCallback((i: number) => {
-    setIdx((eski) => {
-      setOncekiIdx(eski);
-      return (i + ASAMALAR.length) % ASAMALAR.length;
-    });
+  const elleGezildi = useRef(false);
+
+  const durdur = useCallback(() => {
+    if (zamanlayici.current) clearInterval(zamanlayici.current);
+    zamanlayici.current = null;
   }, []);
 
+  const git = useCallback(
+    (i: number) => {
+      // kullanıcı elle gezinmeye başladıysa otomatik oynatma kalıcı durur
+      elleGezildi.current = true;
+      durdur();
+      setIdx((eski) => {
+        setOncekiIdx(eski);
+        return (i + ASAMALAR.length) % ASAMALAR.length;
+      });
+    },
+    [durdur],
+  );
+
   const otomatikBaslat = useCallback(() => {
-    if (zamanlayici.current) clearInterval(zamanlayici.current);
+    durdur();
+    if (elleGezildi.current) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     zamanlayici.current = setInterval(() => {
       setIdx((eski) => {
@@ -86,14 +100,26 @@ export default function Journey() {
         return (eski + 1) % ASAMALAR.length;
       });
     }, 4600);
-  }, []);
+  }, [durdur]);
 
   useEffect(() => {
-    if (mod === "adim") otomatikBaslat();
+    if (mod !== "adim") return durdur;
+    // yalnız bölüm ekrandayken oynat (mobil pil tasarrufu)
+    const bolum = bolumRef.current;
+    if (!bolum || typeof IntersectionObserver === "undefined") {
+      otomatikBaslat();
+      return durdur;
+    }
+    const gozlemci = new IntersectionObserver(
+      ([giris]) => (giris.isIntersecting ? otomatikBaslat() : durdur()),
+      { threshold: 0.2 },
+    );
+    gozlemci.observe(bolum);
     return () => {
-      if (zamanlayici.current) clearInterval(zamanlayici.current);
+      gozlemci.disconnect();
+      durdur();
     };
-  }, [mod, otomatikBaslat]);
+  }, [mod, otomatikBaslat, durdur]);
 
   const modDegistir = (m: "adim" | "tumu") => {
     setMod(m);
@@ -156,8 +182,9 @@ export default function Journey() {
 
           <div
             className="jviewport"
-            onMouseEnter={() => zamanlayici.current && clearInterval(zamanlayici.current)}
+            onMouseEnter={durdur}
             onMouseLeave={otomatikBaslat}
+            onTouchStart={durdur}
           >
             {ASAMALAR.map((a, i) => {
               const Sahne = SAHNELER[i];

@@ -101,7 +101,7 @@ export default function FaturaSihirbazi() {
     setHata(null);
     if (aylikFatura <= 0) return setHata("Aylık fatura tutarını girin.");
     const verim = ILLER.find(([ad]) => ad === il)?.[1] ?? 1450;
-    setSonuc(tip === "konut" ? konutHesap(aylikFatura, verim) : isletmeHesap(aylikFatura, verim, ozTuketim));
+    setSonuc(tip === "konut" ? konutHesap(aylikFatura, verim, aylikKwh || undefined) : isletmeHesap(aylikFatura, verim, ozTuketim, aylikKwh || undefined));
     setAdim(3);
   }
 
@@ -149,6 +149,9 @@ export default function FaturaSihirbazi() {
             Fatura yalnız bu analiz için kullanılır; tüketim ve tutar satırları otomatik okunur,
             bir sonraki adımda düzeltme şansınız olur.
           </p>
+          <button type="button" className="fs-geri" onClick={() => setAdim(2)}>
+            Faturam yanımda değil — bilgileri elle gireyim →
+          </button>
         </div>
       )}
 

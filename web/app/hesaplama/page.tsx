@@ -34,6 +34,12 @@ export default function Hesaplama() {
           için asistana taşıyabilirsiniz. Hibe ve kredi seçenekleri için{" "}
           <a href="/destekler">Destekler</a> sayfasına bakın.
         </p>
+        <nav className="cip-nav" aria-label="Sayfa içi araçlar">
+          <a href="#maliyet">Kurulum Maliyeti</a>
+          <a href="#roi">Yatırım Getirisi</a>
+          <a href="#batarya">Batarya</a>
+          <a href="/fatura-analizi">Fatura Analizi ↗</a>
+        </nav>
       </div>
 
       <div className="calc-grid">

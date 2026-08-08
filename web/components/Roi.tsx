@@ -20,6 +20,8 @@ export default function Roi() {
   const [faturaMetni, setFaturaMetni] = useState(TIP.konut.varsayilan.toLocaleString("tr-TR"));
   const [verim, setVerim] = useState(1300); // İstanbul
   const [ozTuketim, setOzTuketim] = useState(0.8);
+  // kilit ancak kullanıcı araca dokunduktan sonra devreye girer
+  const [dokundu, setDokundu] = useState(false);
 
   const t = TIP[tip];
 
@@ -52,7 +54,7 @@ export default function Roi() {
         </div>
       </div>
 
-      <div className="roi-form">
+      <div className="roi-form" onChangeCapture={() => setDokundu(true)}>
         <div className="rtoggle" aria-label="Abone tipi">
           <button className={tip === "konut" ? "on" : ""} aria-pressed={tip === "konut"} onClick={() => tipDegistir("konut")}>
             Konut
@@ -126,7 +128,7 @@ export default function Roi() {
           </div>
         )}
 
-        <LeadKilidi kaynak="Yatırım getirisi aracı">
+        <LeadKilidi kaynak="Yatırım getirisi aracı" beklet={!dokundu}>
 <div className="roi-out">
           <div className="ro">
             <div className="rv">{kwMetni}</div>

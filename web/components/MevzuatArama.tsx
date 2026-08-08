@@ -93,8 +93,9 @@ export default function MevzuatArama() {
           </button>
         </div>
         <p className="mv-ipucu">
-          Yazdıkça liste anında süzülür; "AI'ya Sor" sorunuzu kütüphanedeki kayıtlara göre
-          yanıtlar.
+          {arama.trim()
+            ? `${liste.length} kayıt eşleşti — sorunuzun cevabı listede yoksa "AI'ya Sor" kütüphaneye göre yanıtlar.`
+            : 'Yazdıkça liste anında süzülür; "AI\'ya Sor" sorunuzu kütüphanedeki kayıtlara göre yanıtlar.'}
         </p>
       </form>
 

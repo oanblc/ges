@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Atac, Ok, Kalkan, Sohbet } from "./Icons";
-import { leadVar, leadKaydet } from "./LeadKilidi";
+import { leadVar, leadKaydet, iletisimGecerliMi } from "./LeadKilidi";
+import { ORNEK_SORULAR } from "./sorular";
 
 type Mesaj = {
   role: "user" | "assistant";
@@ -18,12 +19,6 @@ type Ek = { ad: string; mime: string; veri: string };
 
 const IZINLI_EKLER = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 
-const ORNEKLER = [
-  "Panel taktırdım, neden hâlâ fatura geliyor?",
-  "Saatlik mahsuplaşma beni etkiler mi?",
-  "Kiracıyım, çatıya panel taktırabilir miyim?",
-  "Elektrik kesilince panellerim evi besler mi?",
-];
 
 /** SSE gövdesini olay olay ayrıştırır. */
 function* olaylar(tampon: string): Generator<[string, string, number]> {
@@ -58,9 +53,10 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   }, []);
 
   const cevapSayisi = mesajlar.filter((m) => m.role === "assistant" && !m.akiyor && m.content).length;
-  // 2 cevaptan sonra iletişim iste; "daha sonra" diyen 5. cevapta yeniden sorulur
-  const kilitli = !leadVerildi && (cevapSayisi >= 5 || (cevapSayisi >= 2 && !ertelendi));
+  // 3 cevaptan sonra iletişim iste; "daha sonra" diyen 6. cevapta yeniden sorulur
+  const kilitli = !leadVerildi && (cevapSayisi >= 6 || (cevapSayisi >= 3 && !ertelendi));
   const kayanRef = useRef<HTMLDivElement>(null);
+  const kapiRef = useRef<HTMLDivElement>(null);
   const gonderildiRef = useRef(false);
 
   const mesajGuncelle = (fn: (son: Mesaj) => Mesaj) =>
@@ -164,6 +160,21 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   }
 
   useEffect(() => {
+    const soruDinle = (e: Event) => {
+      const detay = (e as CustomEvent<string>).detail;
+      if (typeof detay === "string") void sor(detay);
+    };
+    const leadAcDinle = () => setLeadDurum((d) => (d === "gonderildi" ? d : "form"));
+    window.addEventListener("gd-soru", soruDinle);
+    window.addEventListener("gd-lead-ac", leadAcDinle);
+    return () => {
+      window.removeEventListener("gd-soru", soruDinle);
+      window.removeEventListener("gd-lead-ac", leadAcDinle);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mesajlar, durum, kilitli, ek]);
+
+  useEffect(() => {
     if (ilkSoru && !gonderildiRef.current) {
       gonderildiRef.current = true;
       void sor(ilkSoru);
@@ -175,7 +186,18 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
     kayanRef.current?.scrollTo({ top: kayanRef.current.scrollHeight, behavior: "smooth" });
   }, [mesajlar, durum]);
 
+  useEffect(() => {
+    if (kilitli) kapiRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [kilitli]);
+
+  const [leadHata, setLeadHata] = useState<string | null>(null);
+
   async function leadGonder() {
+    if (!iletisimGecerliMi(iletisim.trim())) {
+      setLeadHata("Geçerli bir telefon veya e-posta girin.");
+      return;
+    }
+    setLeadHata(null);
     const res = await fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -205,7 +227,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
               analiz edelim.
             </p>
             <div className="as-ornekler">
-              {ORNEKLER.map((o) => (
+              {ORNEK_SORULAR.map((o) => (
                 <button key={o} className="as-chip" onClick={() => void sor(o)}>
                   {o}
                 </button>
@@ -249,7 +271,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
       </div>
 
       {kilitli && (
-        <div className="sohbet-kapisi" role="group" aria-label="Devam etmek için iletişim bırakın">
+        <div className="sohbet-kapisi" ref={kapiRef} role="group" aria-label="Devam etmek için iletişim bırakın">
           <b>Sorularınız netleşmeye başladı</b>
           <p>
             Devam etmeden önce telefon ya da e-postanızı bırakın; gerekirse danışmanımız
@@ -267,20 +289,24 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
               onChange={(e) => setIletisim(e.target.value)}
               placeholder="Telefon veya e-posta"
               aria-label="İletişim bilgisi"
+              autoComplete="on"
+              enterKeyHint="send"
               required
             />
             <button className="gt-btn small">Devam Et <Ok className="i" /></button>
+            {cevapSayisi < 6 && (
+              <button
+                type="button"
+                className="gt-btn small line"
+                onClick={() => setErtelendi(true)}
+              >
+                Daha Sonra
+              </button>
+            )}
           </form>
+          {leadHata && <span className="ek-hata">{leadHata}</span>}
           <span className="kilit-kvkk">
             Göndererek <a href="/gizlilik">KVKK aydınlatma metnini</a> kabul etmiş olursunuz.
-            {cevapSayisi < 5 && (
-              <>
-                {" · "}
-                <button type="button" className="fs-geri" onClick={() => setErtelendi(true)}>
-                  Daha sonra
-                </button>
-              </>
-            )}
           </span>
         </div>
       )}
@@ -329,6 +355,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
                 : "Sorunuzu yazın ya da ataçla faturanızı ekleyin…"
           }
           aria-label="Asistana soru"
+          enterKeyHint="send"
           disabled={!!durum || kilitli}
         />
         <button className="send" aria-label="Gönder" disabled={!!durum || kilitli}>
@@ -355,9 +382,12 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
               onChange={(e) => setIletisim(e.target.value)}
               placeholder="Telefon veya e-posta"
               aria-label="İletişim bilgisi"
+              autoComplete="on"
+              enterKeyHint="send"
               required
             />
             <button className="gt-btn small">Gönder</button>
+            {leadHata && <span className="ek-hata">{leadHata}</span>}
           </form>
         )}
         {leadDurum === "gonderildi" && (

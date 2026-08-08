@@ -42,6 +42,8 @@ export default function Maliyet() {
   const [cati, setCati] = useState<Cati>("kiremit");
   const [bataryali, setBataryali] = useState(false);
   const [bataryaKwh, setBataryaKwh] = useState(10);
+  // kilit ancak kullanıcı araca dokunduktan sonra devreye girer
+  const [dokundu, setDokundu] = useState(false);
 
   const s = SEG[segment];
 
@@ -71,7 +73,7 @@ export default function Maliyet() {
 
   return (
     <div className="b-grid">
-      <div className="roi-form" style={{ padding: 0 }}>
+      <div className="roi-form" style={{ padding: 0 }} onChangeCapture={() => setDokundu(true)}>
         <div className="rtoggle" aria-label="Sistem tipi">
           <button className={segment === "konut" ? "on" : ""} aria-pressed={segment === "konut"} onClick={() => segDegistir("konut")}>
             Konut çatısı
@@ -128,7 +130,7 @@ export default function Maliyet() {
           </div>
         )}
 
-        <LeadKilidi kaynak="Kurulum maliyeti aracı">
+        <LeadKilidi kaynak="Kurulum maliyeti aracı" beklet={!dokundu}>
         <div className="roi-out">
           <div className="ro">
             <div className="rv">
