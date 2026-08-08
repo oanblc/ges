@@ -20,8 +20,8 @@ const YAZILAR = [
       "Tedarikçi mesajlarındaki 'devlet desteği mahsuplaştırıldı' satırının anlamı: kim alır, 4.000 kWh eşiği neden önemli, SKTT'ye düşmek ne demek — ve daralan destek GES kararınızı nasıl etkiler.",
     tarih: "8 Ağustos 2026",
     etiket: "Tarifeler",
-    gorsel: "/kapak-devlet-destegi.svg",
-    gorselAlt: "Devlet desteği satırı vurgulanmış elektrik faturası ve daralan destek eşiği grafiği",
+    gorsel: "/fatura-elektrik.jpg",
+    gorselAlt: "Elektrik faturası — okuma bilgileri ve fatura detayı",
   },
   {
     yol: "/blog/saatlik-mahsuplasma-rehberi",

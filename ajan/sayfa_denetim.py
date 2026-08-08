@@ -74,14 +74,12 @@ def _kb_ozeti() -> str:
 def _calistir(gorev: str) -> str:
     client = anthropic.Anthropic()
     messages = [{"role": "user", "content": gorev}]
-    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 6}]
+    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 4}]
 
     while True:
         response = client.beta.messages.create(
-            model="claude-opus-5",
+            model="claude-sonnet-5",
             max_tokens=16000,
-            betas=["server-side-fallback-2026-07-01"],
-            fallbacks="default",
             system=(
                 "gesdanismani.com için içerik denetçisisin. Görev: sayfalardaki görünür "
                 "bilgileri (rakam, tarih, mevzuat kuralı, süreç bilgisi) bilgi tabanıyla "

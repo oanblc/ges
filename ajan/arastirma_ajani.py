@@ -38,14 +38,12 @@ def _env_yukle() -> None:
 def _calistir(gorev: str) -> str:
     client = anthropic.Anthropic()
     messages = [{"role": "user", "content": gorev}]
-    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 12}]
+    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 8}]
 
     while True:
         response = client.beta.messages.create(
-            model="claude-opus-5",
+            model="claude-sonnet-5",
             max_tokens=16000,
-            betas=["server-side-fallback-2026-07-01"],
-            fallbacks="default",
             system=(
                 "Türkiye enerji piyasası uzmanı bir araştırma ajanısın. "
                 "gesdanismani.com bilgi tabanı için çalışıyorsun. Kurallar: "
