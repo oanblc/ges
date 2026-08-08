@@ -14,6 +14,16 @@ export const metadata: Metadata = {
 
 const YAZILAR = [
   {
+    yol: "/blog/arazi-ges-mi-cati-ges-mi",
+    baslik: "Arazi GES mi, çatı GES mi? Farklar, maliyetler, karar rehberi",
+    ozet:
+      "İzin yükünden kurulum maliyetine iki modelin 2026 karşılaştırması: $/kW bantları, maliyet dağılımı grafiği, arazi tarafının az bilinen izin adımları ve hangi durumda hangisinin mantıklı olduğu.",
+    tarih: "8 Ağustos 2026",
+    etiket: "Yatırım",
+    gorsel: "/kapak-arazi-cati.svg",
+    gorselAlt: "Arazi GES panel sıraları ile çatı GES'li ev karşılaştırması",
+  },
+  {
     yol: "/blog/faturadaki-devlet-destegi",
     baslik: "Faturadaki 'devlet desteği' nedir, neden her yıl azalıyor?",
     ozet:

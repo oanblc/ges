@@ -440,6 +440,14 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .yazi .fig svg{width:100%; height:auto; display:block}
 .yazi .fig figcaption{font-size:12.5px; color:var(--text); margin-top:12px; line-height:1.5}
 .yazi .dk-cta{margin-left:0; margin-right:0}
+.tablo-kaydir{overflow-x:auto; margin:18px 0 26px; background:var(--surface);
+  border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow)}
+.tablo-kaydir table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:560px}
+.tablo-kaydir th{text-align:left; padding:12px 16px; background:#F3F5F0; color:#252525;
+  font-family:var(--font-epilogue), sans-serif; font-size:13px}
+.tablo-kaydir td{padding:11px 16px; border-top:1px solid #E9ECE5; vertical-align:top;
+  line-height:1.5; max-width:34ch}
+.tablo-kaydir td:first-child{font-weight:600; color:#252525}
 .yazi-yan .cta p{font-size:13px}
 .chart-legend{display:flex; gap:18px; font-size:12.5px; color:var(--text); margin-bottom:12px; flex-wrap:wrap}
 .chart-legend span{display:inline-flex; align-items:center}
