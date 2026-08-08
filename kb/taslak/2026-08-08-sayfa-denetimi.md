@@ -1,4 +1,7 @@
 # Sayfa denetimi uyarıları — 2026-08-08
 
-### /hesaplama
-- Kurulum maliyeti aracı, 6 kW konut için toplam bandı 153–229 bin ₺ gösterirken kW başına birim maliyeti 24.000–36.000 ₺ olarak veriyor; iki gösterim aritmetik olarak uyuşmuyor (153.000÷6 ≈ 25.500 ₺/kW, 229.000÷6 ≈ 38.200 ₺/kW). ESKİ: 'kW başına 24.000–36.000 ₺' → DOĞRU: toplam bantla tutarlı 25.500–38.200 ₺/kW (veya toplam bandın 144–216 bin ₺'ye çekilmesi). Bilgi tabanı konut bandı: 5 kW için 24–36 bin ₺/kW (ekipman-fiyatlar.md) / 24–38 bin ₺/kW (piyasa-mahsuplasma.md).
+### /
+- Aşama süreleri toplamı bilgi tabanındaki uçtan uca süreyle çelişiyor: sayfadaki aşama süreleri (Ön değerlendirme 1–2 hafta + Bağlantı başvurusu 1–3 ay + Proje onayı 2–6 ay + Kurulum 1–3 gün + Kabul 2–8 hafta) üst uçta ~11 aya çıkıyor. ESKİ: 'Aşama 4 Proje Onayı ≈ 2–6 ay' (toplamı 3–6 ayın çok üstüne taşıyor) → DOĞRU: bilgi tabanı uçtan uca gerçekçi toplam süreyi 3–6 ay olarak veriyor; proje onayı adımı bu tavanla uyumlu (hafta ölçeğinde) gösterilmeli veya toplam süre açıkça revize edilmeli.
+
+### /surec
+- Sayfa 'uçtan uca gerçekçi toplam 3-6 aydır' derken listelediği aşama süreleri bununla çelişiyor: 1–2 hafta + 1–3 ay + 2–6 ay + 1–3 gün + 2–8 hafta = ~3,8–11,5 ay. ESKİ: 'Aşama 4 Proje Onayı ≈ 2–6 ay' → DOĞRU: bilgi tabanına göre uçtan uca süreç 3–6 ay; tek başına proje onayına 6 ay verilmesi bu çıpayı geçersiz kılıyor, aşama süreleri toplam 3–6 ay ile uyumlulaştırılmalı.
