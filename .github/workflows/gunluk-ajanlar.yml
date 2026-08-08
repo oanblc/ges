@@ -1,0 +1,112 @@
+# Günlük ajanlar — eskiden Ozan'ın Mac'indeki crontab'daydı; artık buluttan çalışır.
+# Veri güncellenirse repoya commit edilir; push Railway'de otomatik deploy tetikler,
+# site böylece her sabah taze veriyle yayınlanır.
+#
+# Gerekli Actions secrets: ANTHROPIC_API_KEY, EPIAS_KULLANICI, EPIAS_SIFRE
+
+name: gunluk-ajanlar
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # 08:00 TR — veri turu (EPİAŞ + nöbetçi + destek bekçisi)
+    - cron: "0 7 * * *"   # 10:00 TR — sayfa denetimi (sabah deploy'u oturduktan sonra)
+    - cron: "30 5 * * 1"  # Pazartesi 08:30 TR — haftalık nöbetçi taraması
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PYTHON_SURUM: "3.12"
+
+jobs:
+  veri:
+    if: github.event.schedule == '0 5 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_SURUM }}
+      - run: pip install -r ajan/requirements.txt
+      - name: EPİAŞ veri çekimi
+        continue-on-error: true
+        env:
+          EPIAS_KULLANICI: ${{ secrets.EPIAS_KULLANICI }}
+          EPIAS_SIFRE: ${{ secrets.EPIAS_SIFRE }}
+        run: python ajan/epias_veri.py
+      - name: Nöbetçi taraması (günlük)
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python ajan/arastirma_ajani.py tara gunluk
+      - name: Destek bekçisi
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python ajan/destek_takip.py
+      - name: Değişiklikleri commit'le
+        run: |
+          git config user.name "ges-ajan-botu"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kb/veri web/data kb/taslak
+          if ! git diff --cached --quiet; then
+            git commit -m "Günlük veri turu: EPİAŞ + nöbetçi + destek bekçisi [bot]"
+            git pull --rebase origin main
+            git push
+          else
+            echo "Değişiklik yok."
+          fi
+
+  denetim:
+    if: github.event.schedule == '0 7 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_SURUM }}
+      - run: pip install -r ajan/requirements.txt
+      - name: Sayfa denetimi (canlı site)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SITE_URL: https://ges-production-f173.up.railway.app
+        run: python ajan/sayfa_denetim.py
+      - name: Değişiklikleri commit'le
+        run: |
+          git config user.name "ges-ajan-botu"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kb/veri web/data kb/taslak
+          if ! git diff --cached --quiet; then
+            git commit -m "Günlük sayfa denetimi [bot]"
+            git pull --rebase origin main
+            git push
+          else
+            echo "Değişiklik yok."
+          fi
+
+  haftalik:
+    if: github.event.schedule == '30 5 * * 1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_SURUM }}
+      - run: pip install -r ajan/requirements.txt
+      - name: Nöbetçi taraması (haftalık)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python ajan/arastirma_ajani.py tara haftalik
+      - name: Değişiklikleri commit'le
+        run: |
+          git config user.name "ges-ajan-botu"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kb/taslak
+          if ! git diff --cached --quiet; then
+            git commit -m "Haftalık nöbetçi taraması [bot]"
+            git pull --rebase origin main
+            git push
+          else
+            echo "Değişiklik yok."
+          fi

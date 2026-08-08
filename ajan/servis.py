@@ -13,6 +13,7 @@ Not: Çekirdek mantık asistan.py'de; burada yalnız akış orkestrasyonu ve kor
 
 import datetime
 import json
+import os
 import subprocess
 import threading
 import time
@@ -25,7 +26,8 @@ from asistan import (ARACLAR, GUVENLI_YANIT, SISTEM, _denetle, _istemci, _kb_yuk
                      fatura_analizi, fizibilite, lead_ozeti)
 
 ROOT = Path(__file__).resolve().parent.parent
-LEAD_DIZIN = ROOT / "kb" / "lead"
+# Railway'de kalıcı volume bu yola bağlanır (LEAD_DIZIN=/app/kb/lead); yerelde repo içi.
+LEAD_DIZIN = Path(os.environ.get("LEAD_DIZIN", str(ROOT / "kb" / "lead")))
 
 app = FastAPI()
 _istemci_tekil = None
