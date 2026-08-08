@@ -304,6 +304,9 @@ Cevabı bilgi tabanına karşı denetle:
 2. Bilgi tabanında olmayan uydurma iddia var mı?
 3. Fizibilite soruları için eksik girdiyle rakam verilmiş mi (verilmemeliydi)?
 4. Zorunlu uyarılar atlanmış mı (yatırım cevabında "bağlayıcı görüş değildir")?
+5. ÖLÇÜLÜLÜK: SORUN yalnız kullanıcıyı YANILTACAK esaslı hatalar içindir. Rakam bilgi
+   tabanındaki bandın içindeyse, sapma yuvarlama düzeyindeyse ya da yalnız kaynak
+   adlandırması tartışmalıysa (ör. PVGIS/GEPA) SORUN yazma — ONAY ver.
 ÇIKTI FORMATI (başka bir şey yazma):
 - Sorun yoksa tek satır: ONAY
 - Sorun varsa: SORUN satırı + her hata için "- [iddia] → [doğrusu, kb dayanağıyla]"
