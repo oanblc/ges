@@ -56,7 +56,7 @@ const ASAMALAR = [
   },
   {
     ad: "Proje Onayı",
-    sure: "≈ 2–6 ay",
+    sure: "≈ 1–2 ay",
     detay:
       "Elektrik projesi EMO kayıtlı serbest müşavir mühendislere hazırlatılır ve TEDAŞ onayına sunulur: 100 kW'a kadar kabuller Bölge Koordinatörlüklerinde, 1.000 kW'a kadar proje ve kabuller Bölge Müdürlüklerinde yürür. Onay süresi bölgeye göre değişir.",
     belgeler: [
@@ -130,8 +130,8 @@ export default function Surec() {
         </h1>
         <p>
           Her aşamanın gerekli belgeleri, gerçekçi süreleri ve en sık gecikme nedenleri.
-          Süreler bölgeye göre değişir; uçtan uca gerçekçi toplam 3-6 aydır. (Mevzuat
-          güncelliği: {META.kbGuncelleme})
+          Uçtan uca süreç çoğunlukla 3-6 ay sürer; bölgeye ve dönem yoğunluğuna göre
+          uzayabilir. (Mevzuat güncelliği: {META.kbGuncelleme})
         </p>
       </div>
 

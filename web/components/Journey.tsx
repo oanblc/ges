@@ -34,7 +34,7 @@ const ASAMALAR = [
     ozet: "Elektrik projesi hazırlanır ve TEDAŞ tarafından onaylanır.",
     detay:
       "Elektrik projesi serbest müşavir mühendislere hazırlatılır ve TEDAŞ onayına sunulur. Onay süresi bölgeye göre değişir; süre sınırlarını kaçırmamak önemlidir.",
-    sure: "≈ 2–6 ay",
+    sure: "≈ 1–2 ay",
     Ikon: DosyaOnay,
   },
   {
