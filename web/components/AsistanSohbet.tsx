@@ -44,6 +44,25 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   const [iletisim, setIletisim] = useState("");
   const kayanRef = useRef<HTMLDivElement>(null);
   const gonderildiRef = useRef(false);
+  const takipRef = useRef(true);        // kullanıcı en alttaysa akışı takip et
+  const oncekiSayiRef = useRef(0);      // yeni mesaj eklenmesini ayırt eder
+  const [asagidaYeni, setAsagidaYeni] = useState(false);
+
+  const kaydirmaIzle = () => {
+    const el = kayanRef.current;
+    if (!el) return;
+    const altta = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    takipRef.current = altta;
+    if (altta) setAsagidaYeni(false);
+  };
+
+  const enAltaGit = () => {
+    const el = kayanRef.current;
+    if (!el) return;
+    takipRef.current = true;
+    setAsagidaYeni(false);
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  };
 
   const mesajGuncelle = (fn: (son: Mesaj) => Mesaj) =>
     setMesajlar((eski) => eski.map((m, i) => (i === eski.length - 1 ? fn(m) : m)));
@@ -169,7 +188,22 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   }, [ilkSoru]);
 
   useEffect(() => {
-    kayanRef.current?.scrollTo({ top: kayanRef.current.scrollHeight, behavior: "smooth" });
+    const el = kayanRef.current;
+    if (!el) return;
+    if (mesajlar.length !== oncekiSayiRef.current) {
+      // soru gönderildi: bir kez en alta in, sonra sabit kal — cevabın başı
+      // okunurken akış görüntüyü kaydırmasın
+      oncekiSayiRef.current = mesajlar.length;
+      el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      takipRef.current = false;
+      setAsagidaYeni(false);
+      return;
+    }
+    if (takipRef.current) {
+      el.scrollTo({ top: el.scrollHeight });
+    } else if (el.scrollHeight - el.scrollTop - el.clientHeight > 80) {
+      setAsagidaYeni(true);
+    }
   }, [mesajlar, durum]);
 
   const [leadHata, setLeadHata] = useState<string | null>(null);
@@ -199,7 +233,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
 
   return (
     <div className="as-main" onPaste={yapistir}>
-      <div className="chat" ref={kayanRef} aria-live="polite">
+      <div className="chat" ref={kayanRef} onScroll={kaydirmaIzle} aria-live="polite">
         {mesajlar.length === 0 && (
           <div className="as-bos">
             <p>
@@ -250,6 +284,11 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
           ),
         )}
         {durum && <div className="as-durum">{durum}…</div>}
+        {asagidaYeni && (
+          <button type="button" className="asagi-git" onClick={enAltaGit}>
+            ↓ {durum ? "Yanıt yazılıyor" : "Yeni yanıt"}
+          </button>
+        )}
       </div>
 
       {ek && (
