@@ -532,11 +532,12 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .mv-bos a{color:var(--theme)}
 
 /* ---------- lead kilidi ve sohbet kapısı ---------- */
-.kilit{position:relative}
-.kilit-icerik{filter:blur(7px); pointer-events:none; user-select:none; opacity:.75}
-.kilit-kart{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:8px; text-align:center; padding:18px;
-  background:color-mix(in srgb, var(--surface) 55%, transparent); border-radius:14px}
+/* grid istifi: kart, bulanık içerikten uzunsa konteyner büyür — komşu öğelere taşmaz */
+.kilit{display:grid}
+.kilit-icerik{grid-area:1/1; filter:blur(7px); pointer-events:none; user-select:none; opacity:.75}
+.kilit-kart{grid-area:1/1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:8px; text-align:center; padding:18px; min-width:0;
+  background:color-mix(in srgb, var(--surface) 72%, transparent); border-radius:14px}
 .kilit-kart b{font-size:15.5px; color:var(--title)}
 .kilit-kart p{margin:0; font-size:13px; max-width:46ch; color:var(--text)}
 .kilit-kart .as-lead-form{margin-top:6px}

@@ -34,7 +34,7 @@ _istemci_tekil = None
 _kilit = threading.Lock()
 
 # ---- IP başına hız sınırı (bellek içi; tek süreç için yeterli) ----
-SAAT_LIMIT = 12          # IP başına saatte istek
+SAAT_LIMIT = int(os.environ.get("SAAT_LIMIT", "30"))  # IP başına saatte istek (env ile ayarlanır)
 ESZAMANLI_LIMIT = 4      # aynı anda işlenen sohbet
 _istekler = {}           # ip -> [zaman damgaları]
 _eszamanli = threading.Semaphore(ESZAMANLI_LIMIT)

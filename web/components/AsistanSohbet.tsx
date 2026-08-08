@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Atac, Ok, Kalkan, Sohbet } from "./Icons";
-import { leadVar, leadKaydet, iletisimGecerliMi } from "./LeadKilidi";
+import { leadKaydet, iletisimGecerliMi } from "./LeadKilidi";
 import { ORNEK_SORULAR } from "./sorular";
 
 type Mesaj = {
@@ -42,21 +42,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   const [durum, setDurum] = useState<string | null>(null);
   const [leadDurum, setLeadDurum] = useState<"kapali" | "form" | "gonderildi">("kapali");
   const [iletisim, setIletisim] = useState("");
-  const [leadVerildi, setLeadVerildi] = useState(true); // SSR'da kilit gösterme; mount'ta netleşir
-  const [ertelendi, setErtelendi] = useState(false);
-
-  useEffect(() => {
-    setLeadVerildi(leadVar());
-    const dinle = () => setLeadVerildi(true);
-    window.addEventListener("gd-lead", dinle);
-    return () => window.removeEventListener("gd-lead", dinle);
-  }, []);
-
-  const cevapSayisi = mesajlar.filter((m) => m.role === "assistant" && !m.akiyor && m.content).length;
-  // 3 cevaptan sonra iletişim iste; "daha sonra" diyen 6. cevapta yeniden sorulur
-  const kilitli = !leadVerildi && (cevapSayisi >= 6 || (cevapSayisi >= 3 && !ertelendi));
   const kayanRef = useRef<HTMLDivElement>(null);
-  const kapiRef = useRef<HTMLDivElement>(null);
   const gonderildiRef = useRef(false);
 
   const mesajGuncelle = (fn: (son: Mesaj) => Mesaj) =>
@@ -87,7 +73,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   }
 
   async function sor(soru: string) {
-    if ((!soru.trim() && !ek) || durum || kilitli) return;
+    if ((!soru.trim() && !ek) || durum) return;
     const metin = soru.trim() || "Faturamı analiz eder misin?";
     const eskiler = mesajlar
       .filter((m) => !m.akiyor)
@@ -172,7 +158,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
       window.removeEventListener("gd-lead-ac", leadAcDinle);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mesajlar, durum, kilitli, ek]);
+  }, [mesajlar, durum, ek]);
 
   useEffect(() => {
     if (ilkSoru && !gonderildiRef.current) {
@@ -185,10 +171,6 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   useEffect(() => {
     kayanRef.current?.scrollTo({ top: kayanRef.current.scrollHeight, behavior: "smooth" });
   }, [mesajlar, durum]);
-
-  useEffect(() => {
-    if (kilitli) kapiRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [kilitli]);
 
   const [leadHata, setLeadHata] = useState<string | null>(null);
 
@@ -270,47 +252,6 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
         {durum && <div className="as-durum">{durum}…</div>}
       </div>
 
-      {kilitli && (
-        <div className="sohbet-kapisi" ref={kapiRef} role="group" aria-label="Devam etmek için iletişim bırakın">
-          <b>Sorularınız netleşmeye başladı</b>
-          <p>
-            Devam etmeden önce telefon ya da e-postanızı bırakın; gerekirse danışmanımız
-            sohbetinizin kaldığı yerden size ulaşsın.
-          </p>
-          <form
-            className="as-lead-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void leadGonder();
-            }}
-          >
-            <input
-              value={iletisim}
-              onChange={(e) => setIletisim(e.target.value)}
-              placeholder="Telefon veya e-posta"
-              aria-label="İletişim bilgisi"
-              autoComplete="on"
-              enterKeyHint="send"
-              required
-            />
-            <button className="gt-btn small">Devam Et <Ok className="i" /></button>
-            {cevapSayisi < 6 && (
-              <button
-                type="button"
-                className="gt-btn small line"
-                onClick={() => setErtelendi(true)}
-              >
-                Daha Sonra
-              </button>
-            )}
-          </form>
-          {leadHata && <span className="ek-hata">{leadHata}</span>}
-          <span className="kilit-kvkk">
-            Göndererek <a href="/gizlilik">KVKK aydınlatma metnini</a> kabul etmiş olursunuz.
-          </span>
-        </div>
-      )}
-
       {ek && (
         <div className="ek-cubugu">
           <span className="ek-chip">
@@ -348,17 +289,15 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
           value={girdi}
           onChange={(e) => setGirdi(e.target.value)}
           placeholder={
-            kilitli
-              ? "Devam etmek için yukarıya iletişim bilginizi bırakın…"
-              : ek
-                ? "Faturanızla ilgili sorunuz (boş bırakabilirsiniz)…"
-                : "Sorunuzu yazın ya da ataçla faturanızı ekleyin…"
+            ek
+              ? "Faturanızla ilgili sorunuz (boş bırakabilirsiniz)…"
+              : "Sorunuzu yazın ya da ataçla faturanızı ekleyin…"
           }
           aria-label="Asistana soru"
           enterKeyHint="send"
-          disabled={!!durum || kilitli}
+          disabled={!!durum}
         />
-        <button className="send" aria-label="Gönder" disabled={!!durum || kilitli}>
+        <button className="send" aria-label="Gönder" disabled={!!durum}>
           <Ok className="i" />
         </button>
       </form>
