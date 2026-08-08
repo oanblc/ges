@@ -32,7 +32,10 @@ export default function SiteHead({ aktif }: { aktif: AktifSayfa }) {
         <span className="sun">
           <Sun />
         </span>
-        gesdanışmanı
+        <span className="brand-yazi">
+          gesdanismani
+          <i>.com</i>
+        </span>
       </Link>
       <nav className="nav" aria-label="Ana menü">
         {BAGLANTILAR.map(([anahtar, yol, ad]) => (

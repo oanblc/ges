@@ -27,7 +27,7 @@ export default function SiteFoot({ notu }: { yol?: string; notu?: string }) {
   return (
     <footer className="site-foot">
       <div>
-        <b>gesdanışmanı</b> — GES danışmanlık platformu
+        <b>gesdanismani.com</b> — GES danışmanlık platformu
         <br />
         Tarife verisi: EPDK, {META.tarifeGecerlilik} · Piyasa verisi: {META.piyasaKaynak}
         <br />
