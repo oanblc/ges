@@ -1,3 +1,5 @@
+> DURUM: İŞLENDİ (8 Ağu 2026, Ozan onayı) — özet kb/ikili-anlasma-fiyatlama.md ve kb/ekipman-fiyatlar.md'ye aktarıldı.
+
 Araştırmaya başlıyorum. Önce güncel tarihi ve piyasa verilerini kontrol edeyim.Bugün 8 Ağustos 2026. Şimdi kalem kalem güncel fiyat araştırması yapıyorum.# Türkiye Çatı GES — Malzeme + Yumuşak Maliyet Kalemleri Fiyat Raporu
 
 **Güncelleme tarihi:** 8 Ağustos 2026

@@ -1,6 +1,6 @@
 ---
 konu: GES ekipman türleri ve güncel fiyatlar (panel, inverter, batarya, montaj, anahtar teslim)
-guncelleme: 2026-08-06
+guncelleme: 2026-08-08
 durum: yayin (Ozan onayi 6 Agu 2026)
 not: TL fiyatlara "Ağustos 2026 itibarıyla" damgası; 3 ayda bir güncelleme önerilir
 ---
@@ -34,6 +34,19 @@ not: TL fiyatlara "Ağustos 2026 itibarıyla" damgası; 3 ayda bir güncelleme �
 ## 5. Montaj
 - Çatı: eloksallı alüminyum ray standart; sandviç/trapez sac EN UCUZ; kiremit özel kanca+sızdırmazlık maliyeti; beton teras/membran balastlı — en pahalı.
 - Konstrüksiyon+montaj toplamın %10-20'si; kablo/elektrik (DC pano, parafudr T1+2, topraklama, paratoner) %8-10.
+- Metraj kuralları (8 Ağu 2026 araştırması): ray ≈ 2,3 m/panel (EN-AW 6063 T6 alüminyum),
+  bağlantı (kanca/vida + tutucular) ≈ 4 adet/panel. Örnek: 5 kW ≈ 20,5 m ray + 36 bağlantı;
+  100 kW ≈ 379 m + 668 bağlantı. Konstrüksiyon TL birim fiyatları perakendede İLAN EDİLMİYOR → teklifle.
+- DC solar kablo 6 mm² (EN 50618, 1500V DC, kalaylı bakır sınıf 5): 45-80 ₺/m bandı
+  (Ağu 2026; kaynaklar çelişkili, teyitli tek fiyat yok — teklif kalemi olarak doğrulat).
+
+## 5b. Yumuşak maliyet — resmî bedeller (2026, EPDK 25.12.2025 Kurul 14165-9/12)
+- ★ 50 kW VE ALTI çatı/cephe GES: proje onay + kabul bedeli 2026'da 0 TL (bedel alınmıyor).
+  Konut hesabında bu kalem SIFIR yazılır; "3-4 bin TL harç" gibi eski varsayımlar geçersiz.
+- Pay devri işlemi: 0 TL. Diğer işlemler (tesis devri, birleşme, unvan değişikliği): 4.210 TL.
+- OSOS ilave veri talebi: 61 TL/sayaç/ay.
+- 50 kW ÜSTÜ proje onay + kabul bedeli: ayrı kurul kararında, tutar TEYİT BEKLİYOR.
+- SMM proje ücreti, statik rapor, çift yönlü sayaç bedeli: ilan edilmiyor → teklif kalemi.
 
 ## 6. Anahtar teslim (Ağu 2026)
 | Segment | Bant | ₺/kW |

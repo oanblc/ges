@@ -1,6 +1,6 @@
 ---
 konu: İkili anlaşma fiyatlama tipleri, SKTT, çift terimli, tedarikçi değiştirme, GES etkileşimi
-guncelleme: 2026-08-06
+guncelleme: 2026-08-08
 durum: yayin (Ozan onayi 6 Agu 2026)
 teyit: SKTT tüketim limitlerinin 2026 kesin değerleri EPDK karar metninden; GTŞ fazla alım fiyatı aylık parametrik
 ---
@@ -13,7 +13,8 @@ teyit: SKTT tüketim limitlerinin 2026 kesin değerleri EPDK karar metninden; GT
 2. Sabit fiyat: ay boyu tek fiyat, PTF/YEKDEM ayrışması yok; vade uzadıkça risk primi (2026 volatilitesi: Haz 1.240 → Tem 2.700 ₺/MWh).
 3. PTF×katsayı / PTF+sabit ek / gece-gündüz ikili: birim fiyat ÷ (AOPTF+YEKDEM) her ay sabitse bu tip.
 4. Ulusal tarifeden %X iskonto: mesken/küçük ticarethanede hâlâ aktif; EPDK tarifesine oranı sabit.
-5. SKTT: (AOPTF+YEKDEM) × KBK; 2026 KBK: mesken 1,05, ticarethane/sanayi 1,0938 (EPDK 30.10.2025).
+5. SKTT: (AOPTF+YEKDEM) × KBK; KBK 2025: 1,0938 (RG 16.11.2024). 2026 KBK değeri birincil
+   kaynaktan TEYİT BEKLİYOR (tedarikçi sayfalarında mesken için 1,05 geçer, tarihsiz — güvenme).
    İkili anlaşması biten otomatik GTŞ+SKTT'ye düşer = fiili ceza tarifesi → en yüksek tasarruf potansiyelli müşteri.
 
 ## TEŞHİS SIRASI (asistan algoritması — protokol v2'ye eklendi)
@@ -26,6 +27,24 @@ teyit: SKTT tüketim limitlerinin 2026 kesin değerleri EPDK karar metninden; GT
 - YEKDEM iki yerde: cari ay aktif enerji bloğunda; GEÇMİŞ DÖNEM FARKI "Diğer"de ayrı satır. Sabit fiyatlı sözleşmede YEKDEM satırı hiç görünmemeli — görünüyorsa "sabit + YEKDEM geçişli"dir.
 - Kayıp-kaçak: 2016'dan beri dağıtımın içinde, ayrı satır yok.
 - Serbest tüketicide enerji faturası (tedarikçi) + dağıtım faturası (EDAŞ) AYRI gelebilir.
+
+## Serbest tüketici 2026 parametreleri (8 Ağu 2026 araştırması, Ozan onayı)
+- ST limiti 2026: 500 kWh/yıl (RG 23.12.2025/33116; 2025'te 750 idi) → aylık ~42 kWh: fiilen
+  tüm konutlar ve tüm ticarethane/sanayi serbest tüketici. Hak kullanan abone: Oca 2025
+  224.650 → Kas 2025 801.270.
+- SKTT limitleri 2026: mesken 4.000 kWh/yıl (5.000'den indi; ≈ aylık 333 kWh ≈ ~984 ₺ fatura),
+  ticarethane/sanayi 15.000 kWh/yıl. TESİSAT bazlı uygulanır (yalnız aşan tesisat SKTT'ye geçer).
+  SKTT'de ulusal tarifedeki aktif enerji desteği YOK; dağıtım bedeli değişmez.
+- Firma katsayıları (Enerjisa/CK/Aksa vb.) KAMUYA YAYINLANMAZ — hacim/profil/teminata göre
+  müzakere edilir. Asistan kural: sabit firma katsayısı varsayma; kullanıcıdan teklif metnini
+  iste, KBK tabanıyla kıyasla.
+- "Eksi TL" ↔ katsayı dönüşümü: k_eşdeğer = 1 − X/(AOPTF+YEKDEM). Efektif iskonto fiyat
+  yükseldikçe ERİR (Ağu 2026: −250 ₺ teklifi PTF 1.500'de %12,8, PTF 3.000'de %7,2 iskonto).
+  Karar kuralı: fiyat artışı bekleniyorsa katsayı (%), düşüş bekleniyorsa eksi TL lehte.
+- Ulusal tarife iskontolu tip: piyasa bandı %8-15, yalnız aktif enerjiye uygulanır; EPDK
+  zamları birebir yansır ("sabit" değildir).
+- Sabit fiyat tuzağı: sözleşmede "YEKDEM hariç" ibaresi varsa fiyat sabitliği bozulur —
+  YEKDEM dahil mi mutlaka kontrol ettir.
 
 ## Çift terimli tarife
 - Güç bedeli: sözleşme gücü × kr/kW/ay sabit; aşım: demand ölçümüyle aşan kW × ~1,5-2 kat.
@@ -49,7 +68,9 @@ teyit: SKTT tüketim limitlerinin 2026 kesin değerleri EPDK karar metninden; GT
 - GES tasarrufu: 48.000 öz tüketim × (3,115+1,083)×1,20 ≈ 241.800 ₺ + 12.000 fazla × ~1,8 ≈ 21.600 ₺.
 
 ## 2026 seviyeleri
-PTF: ilk 4 ay ort 1.645; Haz 1.240; Tem ~2.700 ₺/MWh. YEKDEM revize: Tem 424 / Ağu 450,5 / Eyl 581,1.
+PTF: ilk 4 ay ort 1.645; Tem 2.699,61 ₺/MWh (Haz değeri kaynak içi çelişkili — EPİAŞ'tan teyitli
+kullan). YEKDEM 2026 iki kez revize edildi (son: Kurul 14718): Tem 423,99 / Ağu 450,45 / Eyl 581,14
+₺/MWh — Nisan öngörüsünün ~2 katı. Ders: endeksli sözleşmede tüketici hem PTF hem YEKDEM riskini taşır.
 Karşılaştırma platformları: mesken/KOBİ encazip+akıllitarife; işletmede danışman modeli (Enoptimal, Apollo, Covolt, Grentis).
 
 ## Kaynaklar

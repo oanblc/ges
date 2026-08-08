@@ -1,3 +1,5 @@
+> DURUM: İŞLENDİ (8 Ağu 2026, Ozan onayı) — özet kb/ikili-anlasma-fiyatlama.md ve kb/ekipman-fiyatlar.md'ye aktarıldı.
+
 Araştırmaya başlıyorum. Önce güncel piyasa verilerini ve tedarikçi tekliflerini taramam gerekiyor.Piyasa çerçevesi netleşti (2026 içindeyiz). Şimdi tedarikçi teklif yapıları, SKTT katsayıları ve güncel tarife rakamlarını derinleştiriyorum.Şimdi tedarikçi bazlı teklif yapılarını ve K katsayısı seviyelerini araştırıyorum.# Türkiye Serbest Tüketici Elektrik Tedarik Teklifleri — Ağustos 2026 Durum Raporu
 
 **Rapor derleme tarihi:** 8 Ağustos 2026

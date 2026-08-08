@@ -265,8 +265,10 @@ export default function Maliyet() {
       </table>
       <p className="roi-note">
         Kalem payları 2026 sektör kırılımıdır; ekipman spesifikasyonları güncel piyasa
-        standardına göredir (Ağustos 2026). Marka ve kesin kalem fiyatları teklifle netleşir —
-        teklifinizdeki kalemleri bu listeyle karşılaştırın, eksik kalemi sorun.
+        standardına göredir (Ağustos 2026). İyi haber: 50 kW ve altı çatı GES'te 2026 yılı
+        için TEDAŞ proje onay + kabul bedeli alınmıyor (EPDK kararı). Marka ve kesin kalem
+        fiyatları teklifle netleşir — teklifinizdeki kalemleri bu listeyle karşılaştırın,
+        eksik kalemi sorun.
       </p>
     </div>
     </>
