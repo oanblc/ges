@@ -7,6 +7,7 @@ import {
   SunDolu, Ok, Ara, Kalkan, Saat, Arti, Atac, Ev, Fabrika, Filiz,
   Rota, SaatYenile, Ayarlar,
 } from "@/components/Icons";
+import { Aciklamali } from "@/components/Terim";
 
 export default function Anasayfa() {
   return (
@@ -25,11 +26,9 @@ export default function Anasayfa() {
             <br />
             <span className="hl-y">güvenilir</span> rehberlik.
           </h1>
-          <p className="lead">
-            Fizibiliteden başvuruya, kurulumdan mahsuplaşmaya — sürecin her aşamasında
+          <p className="lead"><Aciklamali>Fizibiliteden başvuruya, kurulumdan mahsuplaşmaya — sürecin her aşamasında
             güncel mevzuata dayanan danışmanlık. Teknik bilgi gerektirmez; elektrik
-            faturanız yeterli.
-          </p>
+            faturanız yeterli.</Aciklamali></p>
 
           <form className="ask" action="/asistan" method="get">
             <Ara className="i" />
@@ -79,10 +78,8 @@ export default function Anasayfa() {
             <Ev />
           </span>
           <b>Konut Sahipleri</b>
-          <p>
-            Çatı uygunluğu, yatırım geri dönüşü ve apartmanlarda kat maliki süreçleri dahil uçtan
-            uca yönlendirme.
-          </p>
+          <p><Aciklamali>Çatı uygunluğu, yatırım geri dönüşü ve apartmanlarda kat maliki süreçleri dahil uçtan
+            uca yönlendirme.</Aciklamali></p>
           <a className="more" href={`/asistan?soru=${encodeURIComponent("Evime güneş paneli kurmak mantıklı mı?")}`}>
             Detaylı bilgi <Ok className="i" />
           </a>
@@ -92,10 +89,8 @@ export default function Anasayfa() {
             <Fabrika />
           </span>
           <b>İşletmeler</b>
-          <p>
-            Fabrika ve ticari çatılarda fizibilite analizi, KOSGEB destekleri ve ihale
-            süreçlerinde danışmanlık.
-          </p>
+          <p><Aciklamali>Fabrika ve ticari çatılarda fizibilite analizi, KOSGEB destekleri ve ihale
+            süreçlerinde danışmanlık.</Aciklamali></p>
           <a className="more" href={`/asistan?soru=${encodeURIComponent("İşletmem için GES fizibilitesi yapar mısın?")}`}>
             Detaylı bilgi <Ok className="i" />
           </a>
@@ -105,10 +100,8 @@ export default function Anasayfa() {
             <Filiz />
           </span>
           <b>Tarımsal Üreticiler</b>
-          <p>
-            Sulama amaçlı GES yatırımları, IPARD ve TKDK hibe programları ile tarımsal tarife
-            uygulamaları.
-          </p>
+          <p><Aciklamali>Sulama amaçlı GES yatırımları, IPARD ve TKDK hibe programları ile tarımsal tarife
+            uygulamaları.</Aciklamali></p>
           <a className="more" href={`/asistan?soru=${encodeURIComponent("Tarımsal sulama için GES kurabilir miyim?")}`}>
             Detaylı bilgi <Ok className="i" />
           </a>
@@ -121,28 +114,28 @@ export default function Anasayfa() {
             <Rota />
           </span>
           <div className="v">7 aşama</div>
-          <div className="k">İnteraktif süreç haritası</div>
+          <div className="k"><Aciklamali>İnteraktif süreç haritası</Aciklamali></div>
         </div>
         <div>
           <span className="cic">
             <SaatYenile />
           </span>
           <div className="v">Güncel</div>
-          <div className="k">Saatlik mahsuplaşma dönemine uygun analiz</div>
+          <div className="k"><Aciklamali>Saatlik mahsuplaşma dönemine uygun analiz</Aciklamali></div>
         </div>
         <div>
           <span className="cic">
             <Ayarlar />
           </span>
           <div className="v">4 araç</div>
-          <div className="k">Maliyet · Getiri · Batarya · Fatura analizi</div>
+          <div className="k"><Aciklamali>Maliyet · Getiri · Batarya · Fatura analizi</Aciklamali></div>
         </div>
         <div>
           <span className="cic">
             <Kalkan />
           </span>
           <div className="v">₺0</div>
-          <div className="k">Danışma ve hesaplama araçları ücretsiz</div>
+          <div className="k"><Aciklamali>Danışma ve hesaplama araçları ücretsiz</Aciklamali></div>
         </div>
       </section>
 
@@ -158,37 +151,35 @@ export default function Anasayfa() {
           <h2>
             Platformu <span className="hl-g">dört adımda</span> kullanın
           </h2>
-          <p className="desc">
-            Projenize özel geri dönüş süresini soldaki araçla anında görün; hesaplamalar resmî EPDK
-            tarifeleri ve EPİAŞ gerçekleşen piyasa verileriyle yapılır.
-          </p>
+          <p className="desc"><Aciklamali>Projenize özel geri dönüş süresini soldaki araçla anında görün; hesaplamalar resmî EPDK
+            tarifeleri ve EPİAŞ gerçekleşen piyasa verileriyle yapılır.</Aciklamali></p>
           <div className="steps-grid">
             <div className="step">
               <span className="num">1</span>
               <b>Sorunuzu Sorun</b>
-              <p>Asistan, durumunuza uygun cevabı güncel mevzuata dayanarak verir.</p>
+              <p><Aciklamali>Asistan, durumunuza uygun cevabı güncel mevzuata dayanarak verir.</Aciklamali></p>
             </div>
             <div className="step">
               <span className="num">2</span>
               <b>Faturanızı Yükleyin</b>
-              <p>Tüketiminiz okunur; size uygun güç, maliyet ve satış geliri hesaplanır.</p>
+              <p><Aciklamali>Tüketiminiz okunur; size uygun güç, maliyet ve satış geliri hesaplanır.</Aciklamali></p>
             </div>
             <div className="step">
               <span className="num">3</span>
               <b>Planınızı Netleştirin</b>
-              <p>Destek uygunluğu, batarya kararı ve süreç adımlarını araçlarla görün.</p>
+              <p><Aciklamali>Destek uygunluğu, batarya kararı ve süreç adımlarını araçlarla görün.</Aciklamali></p>
             </div>
             <div className="step">
               <span className="num">4</span>
               <b>Danışmanla İlerleyin</b>
-              <p>Talep bırakın; teklif karşılaştırma ve süreç yönetiminde yanınızda olalım.</p>
+              <p><Aciklamali>Talep bırakın; teklif karşılaştırma ve süreç yönetiminde yanınızda olalım.</Aciklamali></p>
             </div>
           </div>
           <div className="journey-foot">
             <a className="gt-btn small" href="/hesaplama">
               Tüm Hesaplama Araçları <Ok className="i" />
             </a>
-            <p>Batarya boyutlandırma aracı da hesaplama sayfasında; destek uygunluğu Destekler sayfasında.</p>
+            <p><Aciklamali>Batarya boyutlandırma aracı da hesaplama sayfasında; destek uygunluğu Destekler sayfasında.</Aciklamali></p>
           </div>
         </div>
       </section>

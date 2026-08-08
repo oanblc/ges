@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Ok, OkGeri, EvBuyutec, Dosya, Zarf, DosyaOnay, PanelMontaj, SayacOnay, GunesUfuk } from "./Icons";
 import { SAHNELER } from "./JourneyArt";
+import { Aciklamali } from "./Terim";
 
 const ASAMALAR = [
   {
@@ -198,7 +199,7 @@ export default function Journey() {
                       Aşama {i + 1} / {ASAMALAR.length}
                     </span>
                     <h4>{a.ad}</h4>
-                    <p className="jd">{a.detay}</p>
+                    <p className="jd"><Aciklamali>{a.detay}</Aciklamali></p>
                     <span className="jt">{a.sure}</span>
                   </div>
                   <span className="jart">
@@ -227,7 +228,7 @@ export default function Journey() {
                 <a.Ikon />
               </span>
               <b>{a.ad}</b>
-              <p>{a.ozet}</p>
+              <p><Aciklamali>{a.ozet}</Aciklamali></p>
               <span className="jt">{a.sure}</span>
             </div>
           ))}

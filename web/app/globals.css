@@ -505,7 +505,7 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .terim-kutu::after{content:""; position:absolute; top:100%; left:50%; transform:translateX(-50%);
   border:6px solid transparent; border-top-color:var(--title)}
 .terim:hover .terim-kutu, .terim:focus .terim-kutu, .terim:focus-visible .terim-kutu{display:block}
-.msg.user .terim{border-bottom-color:var(--theme2)}
+.msg.user .terim,.hero .terim,.counters .terim{border-bottom-color:var(--theme2)}
 
 /* ---------- mevzuat kütüphanesi ---------- */
 .mv-ask{box-shadow:var(--shadow); border:1px solid var(--border); max-width:760px}
