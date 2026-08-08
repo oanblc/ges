@@ -327,24 +327,38 @@ EK_NOTU = (
 
 
 def _denetle(soru: str, cevap: str, istemci, ekli: bool = False) -> str:
-    """İkinci geçiş: taslak cevabı kb'ye karşı denetler (maliyet için Sonnet)."""
+    """İkinci geçiş: taslak cevabı kb'ye karşı denetler (öncelik Sonnet).
+
+    Anthropic bakiyesi/erişimi düştüğünde asistanı tamamen susturmamak için
+    denetim Gemini'ye yedeklenir (2026-08-08: bakiye tükenince tüm cevaplar
+    'bakımda' mesajına düşmüştü). Çapraz aile denetimi tercih, Gemini yedek.
+    """
     talimat = DENETIM_TALIMATI + (EK_NOTU if ekli else "")
-    yanit = istemci.beta.messages.create(
-        model="claude-sonnet-5",
-        max_tokens=1024,
-        betas=["extended-cache-ttl-2025-04-11"],
-        output_config={"effort": "low"},
-        system=[{
-            "type": "text",
-            "text": SISTEM + _kb_yukle(),
-            "cache_control": {"type": "ephemeral", "ttl": "1h"},
-        }],
-        messages=[{
-            "role": "user",
-            "content": f"{talimat}\n\n<soru>{soru}</soru>\n\n<taslak_cevap>{cevap}</taslak_cevap>",
-        }],
-    )
-    return "".join(b.text for b in yanit.content if b.type == "text").strip()
+    icerik = f"{talimat}\n\n<soru>{soru}</soru>\n\n<taslak_cevap>{cevap}</taslak_cevap>"
+    try:
+        yanit = istemci.beta.messages.create(
+            model="claude-sonnet-5",
+            max_tokens=1024,
+            betas=["extended-cache-ttl-2025-04-11"],
+            output_config={"effort": "low"},
+            system=[{
+                "type": "text",
+                "text": SISTEM + _kb_yukle(),
+                "cache_control": {"type": "ephemeral", "ttl": "1h"},
+            }],
+            messages=[{"role": "user", "content": icerik}],
+        )
+        return "".join(b.text for b in yanit.content if b.type == "text").strip()
+    except Exception as hata:
+        print(f"UYARI: Sonnet denetimi düştü ({type(hata).__name__}: {str(hata)[:120]}) "
+              "— Gemini yedeğine geçildi.", flush=True)
+        import gemini
+        p = gemini.uret(SISTEM + _kb_yukle(),
+                        [{"role": "user", "parts": [{"text": icerik}]}], max_cikti=1024)
+        metin = "".join(x.get("text", "") for x in p).strip()
+        if not metin:
+            raise
+        return metin
 
 
 LEAD_SEMASI = {
