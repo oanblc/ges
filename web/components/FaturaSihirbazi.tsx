@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Atac, Ok } from "./Icons";
+import LeadKilidi from "./LeadKilidi";
 import { ILLER, MALIYET_BANT, CATI_CARPANI } from "@/data/kb";
 import { konutHesap, isletmeHesap, type HesapSonuc } from "@/lib/hesap";
 
@@ -236,6 +237,7 @@ export default function FaturaSihirbazi() {
 
       {adim === 3 && sonuc && bant && (
         <div className="fs-sonuc">
+          <LeadKilidi kaynak="Fatura analizi sihirbazı">
           <div className="roi-out fs-out">
             <div className="ro one">
               <div className="rv">
@@ -285,6 +287,7 @@ export default function FaturaSihirbazi() {
             yıllık üretimin tüketiminizin 2 katını aşan kısmı bedelsiz YEKDEM'e devredilir. Sonuçlar
             ön fizibilitedir; kesin tasarım yerinde keşif ister.
           </p>
+          </LeadKilidi>
           <div className="tool-cta">
             <a
               className="gt-btn small"

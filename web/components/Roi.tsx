@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { ILLER, META } from "@/data/kb";
 import { konutHesap, isletmeHesap } from "@/lib/hesap";
+import LeadKilidi from "./LeadKilidi";
 
 const tl = (n: number) => "₺" + Math.round(n).toLocaleString("tr-TR");
 const sayi = (s: string) => Number(String(s).replace(/[^\d]/g, "")) || 0;
@@ -125,7 +126,8 @@ export default function Roi() {
           </div>
         )}
 
-        <div className="roi-out">
+        <LeadKilidi kaynak="Yatırım getirisi aracı">
+<div className="roi-out">
           <div className="ro">
             <div className="rv">{kwMetni}</div>
             <div className="rk">Önerilen kapasite</div>
@@ -145,6 +147,7 @@ export default function Roi() {
             ? `Aylık mahsuplaşma ve kademeli konut tarifesiyle (EPDK, ${META.tarifeGecerlilik}) hesaplanır. Kesin analiz için asistana çatı bilgilerinizi iletin.`
             : `Saatlik mahsuplaşma esasıyla hesaplanır: öz tüketim tam perakende fiyattan, satış çıplak enerji bedelinden değerlenir (EPDK, ${META.tarifeGecerlilik}). İkili anlaşmanız varsa asistana sözleşme fiyatınızı iletin.`}
         </p>
+        </LeadKilidi>
       </div>
     </div>
   );

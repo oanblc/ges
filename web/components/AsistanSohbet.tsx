@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Atac, Ok, Kalkan, Sohbet } from "./Icons";
+import { leadVar, leadKaydet } from "./LeadKilidi";
 
 type Mesaj = {
   role: "user" | "assistant";
@@ -46,6 +47,19 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   const [durum, setDurum] = useState<string | null>(null);
   const [leadDurum, setLeadDurum] = useState<"kapali" | "form" | "gonderildi">("kapali");
   const [iletisim, setIletisim] = useState("");
+  const [leadVerildi, setLeadVerildi] = useState(true); // SSR'da kilit gösterme; mount'ta netleşir
+  const [ertelendi, setErtelendi] = useState(false);
+
+  useEffect(() => {
+    setLeadVerildi(leadVar());
+    const dinle = () => setLeadVerildi(true);
+    window.addEventListener("gd-lead", dinle);
+    return () => window.removeEventListener("gd-lead", dinle);
+  }, []);
+
+  const cevapSayisi = mesajlar.filter((m) => m.role === "assistant" && !m.akiyor && m.content).length;
+  // 2 cevaptan sonra iletişim iste; "daha sonra" diyen 5. cevapta yeniden sorulur
+  const kilitli = !leadVerildi && (cevapSayisi >= 5 || (cevapSayisi >= 2 && !ertelendi));
   const kayanRef = useRef<HTMLDivElement>(null);
   const gonderildiRef = useRef(false);
 
@@ -77,7 +91,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   }
 
   async function sor(soru: string) {
-    if ((!soru.trim() && !ek) || durum) return;
+    if ((!soru.trim() && !ek) || durum || kilitli) return;
     const metin = soru.trim() || "Faturamı analiz eder misin?";
     const eskiler = mesajlar
       .filter((m) => !m.akiyor)
@@ -168,6 +182,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
       body: JSON.stringify({ mesajlar: mesajlar.filter((m) => !m.akiyor), iletisim }),
     });
     setLeadDurum(res.ok ? "gonderildi" : "form");
+    if (res.ok) leadKaydet(); // araç kilitleri de açılır
   }
 
   const yapistir = (e: React.ClipboardEvent) => {
@@ -233,6 +248,43 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
         {durum && <div className="as-durum">{durum}…</div>}
       </div>
 
+      {kilitli && (
+        <div className="sohbet-kapisi" role="group" aria-label="Devam etmek için iletişim bırakın">
+          <b>Sorularınız netleşmeye başladı</b>
+          <p>
+            Devam etmeden önce telefon ya da e-postanızı bırakın; gerekirse danışmanımız
+            sohbetinizin kaldığı yerden size ulaşsın.
+          </p>
+          <form
+            className="as-lead-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void leadGonder();
+            }}
+          >
+            <input
+              value={iletisim}
+              onChange={(e) => setIletisim(e.target.value)}
+              placeholder="Telefon veya e-posta"
+              aria-label="İletişim bilgisi"
+              required
+            />
+            <button className="gt-btn small">Devam Et <Ok className="i" /></button>
+          </form>
+          <span className="kilit-kvkk">
+            Göndererek <a href="/gizlilik">KVKK aydınlatma metnini</a> kabul etmiş olursunuz.
+            {cevapSayisi < 5 && (
+              <>
+                {" · "}
+                <button type="button" className="fs-geri" onClick={() => setErtelendi(true)}>
+                  Daha sonra
+                </button>
+              </>
+            )}
+          </span>
+        </div>
+      )}
+
       {ek && (
         <div className="ek-cubugu">
           <span className="ek-chip">
@@ -270,14 +322,16 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
           value={girdi}
           onChange={(e) => setGirdi(e.target.value)}
           placeholder={
-            ek
-              ? "Faturanızla ilgili sorunuz (boş bırakabilirsiniz)…"
-              : 'Sorunuzu yazın ya da ataçla faturanızı ekleyin…'
+            kilitli
+              ? "Devam etmek için yukarıya iletişim bilginizi bırakın…"
+              : ek
+                ? "Faturanızla ilgili sorunuz (boş bırakabilirsiniz)…"
+                : "Sorunuzu yazın ya da ataçla faturanızı ekleyin…"
           }
           aria-label="Asistana soru"
-          disabled={!!durum}
+          disabled={!!durum || kilitli}
         />
-        <button className="send" aria-label="Gönder" disabled={!!durum}>
+        <button className="send" aria-label="Gönder" disabled={!!durum || kilitli}>
           <Ok className="i" />
         </button>
       </form>

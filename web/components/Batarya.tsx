@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Ok } from "./Icons";
+import LeadKilidi from "./LeadKilidi";
 
 /**
  * Batarya boyutlandırma — formüller kb/teknik-depolama.md ile birebir:
@@ -62,6 +63,7 @@ export default function Batarya() {
                 onChange={(e) => setKwp(+e.target.value)}
               />
             </div>
+            <LeadKilidi kaynak="Batarya aracı">
             <div className="roi-out">
               <div className="ro">
                 <div className="rv">≈ {oneriKwh.toLocaleString("tr-TR")} kWh</div>
@@ -78,6 +80,7 @@ export default function Batarya() {
                 <div className="rk">LFP beklenen ömür (takvim yaşlanması belirler)</div>
               </div>
             </div>
+            </LeadKilidi>
           </>
         ) : (
           <>

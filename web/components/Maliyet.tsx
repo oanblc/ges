@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { BATARYA_TL_KWH, CATI_CARPANI, MALIYET_BANT, MALIYET_KALEMLERI } from "@/data/kb";
 import { Ok } from "./Icons";
+import LeadKilidi from "./LeadKilidi";
 
 /**
  * "Ne kadar param gider?" — kurulum maliyeti tahmini.
@@ -127,6 +128,7 @@ export default function Maliyet() {
           </div>
         )}
 
+        <LeadKilidi kaynak="Kurulum maliyeti aracı">
         <div className="roi-out">
           <div className="ro">
             <div className="rv">
@@ -156,6 +158,7 @@ export default function Maliyet() {
             Yatırım Teşvik Belgesi KDV istisnası sağlayabilir — Destekler sayfasına bakın.
           </p>
         )}
+        </LeadKilidi>
       </div>
 
       <div>
