@@ -313,6 +313,8 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 /* ---------- alt bilgi ---------- */
 .site-foot{background:var(--theme); color:rgba(255,255,255,.85); padding:34px 32px; display:flex; gap:24px; flex-wrap:wrap; align-items:center; justify-content:space-between; font-size:13px}
 .site-foot b{color:#fff; font-family:var(--font-epilogue), sans-serif}
+.site-foot a{color:var(--theme2); text-decoration:none}
+.site-foot a:hover{text-decoration:underline}
 .site-foot .cols{display:flex; flex-direction:column; gap:8px}
 .site-foot .cols a{color:var(--theme2); text-decoration:none; font-size:12.5px}
 .site-foot .cols a:hover{text-decoration:underline}
