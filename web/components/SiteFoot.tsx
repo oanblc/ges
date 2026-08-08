@@ -18,6 +18,7 @@ const SUTUNLAR: Array<[string, Array<[string, string]>]> = [
       ["/mevzuat", "Mevzuat"],
       ["/rehber", "Rehber"],
       ["/kurulum-sonrasi", "Kurulum Sonrası"],
+      ["/sss", "Sık Sorulan Sorular"],
       ["/blog", "Blog"],
     ],
   ],

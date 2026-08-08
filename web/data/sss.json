@@ -1,0 +1,214 @@
+{
+ "guncelleme": "8 Ağustos 2026",
+ "kaynak": "50 ajanlık tarama — webden derlenen gerçek sorular, asistan + denetçi boru hattı",
+ "kategoriler": [
+  {
+   "ad": "Başlarken: Sistem Nasıl Çalışır",
+   "sorular": [
+    {
+     "soru": "Çatı güneş enerjisi sistemi nasıl çalışır ve faturaya nasıl yansır?",
+     "cevap": "Çatıdaki paneller (güncel standart N-Type TOPCon teknolojisiyle) güneş ışığını DC elektriğe çevirir, inverter bunu evde kullanılabilir AC elektriğe dönüştürür. Üretilen elektrik önce evin ihtiyacına gider; artan enerji çift yönlü sayaç üzerinden şebekeye gönderilir. Meskenlerde aylık mahsuplaşma uygulanır: ay boyunca şebekeden çekilen ve şebekeye verilen enerji ay sonunda netleştirilir. Fatura tamamen sıfırlanmaz, dağıtım bedeli ve bazı vergiler kalmaya devam eder; gerçekçi beklenti faturanın yüzde 70-90 oranında düşmesidir."
+    },
+    {
+     "soru": "Güneş paneli yatırımı gerçekten kazandırır mı, yoksa abartılı bir vaat mi?",
+     "cevap": "Doğru planlandığında Türkiye'nin kârlı yatırımlarından biridir ancak fatura tam sıfırlanacağı veya bedava panel dağıtıldığı gibi abartılı vaatlere dikkat edilmelidir. Meskenlerde geri dönüş süresi 4-8 yıl, işletmelerde 3-5 yıl arasındadır; sistem ömrü 25-30 yıl olduğundan geri kalan süre boyunca elektrik maliyetinden büyük ölçüde korunulur. On-grid sistemler için çağrı mektubu ve proje onay süreci ortalama 3-6 ay sürer, devletin meskenler için doğrudan bedava panel veya hibe desteği yoktur."
+    },
+    {
+     "soru": "1 kW'lık bir sistem yılda ne kadar elektrik üretir?",
+     "cevap": "Türkiye şartlarında 1 kWp gücündeki bir sistem, bölgeye bağlı olarak yılda ortalama 1.200 ile 1.800 kWh arasında elektrik üretir; ülke ortalaması 1.400-1.500 kWh bandındadır. Hesaplama Yıllık Üretim = Kurulu Güç x Özgül Üretim formülüyle yapılır; ışınım süresi, sistemin performans oranı (Türkiye'de yüzde 80 ve üzeri hedeflenir) ve gölge/kirlenme gibi kayıplar bu değeri belirler. Akdeniz ve Güneydoğu Anadolu'da 1.600-1.800 kWh, İç Anadolu ve Ege'de 1.500-1.700 kWh, Marmara ve Karadeniz'de 1.200-1.400 kWh seviyeleri görülür; üretimin yaklaşık yüzde 60-62'si Nisan-Eylül arasında gerçekleşir."
+    },
+    {
+     "soru": "Ortalama bir ev için kaç kilovatlık sistem gerekir?",
+     "cevap": "Türkiye'de ortalama bir evin ihtiyacı genellikle 3 kW ile 10 kWp arasında değişir. Küçük bir ev (aylık yaklaşık 240 kWh tüketim) için 2-3 kWp, orta halli bir aile (aylık 400-500 kWh) için 5-6 kWp, ısı pompası veya havuz gibi ek yükleri olan geniş bir ev için 10 kWp ve üzeri bir kurulum gerekebilir. Doğru kapasiteyi belirlemek için aylık tüketim ve bulunulan il birlikte değerlendirilmelidir."
+    },
+    {
+     "soru": "Aylık 300 kWh tüketen bir ev için kaç kilovatlık sistem yeterli olur?",
+     "cevap": "Aylık 300 kWh tüketim yılda 3.600 kWh ihtiyaç anlamına gelir. Türkiye ortalamasında 1 kWp'lik bir sistem bölgeye göre yılda 1.300-1.700 kWh ürettiğinden, bu tüketimi karşılamak için yaklaşık 2,5-3 kWp gücünde bir sistem yeterli olur. Kesin kapasite ve amortisman hesabı için kurulumun yapılacağı il bilgisi gerekir."
+    },
+    {
+     "soru": "Güneş panelleri kış aylarında ne kadar elektrik üretir?",
+     "cevap": "Türkiye şartlarında kış aylarındaki toplam üretim, yaz aylarındaki üretimin yaklaşık %30 ile %50'si kadardır ve yıllık üretimin %60-62'si Nisan ile Eylül arasında gerçekleşir. Paneller soğuk havalarda teknik olarak daha verimli çalışsa da günlerin kısalması ve güneş açısının eğikliği nedeniyle toplam verim düşer. Şebekeye bağlı sistemlerde aylık mahsuplaşma sayesinde yazın yapılan fazla üretim kış aylarında kullanılabilir."
+    }
+   ]
+  },
+  {
+   "ad": "Maliyet ve Geri Ödeme",
+   "sorular": [
+    {
+     "soru": "5-10 kW'lık bir ev sistemi kurulumu ortalama kaç liraya mal olur?",
+     "cevap": "Ağustos 2026 itibarıyla anahtar teslim (proje, onay, ekipman ve montaj dahil) konut tipi GES maliyetleri 5 kW sistemde 120.000-190.000 TL, 10 kW sistemde 200.000-300.000 TL aralığındadır. Bu fiyatlar 2026 standardı N-Type TOPCon paneller ve standart string inverterlerle yapılan kurulumlar içindir; çatı tipi ve ekipman markasına göre rakamlar yüzde 10-20 değişebilir. 2026 EPDK kararına göre 50 kW altı mesken projelerinde proje onay ve kabul harç bedelleri 0 TL'dir."
+    },
+    {
+     "soru": "GES sistemi kaç yılda kendini geri ödüyor, bölgeye göre değişir mi?",
+     "cevap": "Meskenlerde tipik geri dönüş süresi 4-8 yıl, ticari işletmelerde 3-5 yıldır (Ağustos 2026 piyasa verileri). Bölge doğrudan etkiler: güney bölgelerde (Antalya, Şanlıurfa) 1 kWp yılda 1.600-1.800 kWh üretirken, kuzey bölgelerde (İstanbul, Karadeniz) 1.200-1.400 kWh seviyesinde kalır; bu fark üretimi ve dolayısıyla tasarrufu yüzde 20-30 oranında değiştirdiği için geri dönüş süresini 1-2 yıl kısaltabilir veya uzatabilir."
+    },
+    {
+     "soru": "Bataryalı sistem ile sadece şebekeye bağlı sistem arasında fiyat farkı ne kadar?",
+     "cevap": "Hibrit (bataryalı) bir sistem, standart on-grid bir sisteme göre toplam kurulum maliyetini yaklaşık yüzde 40-60 oranında artırır. Farkın ana kalemleri: hibrit inverterin standart inverterden pahalı olması (10 kW'da 65.000-90.000 TL'ye karşı 35.000-55.000 TL), LiFePO4 batarya paketinin kendisi (10 kWh kapasite için yaklaşık 150.000-230.000 TL) ve akıllı metre/kritik yük panosu gibi ek donanımlardır. Buna karşılık bataryalı sistem kesintide evi beslemeye devam eder ve işletmelerde saatlik mahsuplaşmada ekonomik avantaj sağlar."
+    },
+    {
+     "soru": "Ev çatısına güneş paneli kurmak 2026'da toplam kaç liraya mal olur?",
+     "cevap": "2026 Ağustos piyasa verilerine göre anahtar teslim maliyet 5 kWp sistemde 120.000-190.000 TL, 10 kWp sistemde 200.000-300.000 TL arasındadır. 2026 EPDK kararına göre 50 kW altı mesken projelerinde proje onay ve kabul harç bedelleri 0 TL'dir. Batarya eklemek maliyeti yüzde 40-60 oranında artırır, ancak meskenlerde aylık mahsuplaşma sürdüğü için batarya zorunlu bir ihtiyaç değildir."
+    },
+    {
+     "soru": "Kurulumdan sonra aylık elektrik faturası ne kadar azalır?",
+     "cevap": "Fatura tamamen sıfırlanmaz; dağıtım bedeli ve maktu vergiler faturada kalmaya devam eder, bu nedenle azalma genellikle yüzde 70-90 arasındadır (EPDK 4 Nisan 2026 tarifesi). Konutlarda aylık mahsuplaşma, işletme/sanayi/tarımsal sulama gruplarında 1 Mayıs 2026 itibarıyla saatlik mahsuplaşma uygulanır (RG 02.04.2026). Üretilen elektriği güneş varken doğrudan tüketmek (öz tüketim) en kârlı yöntemdir çünkü bu kullanımda dağıtım bedeli ödenmez."
+    },
+    {
+     "soru": "Çatıya panel kurunca fatura tamamen sıfırlanır mı?",
+     "cevap": "Hayır, şebekeye bağlı (on-grid) sistemlerde fatura tamamen 0 TL olmaz. Aktif enerji bedeli mahsuplaşma yoluyla sıfırlanabilir veya alacaklı hale gelinebilir, ancak dağıtım bedeli (düşük tüketimli meskenlerde faturanın yaklaşık yüzde 70-75'ini oluşturabilir), Belediye Tüketim Vergisi ve KDV gibi kalemler ödenmeye devam eder; şebekeye elektrik satarken de bir veriş bedeli kesilir. Beklenti yüzde 70-90 tasarruf olmalı, tam sıfır fatura ancak çok daha maliyetli off-grid sistemlerde mümkündür."
+    }
+   ]
+  },
+  {
+   "ad": "Mahsuplaşma ve Fatura",
+   "sorular": [
+    {
+     "soru": "Çift yönlü sayaç sayesinde gece çektiğim elektrik gündüz üretimimle mahsuplaşıyor mu?",
+     "cevap": "Konutlarda evet: aylık mahsuplaşma geçerlidir, ay sonunda toplam çekiş ile toplam veriş birbirinden düşülür, gündüz ürettiğiniz fazla elektrik gece tüketiminizi ay bazında siler. Konutlar 1 Mayıs 2026'da başlayan saatlik mahsuplaşmadan muaftır (RG 2 Nisan 2026, EPDK Kararı). İşletmelerde ise 1 Mayıs 2026 itibarıyla saatlik mahsuplaşma uygulanır: her saat kendi içinde netleşir, gündüz fazlası geceki tüketimi doğrudan silmez, bu da bataryayı işletmeler için daha mantıklı hale getirir."
+    },
+    {
+     "soru": "Kışın az, yazın çok ürettiğim aylar birbiriyle mahsuplaşıyor mu?",
+     "cevap": "Hayır, mahsuplaşma yalnızca aylık dönemler bazında yapılır; ayları birbirine bağlayan bir kWh birikimi yoktur. Meskenlerde yaz ayında oluşan üretim fazlası o ayın tarifesi üzerinden TL'ye çevrilip alacak olarak yazılır ve bu alacak kışın faturalardan düşülebilir veya iade edilir; ancak yazın üretilen kWh doğrudan kışın kullanılamaz. İşletmelerde 1 Mayıs 2026'dan itibaren saatlik mahsuplaşma uygulanır ve fazla üretim, 10 yıl boyunca abone grubunun aktif enerji birim bedeli üzerinden değerlendirilir; her durumda şebekeden çekilen elektrik için dağıtım bedeli ödenmeye devam eder."
+    },
+    {
+     "soru": "Saatlik mahsuplaşma ile aylık mahsuplaşma arasında parasal fark ne kadar?",
+     "cevap": "Aylık mahsuplaşmada (meskenler) tasarruf edilen her 1 kWh, faturadaki vergili birim fiyatın tamamına eşittir çünkü şebeke ücretsiz bir batarya gibi kullanılır. Saatlik mahsuplaşmada (1 Mayıs 2026'dan itibaren ticarethane, sanayi ve tarımsal sulama aboneleri) alış fiyatı yaklaşık 5,5-6,5 TL/kWh iken satış fiyatı yaklaşık 2,25 TL/kWh'dir; gece tüketilen her kWh için şebekeye aradaki yaklaşık 3-4 TL fark ödenir. Meskenler saatlik mahsuplaşmadan muaftır (EPDK 30.04.2026/14531 sayılı Karar); öz tüketimi düşük işletmelerde nakit akışı kaybı yüzde 20-50 arasında olabilir."
+    },
+    {
+     "soru": "Fazla üretilen elektrik için şebekeden ek gelir sağlanıyor mu?",
+     "cevap": "Evet, Türkiye'de grid bağlantılı sistemlerde net ölçüm veya enerji satışı imkanı bulunur. Dağıtım şirketine bağlı olarak farklı uygulamalar söz konusu olabilir; bazı dağıtım şirketleri fazla üretilen elektriği satın alırken bazıları net ölçüm sistemi kullanır."
+    },
+    {
+     "soru": "Sayaç fiziksel olarak geriye mi dönüyor yoksa dijital mi kaydediyor?",
+     "cevap": "Sayaç fiziksel olarak geriye dönmez; süreç tamamen dijitaldir. Kurulum sonrası dağıtım şirketi mevcut sayacı çift yönlü bir sayaçla değiştirir; bu sayaç çekiş (şebekeden alınan) ve veriş (şebekeye gönderilen) verilerini ayrı ayrı dijital olarak kaydeder ve genellikle OSOS sistemiyle uzaktan okunur. Mahsuplaşma, bu iki verinin dijital olarak karşılaştırılmasıyla hesaplanır; eski mekanik sayaçların geriye fiziksel dönmesi Türkiye'de yasal değildir ve usulsüz kullanım sayılır."
+    },
+    {
+     "soru": "Panellerle üretilen elektriği ben mi tüketiyorum yoksa başkaları da kullanabiliyor mu?",
+     "cevap": "Üretilen elektrik önce doğrudan evinize veya işletmenize gider (öz tüketim); bu aşamada dağıtım bedeli veya vergi ödenmez. İhtiyaçtan fazlası çift yönlü sayaç üzerinden şebekeye gönderilir; fiziksel olarak bu enerjiyi trafoya bağlı komşular kullanabilir, ancak finansal olarak bu sizin alacağınız olarak kaydedilir. Meskenlerde aylık mahsuplaşma, işletmelerde 1 Mayıs 2026'dan itibaren saatlik mahsuplaşma uygulanır; şebekeye bağlanmak için dağıtım şirketinden onay ve çift yönlü sayaç şarttır."
+    }
+   ]
+  },
+  {
+   "ad": "İzinler, Mevzuat ve Süreç",
+   "sorular": [
+    {
+     "soru": "Çatıya panel kurmadan önce dağıtım şirketinden çağrı mektubu almak zorunlu mu?",
+     "cevap": "Evet, şebekeye bağlı (on-grid) bir sistem kurmak için dağıtım şirketinden bağlantı anlaşmasına çağrı mektubu almak Lisanssız Elektrik Üretim Yönetmeliği çerçevesinde yasal bir zorunluluktur. Çağrı mektubu, şebeke kapasitesinin sisteminiz için uygun olduğunun resmi onayıdır ve genellikle 1-2 ay içinde sonuçlanır; başvuru yapmadan ekipman alınması veya kurulum yapılması önerilmez. Sadece şebekeden tamamen bağımsız off-grid sistemlerde bu izin aranmaz; izinsiz şebeke bağlantısı kaçak kullanım sayılabilir."
+    },
+    {
+     "soru": "Kurulum kararından ruhsat alınmasına kadar toplam süreç kaç ay sürer?",
+     "cevap": "Fikirden devreye almaya kadar toplam süreç gerçekçi olarak 3-6 ay sürer; fiziksel kurulum evler için genellikle 1-3 gündür, sürenin çoğu evrak ve onay aşamalarında geçer. Sıra: çağrı mektubu başvurusu (1-2 ay), proje onayı ve bağlantı anlaşması (1 ay), fiziksel kurulum (1-3 gün), kabul ve çift yönlü sayaç takılması (1 ay). Çatı tipi GES'lerde, binanın taşıyıcı sistemini etkilemediği sürece belediyeden yapı ruhsatı alınması gerekmez, ancak statik uygunluk raporu TEDAŞ proje onayında zorunludur; arazi GES'te süreç 1 yılı aşabilir."
+    },
+    {
+     "soru": "Kurulumdan sonra dağıtım şirketi sistemi kontrol için ziyaret ediyor mu?",
+     "cevap": "Evet, geçici kabul adı verilen bu ziyaret yasal bir zorunluluktur. Dağıtım şirketi yetkilileri panellerin ve inverterin onaylı projeye uygunluğunu, ekipman seri numaralarını ve sertifikalarını, topraklama ve izolasyon testlerini, inverterin şebeke kesildiğinde üretimi durdurma (anti-islanding) özelliğini kontrol eder ve çift yönlü sayacı takıp mühürler. Kabul tutanağı imzalanmadan sistem resmen devreye alınmış sayılmaz ve mahsuplaşma süreci başlamaz; kabul öncesi gayriresmi çalıştırma usulsüzlük olarak değerlendirilebilir."
+    },
+    {
+     "soru": "Elektrik dağıtım şirketine başvururken hangi belgeler istenir?",
+     "cevap": "Çağrı mektubu aşamasında başvuru formu, tapu kaydı veya kira sözleşmesi (kiracıysa mülk sahibinden noter onaylı muvafakatname), güncel elektrik faturası, imza beyannamesi/sirküleri ve apartmanlarda kat malikleri kurulu kararının noter onaylı sureti istenir. Proje onayı aşamasında EMO kayıtlı SMM belgeli mühendisin hazırladığı elektrik projesi (tek hat şeması), statik uygunluk raporu ve panel (IEC 61215/61730) ile inverter (TS EN 50549-1) sertifikaları gerekir. 2026 itibarıyla 50 kW altı çatı GES projelerinde proje onay ve kabul bedeli 0 TL'dir; süreç toplamda genellikle 3-6 ay sürer."
+    },
+    {
+     "soru": "Çatı GES kurulumunda 25 kW sınırı ne anlama gelir?",
+     "cevap": "25 kW sınırı bir yasak değil, konutlarda gelir vergisi muafiyeti ve basitleştirilmiş başvuru süreci sağlayan bir teşvik limitidir. Yasal kurulum üst sınırı mülkün sözleşme gücüyle sınırlıyken, sanayi ve tarımsal sulama aboneleri sözleşme güçlerinin 2 katına kadar kapasite kurabilir. 25 kW üzerindeki konut sistemlerinde aylık mahsuplaşma avantajı korunurken, elde edilen satış geliri için ticari faturalandırma prosedürleri işletilir."
+    }
+   ]
+  },
+  {
+   "ad": "Apartman ve Kat Mülkiyeti",
+   "sorular": [
+    {
+     "soru": "Apartman çatısında panel kurmak için tüm kat maliklerinin onayı gerekir mi?",
+     "cevap": "Çatı ortak alan sayıldığı için Kat Mülkiyeti Kanunu hükümleri geçerlidir. Kendi daireniz için bireysel kullanım amaçlı kurulumda genel uygulama tüm kat maliklerinin oybirliğiyle yazılı onayıdır (KMK m.19); dağıtım şirketleri genellikle noter onaylı muvafakat veya oybirliği kararı ister. Apartmanın ortak alan giderlerini (asansör, hidrofor vb.) karşılamak için kurulacaksa, bu KMK m.42 kapsamında faydalı yenilik sayılabilir ve kat maliklerinin sayı ve arsa payı çoğunluğu (yüzde 51) yeterli görülebilir. Karar mutlaka karar defterine işlenmeli ve noter onaylı olmalıdır; aksi halde söktürme davası riski doğar."
+    },
+    {
+     "soru": "Bir kat maliki paneli kurduğunda diğer malikler ileride itiraz edebilir mi?",
+     "cevap": "Evet, usulüne uygun izin alınmadan yapılan kurulumlara herhangi bir kat maliki itiraz edip mahkeme yoluyla söktürme davası açabilir. Ortak alan aboneliği için sayı ve arsa payı çoğunluğu (yüzde 51) yeterli olabilirken, bireysel abonelik için genellikle oybirliğe yakın güçlü bir muvafakat aranır. Riski önlemek için genel kurulda sistemin gücü, alanı, bakım sorumluluğu ve olası çatı zararlarının kim tarafından karşılanacağını netleştiren bir karar alınmalı, bu karar noter onaylı olarak karar defterine işlenmelidir; dağıtım şirketi bağlantı başvurusunda bu belgeyi zaten talep eder."
+    },
+    {
+     "soru": "Çatıya panel kurup ortak alan elektrik giderlerimi azaltabilir miyim?",
+     "cevap": "Evet, GES'in ortak alan sayacına bağlanmasıyla asansör, koridor aydınlatması ve hidrofor gibi giderler azaltılabilir. Bu, KMK m.42 kapsamında faydalı yenilik sayılır ve kat maliklerinin sayı ve arsa payı çoğunluğu (yüzde 51) ile karar alınması yeterlidir; kararın karar defterine işlenip noter onaylanması gerekir. Ortak sayaç modeli, üretimin gün boyu çalışan asansör gibi sistemlerde doğrudan tüketilmesi ve gündüz artan enerjinin ay sonunda ortak faturadan mahsup edilmesi nedeniyle sorunsuz işleyen bir modeldir; kurulum öncesi çatının statik uygunluğuna dair mühendislik raporu alınması önerilir."
+    }
+   ]
+  },
+  {
+   "ad": "Batarya ve Kesinti",
+   "sorular": [
+    {
+     "soru": "Gece elektrik kullanmak için batarya sistemi şart mı, depolama ne kadar pahalı?",
+     "cevap": "Konutlarda aylık mahsuplaşma sayesinde şebeke ücretsiz bir depolama alanı gibi çalıştığından gece kullanımı için fiziksel bataryaya gerek yoktur; batarya yalnızca kesinti anında elektriksiz kalmamak isteyenler için gereklidir. İşletmelerde 1 Mayıs 2026'dan itibaren saatlik mahsuplaşma uygulandığından batarya ekonomik bir gereklilik haline gelmeye başlamıştır. LiFePO4 bataryaların maliyeti kWh başına yaklaşık 20.000-23.000 TL'dir; 5 kWh kapasiteli bir paket hibrit inverter farkıyla birlikte yaklaşık 113.000 TL ek maliyet oluşturur ve toplam sistem maliyetini yüzde 40-60 artırır. Bataryasız sistemlerde şebeke kesildiğinde paneller güvenlik gereği üretimi durdurur."
+    },
+    {
+     "soru": "Elektrik kesintisinde güneş varken bile inverter neden kapanıyor?",
+     "cevap": "Bu bir arıza değil, uluslararası anti-islanding güvenlik standardının (IEC 62116, TS EN 50549-1) gereğidir. On-grid inverterler şebekeyi frekans/voltaj referansı olarak kullanır ve şebeke kesildiğinde, hatlarda çalışan teknik ekiplerin güvenliği için üretimi saniyeler içinde durdurur; ayrıca bataryasız bir sistemde anlık üretim-tüketim dengesini şebeke desteği olmadan sağlamak mümkün değildir. Kesintide de elektrik kullanmak isteniyorsa sistemin batarya ve yedekleme çıkışı (EPS/Backup) bulunan hibrit bir modele dönüştürülmesi gerekir."
+    },
+    {
+     "soru": "Batarya garantisi 10 yıl diyor ama gerçek ömrü kaç yıl?",
+     "cevap": "Modern GES sistemlerinde standart olan LFP (Lityum Demir Fosfat) bataryalar, eski kurşun-asit akülerin aksine 6.000-10.000 çevrim ömrüne sahiptir; günde ortalama 1 çevrimle bu teorik olarak 16 yıldan fazla hizmet demektir. Takvim ömrü olarak gerçekçi beklenti 10-15 yıldır. 10 yıl garanti ifadesi bataryanın o süre sonunda çalışmayı bırakacağı değil, kapasitesinin belirli bir eşiğin (genellikle yüzde 70-80) altına düşmeyeceği anlamına gelir. Aşırı sıcaklık (40°C üzeri) ve sürekli tam dolum/boşalım ömrü kısaltan başlıca etkenlerdir."
+    },
+    {
+     "soru": "Off-grid sistemde 3-4 günlük yağmurda elektriksiz kalmamak için batarya kapasitesi yeterli mi?",
+     "cevap": "3-4 günlük otonomi, genel kabul gören 2-3 günlük standardın üzerinde olup güvenli bir tercihtir. Kapasite hesabı Günlük Tüketim x Otonomi Günü / Deşarj Derinliği / Sistem Verimi formülüyle yapılır; örneğin günde 5 kWh tüketimle 4 günlük otonomi için LFP bataryada (yüzde 80 DoD, yüzde 85 verim) yaklaşık 29,4 kWh kapasite gerekir. Yağmurlu havalarda üretim yüzde 80-90 oranında düşebileceğinden, büyük bataryayı doldurabilecek yeterli panel gücü veya jeneratör desteği eklemek, bataryayı 5-6 güne çıkarmaktan daha ekonomiktir; LFP (LiFePO4) teknolojisi 10-15 yıl ömrüyle önerilen standarttır."
+    },
+    {
+     "soru": "Hibrit inverter alıp batarya olmadan başlayıp sonra eklemek mümkün mü?",
+     "cevap": "Evet, hibrit inverterle bataryasız başlamak (battery-ready kurulum) hem teknik olarak mümkündür hem de sık tercih edilen bir stratejidir; hibrit inverter batarya takılmadığında standart on-grid inverter gibi çalışır. İleride eklenecek bataryanın marka/haberleşme protokolü ve voltaj sınıfı (LV/HV) ile inverterin uyumlu olmasına dikkat edilmelidir. Sadece hibrit inverterle başlamak toplam maliyeti başlangıçta yaklaşık yüzde 40-50 düşürür; ancak sonradan batarya eklemek TEDAŞ'a tadilat projesi ve yeniden kabul süreci gerektirir, batarya kapasitesi kurulu gücü aşamaz."
+    },
+    {
+     "soru": "Gece ve kesinti süresince evi çalışır tutmak için saat başına kaç kWh batarya gerekir?",
+     "cevap": "Hesap Saatlik Ortalama Tüketim x Süre / Deşarj Derinliği (LFP için yaklaşık 0,85) formülüyle yapılır. Sadece kritik yükler (buzdolabı, modem, birkaç lamba, kombi) için saatlik tüketim yaklaşık 0,3-0,5 kWh olup 10 saatlik kullanım için yaklaşık 5 kWh yeterlidir; TV ve bilgisayar eklenen konforlu kullanımda saatlik 0,8-1,2 kWh ile 10 saat için 10-12 kWh gerekir. Klima veya fırın gibi ağır yükler için genellikle ayrı bir kritik yük panosu kullanılır. Standart bir Türk evinde 10 saatlik gece/kesinti için 5-10 kWh kapasiteli bir batarya ideal başlangıç noktasıdır."
+    },
+    {
+     "soru": "Jel akü ile lityum batarya arasında ömür ve güvenilirlik farkı ne kadar?",
+     "cevap": "Jel akü tipik olarak 500-1.000 çevrim ömre sahipken LiFePO4 lityum batarya 4.000-10.000 çevrim, yani yaklaşık 10 kat daha uzun ömürlü olup 10-15 yıl kullanım sunar. Deşarj derinliği jel akülerde yüzde 50 ile sınırlıyken lityumda yüzde 80-95'e çıkabilir, bu da aynı kullanılabilir enerji için lityumun daha küçük ve hafif olması demektir. Lityum demir fosfat kimyası 270°C'ye kadar termal olarak stabildir ve yüzde 98 civarı şarj verimliliğine sahiptir; günlük kullanımda (bağ evi, sürekli yaşam, işletme) lityum batarya tartışmasız daha iyi bir tercihtir."
+    }
+   ]
+  },
+  {
+   "ad": "Kurulum, Bakım ve Garanti",
+   "sorular": [
+    {
+     "soru": "Panellerin garantisi kaç yıl, arızalanırsa ne olur?",
+     "cevap": "Ürün (malzeme/işçilik) garantisi genellikle 12-15 yıl, performans (lineer) garantisi 25-30 yıldır; modern N-Type TOPCon paneller genellikle 30 yıl performans garantisiyle sunulur ve 30. yılın sonunda başlangıç gücünün en az yüzde 87'sini üretmesi taahhüt edilir. İnverter garantisi genellikle 5-10 yıl olduğundan 25 yıllık sistem ömründe en az bir kez inverter değişimi bütçelenmelidir. Arıza genellikle izleme uygulamasındaki verim düşüşü veya inverterdeki hata koduyla fark edilir; kurulumcu firma iflas etse dahi panel garantisi ana üretici veya Türkiye distribütörü tarafından sürdürülür, bu yüzden seri numaralı garanti belgeleri ve flash test raporları teslim alınmalıdır. Dolu, fırtına, yangın gibi dış hasarlar garanti kapsamında değildir; bunlar için GES sigortası önerilir."
+    },
+    {
+     "soru": "Paneller kaç yıl dayanır ve garanti bitince verim ne kadar düşer?",
+     "cevap": "Panellerin fiziksel ömrü tipik olarak 30-40 yıldır; bu sürenin sonunda paneller birden bozulmaz, sadece verimleri kademeli düşer. Degradasyon adı verilen bu düşüş ilk yıl yaklaşık yüzde 1-2, sonraki yıllarda yılda ortalama yüzde 0,40-0,55 civarındadır; 25 yılın sonunda kaliteli bir panel ilk günkü gücünün yüzde 85-87'sini korur. Garanti bittiğinde (örneğin 30 yıl sonra) panel çalışmaya devam eder ancak verimi orijinal kapasitesinin yaklaşık yüzde 80-84 bandına iner; cam kırılmamış ve nem girmemişse bu seviyede de uzun yıllar üretime devam edebilir."
+    },
+    {
+     "soru": "Panelleri kaç ayda bir temizletmek gerekir?",
+     "cevap": "İdeal sıklık yılda 1-2 kezdir; çok tozlu kırsal alanlar, sanayi bölgeleri veya yoğun kuş popülasyonu olan yerlerde bu sıklık artabilir. Yağmur yüzeysel tozu temizlese de yapışkan polen, sanayi isi veya kuş pisliğini tam gideremez; kuş pisliği ışığı keserek hot-spot (hücre aşırı ısınması) riski doğurabilir. Temizlenmeyen panellerde verim kaybı bölgeye göre yüzde 5-15, çok tozlu sahalarda yüzde 25'e kadar çıkabilir. Temizlik mutlaka saf su ve yumuşak fırçalarla, panel soğukken (sabah erken veya gün batımı) yapılmalı, deterjan ve sert su kullanılmamalıdır."
+    },
+    {
+     "soru": "Panelin altından hava geçmesi veya kar yağması kuruluma zarar verir mi?",
+     "cevap": "Hayır, ikisi de zarar vermez. Panelin altındaki hava boşluğu hücreleri soğutarak verimi korur; sıcaklık 25°C üzerine her çıktığında üretim yaklaşık yüzde 0,30-0,38 düştüğünden bu havalandırma bir mühendislik gerekliliğidir. Kar da panele zarar vermez, paneller IEC 61215 standardı kapsamında metrekare başına yaklaşık 550 kg'a denk gelen mekanik kar yüküne dayanıklı test edilir; kar panelin üzerini kapladığı sürece üretimi keser ama güneş çıkınca cam yüzeyden hızla kayar. Karı sert fırça, kürek veya sıcak suyla temizlemek camda mikro çatlak veya ısıl şoka yol açabileceğinden önerilmez."
+    },
+    {
+     "soru": "Kiremit çatıya panelleri yapıştırma yöntemiyle monte edebilir miyim?",
+     "cevap": "Hayır, yapıştırma yöntemi önerilmez ve risklidir. Panel altında havalandırma boşluğu olmazsa ısınma nedeniyle verim düşer; kiremitler ısıl genleşme farkları yüzünden çatlayabilir ve altındaki kiremit değişimi imkansız hale gelir; ayrıca rüzgar altında yapıştırıcının kopma riski güvenlik sorunu yaratır. Standart ve güvenli yöntem, mevcut kiremitler kaldırılıp altındaki merteklere çelik kanca vidalanan ve panel ile kiremit arasında yaklaşık 10-15 cm havalandırma boşluğu bırakan kiremit kancası (roof hook) sistemidir."
+    },
+    {
+     "soru": "İnverter sık sık kapanıp yeniden başlatmam gerekiyor, arıza mı?",
+     "cevap": "Bu her zaman kalıcı bir arıza anlamına gelmez, sistemin kendini koruyor olması da olabilir. En yaygın sebep öğle saatlerinde şebeke gerilim yükselmesidir (voltaj 253V sınırını aşınca inverter güvenlik için kapanır); ikinci olası sebep kablo/konnektörlerin yıpranmasından kaynaklanan izolasyon hatası (genellikle yağmurlu/nemli havalarda görülür); üçüncüsü ise tozlanma veya fan arızasına bağlı aşırı ısınmadır. Inverter ekranındaki hata kodu ve kapanma saatinin not edilmesi teşhis için önemlidir; DC taraftaki kablolara güneş varken dokunulmamalı, panel sökme girişiminde bulunulmamalıdır."
+    },
+    {
+     "soru": "Fırtına ve kar yağışı güneş panellerine veya çatıya zarar verir mi?",
+     "cevap": "Doğru projelendirilmiş sistemlerde statik uygunluk raporu zorunludur ve paneller metrekarede yaklaşık 550 kg kar yüküne dayanacak IEC 61215 standartlarında test edilir. Konstrüksiyonlar saatte 210 km hıza ulaşan rüzgar yüküne karşı özel ankrajlarla çatıya sabitlenerek uçma riskine karşı korunur. Şiddetli doğal afet risklerine karşı güneş enerjisi sisteminin konut veya işletme sigortasına dahil edilmesi önerilir."
+    }
+   ]
+  },
+  {
+   "ad": "İşletmeler İçin",
+   "sorular": [
+    {
+     "soru": "Fabrika çatısına kurulan GES'in vergi muhasebesi ve amortismanı nasıl hesaplanır?",
+     "cevap": "GES bir demirbaş yatırımı sayılır; VUK'a göre genel kabul gören faydalı ömür 10 yıl olup normal yöntemde yıllık amortisman oranı yüzde 10'dur, azalan bakiyeler yönteminde ilk yıllarda daha yüksek amortisman ayrılabilir (yaklaşık yüzde 20 ile başlar). Yatırım Teşvik Belgesi kapsamındaki projelerde ekipman alımında KDV istisnası, ithal ekipmanda gümrük vergisi muafiyeti ve Kurumlar Vergisi indirimi uygulanabilir; leasing yoluyla yapılan alımlarda teşvikli ürünlerde KDV oranı yüzde 1'dir. Şebekeye satılan fazla enerji bedeli ticari kazanç olarak Kurumlar Vergisi'ne tabidir, öz tüketimle sağlanan tasarruf ise doğrudan gelir değil maliyet azalışı olarak yansır; yıllık bakım/sigorta gideri genellikle yatırım tutarının yüzde 1-2'si seviyesindedir."
+    },
+    {
+     "soru": "Çatı GES'in geri kazanım süresi gerçekten 3-4 yıl mı, bölgeye göre değişir mi?",
+     "cevap": "3-4 yıl, yüksek elektrik tüketen ticari işletmeler için geçerli iyimser bir senaryodur; işletmelerde tipik aralık 3-5 yıl, konutlarda ise 5-8 yıldır. İşletmelerde 1 Mayıs 2026'dan itibaren uygulanan saatlik mahsuplaşma, öz tüketimi düşük işletmelerde süreyi uzatabilirken konutlarda aylık mahsuplaşmanın sürmesi avantaj sağlar. Bölge de belirleyicidir: Antalya/Güneydoğu Anadolu'da 1 kWp yılda 1.600-1.800 kWh, Ankara gibi İç Anadolu'da yaklaşık 1.465 kWh, Karadeniz'de 1.200-1.400 kWh üretir; bu fark geri dönüş süresini yüzde 20-30 oranında değiştirebilir."
+    }
+   ]
+  }
+ ]
+}
