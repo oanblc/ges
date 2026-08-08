@@ -68,14 +68,52 @@ def _metin(yanit):
     return "".join(b.text for b in yanit.content if b.type == "text")
 
 
+IZINLI_GORSEL = {"image/jpeg", "image/png", "image/webp"}
+EK_BOYUT_SINIRI = 9_000_000  # base64 karakter (≈ 6,5 MB dosya)
+
+
+def _temiz_bloklar(icerik):
+    """Son kullanıcı mesajındaki ek bloklarını (fatura görseli/PDF) doğrular."""
+    bloklar, boyut = [], 0
+    for b in icerik[:4]:
+        if not isinstance(b, dict):
+            continue
+        tur = b.get("type")
+        if tur == "text":
+            metin = str(b.get("text", "")).strip()[:4000]
+            if metin:
+                bloklar.append({"type": "text", "text": metin})
+        elif tur in ("image", "document"):
+            kaynak = b.get("source") or {}
+            mt, veri = kaynak.get("media_type"), kaynak.get("data")
+            if kaynak.get("type") != "base64" or not isinstance(veri, str):
+                continue
+            if tur == "image" and mt not in IZINLI_GORSEL:
+                continue
+            if tur == "document" and mt != "application/pdf":
+                continue
+            boyut += len(veri)
+            if boyut > EK_BOYUT_SINIRI:
+                continue
+            bloklar.append({"type": tur, "source": {"type": "base64", "media_type": mt, "data": veri}})
+    return bloklar
+
+
 def _temiz_mesajlar(ham):
-    """İstemciden gelen geçmişi güvenli text-only forma indirger."""
+    """Geçmişi güvenli forma indirger: metin + yalnız SON mesajda ek blokları."""
+    ham = ham[-20:]  # geçmiş üst sınırı
     temiz = []
-    for m in ham[-20:]:  # geçmiş üst sınırı
+    for i, m in enumerate(ham):
         rol = m.get("role")
         icerik = m.get("content")
-        if rol in ("user", "assistant") and isinstance(icerik, str) and icerik.strip():
+        if rol not in ("user", "assistant"):
+            continue
+        if isinstance(icerik, str) and icerik.strip():
             temiz.append({"role": rol, "content": icerik.strip()[:4000]})
+        elif isinstance(icerik, list) and rol == "user" and i == len(ham) - 1:
+            bloklar = _temiz_bloklar(icerik)
+            if bloklar:
+                temiz.append({"role": rol, "content": bloklar})
     return temiz
 
 
@@ -91,7 +129,11 @@ async def sohbet_ucu(istek: Request):
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "Saatlik soru sınırına ulaşıldı; lütfen daha sonra deneyin."},
                             status_code=429)
-    govde = await istek.json()
+    ham_govde = await istek.body()
+    if len(ham_govde) > 13_000_000:
+        return JSONResponse({"hata": "Dosya çok büyük; en fazla 6 MB'lık bir fatura yükleyin."},
+                            status_code=413)
+    govde = json.loads(ham_govde)
     mesajlar = _temiz_mesajlar(govde.get("mesajlar", []))
     if not mesajlar or mesajlar[-1]["role"] != "user":
         return JSONResponse({"hata": "Geçerli bir soru gönderin."}, status_code=400)

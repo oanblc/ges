@@ -459,6 +459,25 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .inbar input{border:0; outline:0; background:transparent; flex:1; font:inherit; color:var(--title); font-size:14.5px; min-width:0}
 .inbar input:disabled{opacity:.5}
 .inbar .send{width:42px;height:42px}
+.inbar .atac{width:38px; height:38px; border-radius:999px; flex:none; display:flex; align-items:center;
+  justify-content:center; cursor:pointer; color:var(--text); background:var(--soft);
+  border:1px solid var(--border); margin-left:-8px; transition:color .2s, border-color .2s}
+.inbar .atac:hover{color:var(--theme); border-color:var(--theme)}
+.inbar .atac.pasif{opacity:.5; pointer-events:none}
+.ek-cubugu{margin:12px 26px -2px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.ek-chip{display:inline-flex; align-items:center; gap:7px; background:var(--surface);
+  border:1px solid var(--theme); color:var(--title); border-radius:999px; padding:6px 8px 6px 14px;
+  font-size:13px; font-weight:500}
+.ek-chip svg.i{width:15px; height:15px; color:var(--theme)}
+.ek-chip button{border:0; background:var(--soft); color:var(--text); width:22px; height:22px;
+  border-radius:999px; cursor:pointer; font-size:15px; line-height:1; display:flex;
+  align-items:center; justify-content:center}
+.ek-chip button:hover{background:var(--border)}
+.ek-ipucu{font-size:12.5px; color:var(--text)}
+.ek-hata{margin:10px 26px -2px; font-size:13px; color:#9a3b3b}
+.msg-ek{display:flex; align-items:center; gap:7px; font-size:12.5px; opacity:.85;
+  margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.25)}
+.msg-ek svg.i{width:14px; height:14px}
 .under{margin:10px 26px 0; font-size:11.5px; opacity:.65; text-align:center}
 .as-lead{margin:14px 26px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center}
 .as-lead-form{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}

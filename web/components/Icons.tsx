@@ -7,6 +7,12 @@ const I = ({ className = "i", children }: P & { children: React.ReactNode }) => 
   </svg>
 );
 
+export const Atac = (p: P) => (
+  <I {...p}>
+    <path d="M20.5 12.6l-7.8 7.8a5.6 5.6 0 0 1-7.9-7.9l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.2 8.2a1.85 1.85 0 0 1-2.6-2.6l7.6-7.6" />
+  </I>
+);
+
 export const Sun = (p: P) => (
   <I {...p}>
     <circle cx="12" cy="12" r="4" />

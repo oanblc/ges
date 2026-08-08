@@ -214,9 +214,11 @@ ARACLAR = [{
     "name": "fatura_analizi",
     "description": (
         "Elektrik faturası ayrıştırma ve çapraz doğrulama motoru (protokol v2). Kullanıcı fatura "
-        "değerlerini verdiğinde çağır. Zorunlu: abone grubu tahmini, tüketim (kWh), aktif enerji "
-        "bedeli (TL), dağıtım bedeli (TL). Varsa: dönem (YYYY-AA), YEKDEM ve sabit maliyet "
-        "bileşenleri. Eksikse kullanıcıdan faturadaki ilgili satırları iste."
+        "değerlerini verdiğinde VEYA fatura fotoğrafı/PDF'i eklediğinde çağır. Görsel eklendiyse "
+        "değerleri görselden kendin oku; okuduğun kalemleri cevabında kısaca listele ki kullanıcı "
+        "doğrulayabilsin. Zorunlu: abone grubu tahmini, tüketim (kWh), aktif enerji bedeli (TL), "
+        "dağıtım bedeli (TL). Varsa: dönem (YYYY-AA), YEKDEM ve sabit maliyet bileşenleri. "
+        "Görselden okunamayan zorunlu alanı kullanıcıdan iste."
     ),
     "input_schema": {
         "type": "object",
@@ -268,6 +270,10 @@ DAVRANIŞ KURALLARI:
    (ör. "EPDK 4 Nisan 2026 tarifesi", "RG 02.04.2026 — saatlik mahsuplaşma").
 4. Bilgi tabanında olmayan konuda uydurma; "bu konu bilgi tabanımda net değil, danışmanımıza
    iletebilirim" de.
+4b. Kullanıcı fatura fotoğrafı/PDF'i eklerse önce belgenin gerçekten elektrik faturası olup
+   olmadığına bak; değilse kibarca belirt. Faturaysa kalemleri görselden oku, okuduklarını
+   kısaca listele ve fatura_analizi aracını çağır. Görüntü bulanıksa hangi satırın net
+   fotoğrafı gerektiğini söyle.
 5. Yaygın yanlışları (mitleri) kibarca düzelt — özellikle: saatlik mahsup meskenleri kapsamaz;
    meskene devlet hibesi yoktur; fatura tamamen sıfırlanmaz (dağıtım+vergi kalır); izinsiz
    şebeke bağlantısı olmaz; kışın panel çalışır; bataryasız on-grid kesintide çalışmaz.
@@ -402,8 +408,17 @@ def sohbet(mesajlar: list, istemci) -> anthropic.types.Message:
         if yanit.stop_reason != "tool_use":
             # Doğrulama katmanı: taslak cevabı kb'ye karşı denetle; sorun varsa bir kez düzelt
             metin = "".join(b.text for b in yanit.content if b.type == "text")
-            soru = next((m["content"] for m in reversed(mesajlar)
-                         if m["role"] == "user" and isinstance(m["content"], str)), "")
+
+            def _metin(icerik):
+                if isinstance(icerik, str):
+                    return icerik
+                if isinstance(icerik, list):  # ekli mesaj: text bloklarını birleştir
+                    return " ".join(b.get("text", "") for b in icerik
+                                    if isinstance(b, dict) and b.get("type") == "text")
+                return ""
+
+            soru = next((_metin(m["content"]) for m in reversed(mesajlar)
+                         if m["role"] == "user" and _metin(m["content"])), "")
             karar = _denetle(soru, metin, istemci)
             if karar.startswith("ONAY") or not karar.startswith("SORUN"):
                 return yanit
