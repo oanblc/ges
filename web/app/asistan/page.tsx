@@ -5,6 +5,7 @@ import AsistanSohbet from "@/components/AsistanSohbet";
 import { META, PIYASA } from "@/data/kb";
 import { Kalkan, Grafik, Soru } from "@/components/Icons";
 import { YanSorular, DanismanlikDugmesi } from "@/components/AsistanYan";
+import { Terim } from "@/components/Terim";
 
 export const metadata: Metadata = {
   title: "GES Asistanı — Güncel Mevzuatla Soru-Cevap",
@@ -43,20 +44,20 @@ export default async function AsistanSayfa({
               <Grafik className="i" /> Canlı piyasa verisi
             </h3>
             <div className="live">
-              <span>PTF ({PIYASA.ay} ort.)</span>
+              <span><Terim ad="PTF">PTF</Terim> ({PIYASA.ay} ort.)</span>
               <span className="v mono">{(PIYASA.ptfOrtalama / 1000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺/kWh</span>
             </div>
             <div className="live">
-              <span>PTF güneş saatleri</span>
+              <span><Terim ad="PTF">PTF</Terim> güneş saatleri</span>
               <span className="v mono">{(PIYASA.ptfGunesSaatleri / 1000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺/kWh</span>
             </div>
             <div className="live">
-              <span>YEKDEM ({PIYASA.yekdemAyi})</span>
+              <span><Terim ad="YEKDEM">YEKDEM</Terim> ({PIYASA.yekdemAyi})</span>
               <span className="v mono">{(PIYASA.yekdemGerceklesenSon / 1000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺/kWh</span>
             </div>
             <div className="live">
               <span>Kaynak</span>
-              <span className="v">EPİAŞ Şeffaflık</span>
+              <span className="v"><Terim ad="EPİAŞ">EPİAŞ</Terim> Şeffaflık</span>
             </div>
           </div>
 

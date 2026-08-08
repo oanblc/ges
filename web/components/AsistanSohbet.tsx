@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Atac, Ok, Kalkan, Sohbet } from "./Icons";
 import { leadKaydet, iletisimGecerliMi } from "./LeadKilidi";
+import { cocuklariIsaretle } from "./Terim";
 import { ORNEK_SORULAR } from "./sorular";
 
 type Mesaj = {
@@ -268,7 +269,18 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
               </div>
               <div className="govde">
                 {m.content ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ children }) => <p>{cocuklariIsaretle(children)}</p>,
+                      li: ({ children }) => <li>{cocuklariIsaretle(children)}</li>,
+                      strong: ({ children }) => <strong>{cocuklariIsaretle(children)}</strong>,
+                      em: ({ children }) => <em>{cocuklariIsaretle(children)}</em>,
+                      td: ({ children }) => <td>{cocuklariIsaretle(children)}</td>,
+                    }}
+                  >
+                    {m.content}
+                  </ReactMarkdown>
                 ) : durum ? (
                   `${durum}…`
                 ) : (
