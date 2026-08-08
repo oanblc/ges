@@ -73,10 +73,13 @@ export default function Maliyet() {
   const catiAlani = Math.round(panelAdet * EKIPMAN.panelM2);
   const invHedef = kw / EKIPMAN.dcAcOran;
   const invKw = EKIPMAN.inverterBoylari.find((b) => b >= invHedef) ?? Math.round(invHedef);
+  // metraj çarpanları: kb/taslak 8 Ağu 2026 araştırması (ray ~2,3 m/panel, bağlantı 4/panel)
+  const rayMetre = Math.round(panelAdet * 2.3);
+  const baglanti = panelAdet * 4;
   const konstruksiyon = {
-    kiremit: "Eloksallı alüminyum ray + kiremit kancası (kiremit delinmez) + sızdırmazlık contaları",
-    trapez: "Eloksallı alüminyum ray + EPDM contalı trapez vidaları",
-    teras: "Balast ayaklı eğimli konstrüksiyon (çatı delinmez) + koruyucu şilte",
+    kiremit: `≈ ${rayMetre} m eloksallı alüminyum ray (EN-AW 6063) + ≈ ${baglanti} adet kiremit kancası (kiremit delinmez) + orta/son tutucular ve sızdırmazlık contaları`,
+    trapez: `≈ ${rayMetre} m eloksallı alüminyum ray + ≈ ${baglanti} adet EPDM contalı trapez vidası + orta/son tutucular`,
+    teras: `Balast ayaklı eğimli konstrüksiyon (çatı delinmez) + ≈ ${rayMetre} m ray + koruyucu şilte`,
   }[cati];
   const malzemeler: Array<[string, string]> = [
     ["Güneş panelleri",
