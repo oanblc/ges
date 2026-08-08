@@ -1,7 +1,8 @@
 """GES Danışmanı — asistan çekirdeği (prototip).
 
 Sitedeki sohbetin arkasında çalışacak beyin. Özellikleri:
-- Tüm bilgi tabanını (kb/ + kb/taslak/) bağlama yükler; prompt cache ile ekonomik.
+- Yayınlanmış bilgi tabanını (kb/, iç mutfak ve taslaklar hariç) bağlama yükler;
+  1 saatlik prompt cache ile ekonomik.
 - Eksik bilgiyle gelen soruda TAHMİN ETMEZ, eksik girdileri kullanıcıdan ister.
 - Hesap gerektiğinde deterministik fizibilite motorunu araç olarak çağırır
   (rakamlar modelden değil koddan gelir).
@@ -15,6 +16,7 @@ Kullanım:
 import datetime
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -34,12 +36,22 @@ def _env_yukle() -> None:
                 os.environ.setdefault(k.strip(), v.strip())
 
 
+# Asistan promptuna GİRMEYENLER: iç mutfak dosyaları (indeks/kaynak kataloğu) ve
+# ham web araştırması dökümleri. taslak/ da yüklenmez — onaysız içerik yayına sızmaz
+# ve soru başına ~15-20k token tasarruf sağlar (8 Ağu 2026 maliyet düzeltmesi).
+_KB_HARIC = {"README.md", "INDEKS.md", "kaynaklar.md",
+             "tarifeler-web-arastirma.md", "tarifeler-web-arastirma-ek.md"}
+
+
 def _kb_yukle() -> str:
     parcalar = []
-    for d in sorted(KB.glob("*.md")) + sorted((KB / "taslak").glob("*.md")):
-        if d.name == "README.md":
+    for d in sorted(KB.glob("*.md")):
+        if d.name in _KB_HARIC:
             continue
-        parcalar.append(f"\n<dosya ad=\"{d.name}\">\n{d.read_text(encoding='utf-8')}\n</dosya>")
+        icerik = d.read_text(encoding="utf-8")
+        # Dosya sonundaki kaynak listeleri cevap üretimine katkı vermez — prompttan düş
+        icerik = re.sub(r"\n## Kaynaklar\n.*\Z", "\n", icerik, flags=re.DOTALL)
+        parcalar.append(f"\n<dosya ad=\"{d.name}\">\n{icerik}\n</dosya>")
     canli = KB / "veri" / "piyasa-canli.json"
     if canli.exists():
         icerik = canli.read_text()
@@ -299,17 +311,16 @@ Cevabı bilgi tabanına karşı denetle:
 
 
 def _denetle(soru: str, cevap: str, istemci) -> str:
-    """İkinci geçiş: taslak cevabı kb'ye karşı denetler. Aynı system → cache okuması."""
+    """İkinci geçiş: taslak cevabı kb'ye karşı denetler (maliyet için Sonnet)."""
     yanit = istemci.beta.messages.create(
-        model="claude-opus-5",
+        model="claude-sonnet-5",
         max_tokens=1024,
-        betas=["server-side-fallback-2026-07-01"],
-        fallbacks="default",
+        betas=["extended-cache-ttl-2025-04-11"],
         output_config={"effort": "low"},
         system=[{
             "type": "text",
             "text": SISTEM + _kb_yukle(),
-            "cache_control": {"type": "ephemeral"},
+            "cache_control": {"type": "ephemeral", "ttl": "1h"},
         }],
         messages=[{
             "role": "user",
@@ -357,7 +368,7 @@ def lead_ozeti(mesajlar: list, istemci) -> dict:
                 elif tur == "tool_result":
                     dokum.append(f"[hesap sonucu]: {b.get('content', '')[:300]}")
     yanit = istemci.messages.create(
-        model="claude-opus-5",
+        model="claude-sonnet-5",
         max_tokens=4096,
         output_config={"effort": "low",
                        "format": {"type": "json_schema", "schema": LEAD_SEMASI}},
@@ -395,12 +406,12 @@ def sohbet(mesajlar: list, istemci) -> anthropic.types.Message:
         yanit = istemci.beta.messages.create(
             model="claude-opus-5",
             max_tokens=6144,
-            betas=["server-side-fallback-2026-07-01"],
+            betas=["server-side-fallback-2026-07-01", "extended-cache-ttl-2025-04-11"],
             fallbacks="default",
             system=[{
                 "type": "text",
                 "text": SISTEM + _kb_yukle(),
-                "cache_control": {"type": "ephemeral"},
+                "cache_control": {"type": "ephemeral", "ttl": "1h"},
             }],
             tools=ARACLAR,
             messages=mesajlar,

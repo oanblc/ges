@@ -146,14 +146,14 @@ async def sohbet_ucu(istek: Request):
             istemci = _al()
             soru = mesajlar[-1]["content"]
             sistem = [{"type": "text", "text": SISTEM + _kb_yukle(),
-                       "cache_control": {"type": "ephemeral"}}]
+                       "cache_control": {"type": "ephemeral", "ttl": "1h"}}]
             gecmis = list(mesajlar)
             yanit = None
             for _tur in range(8):
                 yield _sse("durum", {"mesaj": "düşünüyor"})
                 with istemci.beta.messages.stream(
                     model="claude-opus-5", max_tokens=6144,
-                    betas=["server-side-fallback-2026-07-01"], fallbacks="default",
+                    betas=["server-side-fallback-2026-07-01", "extended-cache-ttl-2025-04-11"], fallbacks="default",
                     system=sistem, tools=ARACLAR, messages=gecmis,
                 ) as akis:
                     for parca in akis.text_stream:
@@ -198,7 +198,7 @@ async def sohbet_ucu(istek: Request):
                 ]
                 revize = istemci.beta.messages.create(
                     model="claude-opus-5", max_tokens=6144,
-                    betas=["server-side-fallback-2026-07-01"], fallbacks="default",
+                    betas=["server-side-fallback-2026-07-01", "extended-cache-ttl-2025-04-11"], fallbacks="default",
                     system=sistem, messages=duzeltme_istegi)
                 yeni = _metin(revize)
                 if yeni and _denetle(soru, yeni, istemci).startswith("ONAY"):
