@@ -49,7 +49,8 @@ Dayanak: RG 2 Nisan 2026 sayı 33212 + 11415 sayılı CB Kararı (RG 13 Haziran 
 | 250 kW | ~24.000 |
 | 500 kW | ~25.650 |
 | 1 MW | ~22.500 |
-- Batarya (LiFePO4): ~10–11 bin ₺/kWh; 6.000+ döngü, 10–15 yıl.
+- Batarya (LiFePO4, ev tipi perakende): ~20–23 bin ₺/kWh (örn. 5 kWh ≈ 113 bin ₺); 6.000+ döngü, 10–15 yıl.
+  (8 Ağu 2026 düzeltme, Ozan onayı: eski "10–11 bin ₺/kWh" değeri hücre/büyük ölçek fiyatıydı; ev tipi perakende teknik-depolama.md ile eşitlendi.)
 
 ## 6. Hesap metodolojisi
 - Öz tüketim oranı varsayılanları: konut bataryasız %25–40 (ama meskende aylık mahsup

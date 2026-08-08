@@ -14,7 +14,7 @@
       "durum": "donemsel",
       "sonKontrol": "2026-08-08",
       "kaynakUrl": "https://www.kosgeb.gov.tr/site/tr/genel/destekdetay/9022/yesil-sanayi-destek-programi",
-      "not": "Koşullar aynı (14 M₺ üst limit, proje bitişinden 12 ay ödemesiz, sonrasında 4'er aylık 6 eşit taksit) ancak program sürekli başvuruya değil çağrı dönemine bağlı çalışıyor: 'aktif' → 'dönemsel/çağrılı' olarak güncellenmeli."
+      "not": "Başvurular çağrı dönemlerinde açılır; güncel çağrı takvimini KOSGEB'den kontrol edin."
     },
     {
       "id": "ytb-etuys",
@@ -24,11 +24,10 @@
       "kitle": [
         "isletme"
       ],
-      "ozet": "KDV istisnası, gümrük muafiyeti, indirimli kurumlar vergisi, damga/harç istisnası ve SGK desteği; amortisman süresi yarıya iner. Leasing üzerinden kullanımda şirket başına asgari 3 M₺ şartı.",
+      "ozet": "9903 sayılı Karar (Mayıs 2025) kapsamında KDV istisnası, gümrük muafiyeti, indirimli kurumlar vergisi, damga/harç istisnası ve SGK desteği; amortisman süresi yarıya iner. Asgari sabit yatırım 1.-2. bölgede 12 M₺, diğer bölgelerde 6 M₺; başvurular 31/12/2030'a kadar kabul edilir.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.pwc.com.tr/tr/Hizmetlerimiz/vergi/dolayli-vergi/bultenler/yat%C4%B1r%C4%B1m-te%C5%9Fvik-b%C3%BCltenleri/9903-sayili-yatirimlarda-devlet-yardimlari-hakkindaki-karar.pdf",
-      "not": "Eski 2012/3305 sayılı teşvik sistemi → 29/30 Mayıs 2025'te yürürlüğe giren 9903 sayılı Yatırımlarda Devlet Yardımları Kararı; asgari sabit yatırım tutarı ayrıca belirtilmeyen hallerde 1.-2. bölgede 12 M₺, diğer bölgelerde 6 M₺ oldu ve teşvik belgesi müracaatları 31/12/2030'a kadar kabul ediliyor (listedeki 'leasingde şirket başına asgari 3 M₺' ifadesi yeni karar metninde teyit edilemedi)."
+      "kaynakUrl": "https://www.pwc.com.tr/tr/Hizmetlerimiz/vergi/dolayli-vergi/bultenler/yat%C4%B1r%C4%B1m-te%C5%9Fvik-b%C3%BCltenleri/9903-sayili-yatirimlarda-devlet-yardimlari-hakkindaki-karar.pdf"
     },
     {
       "id": "ipard-tkdk",
@@ -52,11 +51,10 @@
       "kitle": [
         "konut"
       ],
-      "ozet": "50 kW altındaki çatı tesislerinde şebekeye satılan fazla üretimin geliri gelir vergisinden muaftır.",
+      "ozet": "Sahip olunan veya kiralanan konutların çatı ve/veya cephelerinde kurulan azami 50 kW tesislerde, şebekeye satılan fazla üretimin geliri gelir vergisinden muaftır.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.muhasebetr.com/sorucevap/haber_oku.php?haber_id=4293",
-      "not": "Liste metni genel 'çatı tesisleri' → mevzuat metni yalnızca sahip olunan veya kiralanan KONUTLARIN çatı ve/veya cephelerinde kurulan azami 50 kW (50 kW dâhil) tesisleri kapsıyor."
+      "kaynakUrl": "https://www.muhasebetr.com/sorucevap/haber_oku.php?haber_id=4293"
     },
     {
       "id": "ziraat-yenilenebilir",
@@ -67,11 +65,10 @@
         "isletme",
         "tarimsal"
       ],
-      "ozet": "Yatırımın %80'ine kadar finansman; tarımsal GES'te %0'a varan sübvansiyonlu faiz — çatı GES'te genel faiz desteğinin tek istisnası tarımsal yatırımlardır.",
+      "ozet": "Yatırımın %80'ine kadar finansman; tarımsal yatırımlarda sübvansiyonlu faiz uygulanabilir (oranlar ilan edilmez, şube ve proje bazlıdır).",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.ziraatbank.com.tr/tr/ticari/krediler/cevresel-kredi-urunleri/yenilebilir-enerji-yatirim-kredisi",
-      "not": "Ürün yürürlükte; tarımsal sulama GES'leri için ayrıca 'Güneş Enerjili Sulama Kredisi' adlı ayrı bir ürün bulunuyor — banka faiz/sübvansiyon oranı ilan etmediğinden listedeki oran ifadesi yapı bilgisiyle değiştirilmeli."
+      "kaynakUrl": "https://www.ziraatbank.com.tr/tr/ticari/krediler/cevresel-kredi-urunleri/yenilebilir-enerji-yatirim-kredisi"
     },
     {
       "id": "isbank-iste-gunes",
@@ -81,11 +78,11 @@
       "kitle": [
         "isletme"
       ],
-      "ozet": "10 yıla kadar vade, 1 yıl ödemesiz dönem; TL/USD/EUR seçenekleri ve ücretsiz ön fizibilite.",
+      "ozet": "Öz tüketim amaçlı çatı, cephe ve arazi tipi lisanssız GES finansmanı; 1 yıla kadar ödemesiz dönem ve ücretsiz ön fizibilite.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
       "kaynakUrl": "https://www.isbank.com.tr/kampanyalar/isteguneskampanyasi",
-      "not": "Teyit edilen kapsam öz tüketim amaçlı çatı/cephe/arazi tipi lisanssız GES ve 1 yıla kadar ödemesiz dönem; '10 yıl vade' ve 'TL/USD/EUR' ifadeleri güncel banka sayfasında doğrulanamadı, teyit bekliyor."
+      "not": "Vade üst sınırı ve döviz seçenekleri bankaca ilan edilmiyor; güncel koşulları şubeden teyit edin."
     },
     {
       "id": "garanti-ges",
@@ -102,17 +99,16 @@
     },
     {
       "id": "akbank-ges",
-      "ad": "GES Finansmanı",
+      "ad": "Çatı GES Yatırım Kredisi · KOBİ Eko Dönüşüm Paketi",
       "kurum": "Akbank",
       "tur": "banka",
       "kitle": [
         "isletme"
       ],
-      "ozet": "Tüm segmentlere açık GES finansmanı; ücretsiz fizibilite aracı sunar.",
+      "ozet": "Kurumsal ve ticari segmentte çatı GES finansmanı; KOBİ Eko Dönüşüm Paketi kapsamında Solarvis iş birliğiyle konum, çatı ve fatura verilerinden ücretsiz ön fizibilite sunulur.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.akbank.com/bankamiz/surdurulebilir-finansman/kurumsal-ve-ticari-finansman-urunleri/cati-ges-yatirim-kredisi",
-      "not": "Genel 'GES finansmanı' → ürün bugün 'Çatı GES Yatırım Kredisi' adıyla kurumsal/ticari segmentte konumlanıyor; ücretsiz ön fizibilite Solarvis iş birliğiyle KOBİ müşterilerine sunuluyor."
+      "kaynakUrl": "https://www.akbank.com/bankamiz/surdurulebilir-finansman/kurumsal-ve-ticari-finansman-urunleri/cati-ges-yatirim-kredisi"
     },
     {
       "id": "halkbank-fka",
@@ -123,11 +119,11 @@
         "isletme",
         "konut"
       ],
-      "ozet": "Fransız Kalkınma Ajansı kaynaklı EUR kredisi: 7 yıl vade, 2 yıl ödemesiz. Bireysel tarafta 'Enerji Destek' ürünü mevcut.",
+      "ozet": "Fransız Kalkınma Ajansı kaynaklı EUR kredisi: yatırımda 2 yıl ödemesiz + 5-7 yıl vade, işletmede 1 yıl ödemesiz + 3-4 yıl; 100 bin – 2 milyon EUR bandı. Bireysel tarafta 'Enerji Destek' ürünü mevcut.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
       "kaynakUrl": "https://www.halkbankkobi.com.tr/tr/kobi/krediler/Yurtdisi-Kaynakli-Krediler/FKA-Yenilenebilir-Enerji-Kredisi.html",
-      "not": "Vade yapısı doğrulandı (yatırım kredilerinde 2 yıl ödemesiz + asgari 5 azami 7 yıl vade; işletme kredilerinde 1 yıl ödemesiz + 3-4 yıl); ek olarak kredi tutar aralığı 100.000–2.000.000 EUR olarak geçiyor ancak ikincil kaynaklarda 5 M EUR'ya kadar denmesi nedeniyle üst limit teyit bekliyor."
+      "not": "Bazı kaynaklar üst limiti 5 M EUR'ya kadar veriyor — teyit bekliyor."
     },
     {
       "id": "sekerbank-ekokredi",
@@ -138,25 +134,24 @@
         "konut",
         "isletme"
       ],
-      "ozet": "60 ay vade, 6 ay ödemesiz dönem seçeneğiyle çatı GES finansmanı.",
+      "ozet": "Bireysel EKOkredi Güneş 3-60 ay vade; ticari tarafta 2 yıla kadar ödemesiz, 8 yıla varan vade ve döviz/dövize endeksli seçenekler.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.sekerbank.com.tr/bireysel/surdurulebilirbankacilik/gunes",
-      "not": "Yalnızca '60 ay vade / 6 ay ödemesiz' → bireysel EKOkredi Güneş 3-60 ay vadeyle sürüyor, yenilenebilir enerji yatırımlarında ticari EKOkredi tarafında 2 yıla kadar ödemesiz ve 8 yıla varan vade ile döviz/dövize endeksli seçenek de bulunuyor."
+      "kaynakUrl": "https://www.sekerbank.com.tr/bireysel/surdurulebilirbankacilik/gunes"
     },
     {
       "id": "katilim-finansmani",
       "ad": "Katılım Finansmanı (GES)",
-      "kurum": "Kuveyt Türk · Türkiye Finans",
+      "kurum": "Türkiye Finans · Kuveyt Türk",
       "tur": "banka",
       "kitle": [
         "isletme"
       ],
-      "ozet": "Katılım bankacılığı esaslarıyla 5 yıla kadar vadeli GES finansmanı.",
+      "ozet": "Türkiye Finans Lisanssız Yenilenebilir Enerji Finansmanı Paketi: 1 yıla kadar geri ödemesiz, 5 yıla varan vade; TL/EUR/USD seçenekleri.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
       "kaynakUrl": "https://www.turkiyefinans.com.tr/tr-tr/kobi/sektor-ve-urun-paketleri/sayfalar/lisanssiz-yenilenebilir-enerji-paketi.aspx",
-      "not": "Türkiye Finans tarafı teyitli (Lisanssız Yenilenebilir Enerji Finansmanı Paketi: 1 yıla kadar geri ödemesiz, toplamda 5 yıla varan vade, TL/EUR/USD); Kuveyt Türk'ün güncel GES ürünü bu turda teyit edilemedi."
+      "not": "Kuveyt Türk'ün güncel GES ürünü bu turda teyit edilemedi."
     },
     {
       "id": "turseff-geff",
@@ -166,11 +161,10 @@
       "kitle": [
         "isletme"
       ],
-      "ozet": "Aracı bankalar üzerinden KOBİ'lere yenilenebilir enerji finansmanı; Yapı Kredi aktif aracıdır. Büyük ölçekte TSKB devrededir.",
+      "ozet": "GEFF Türkiye III: 1 milyar avroluk yeni faz. TurSEFF ve GEFF, DenizBank dahil 11 aracı kuruluş üzerinden KOBİ'lere yenilenebilir enerji finansmanı sağlar; büyük ölçekte TSKB devrededir.",
       "durum": "aktif",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://bigpara.hurriyet.com.tr/haberler/genel-haberler/geffden-1-milyar-euroluk-yesil-yatirim_ID102216608/",
-      "not": "GEFF Türkiye'nin 500 milyon avroluk fazı → 1 milyar avroluk yeni faz 'GEFF Türkiye III' devreye girdi; aracı kurum ağı genişledi (DenizBank dahil, TurSEFF+GEFF toplamda 11 ortak kuruluş üzerinden yürüyor)."
+      "kaynakUrl": "https://bigpara.hurriyet.com.tr/haberler/genel-haberler/geffden-1-milyar-euroluk-yesil-yatirim_ID102216608/"
     },
     {
       "id": "leasing-kdv1",
@@ -183,7 +177,8 @@
       "ozet": "Tüzel/ticari müşteriye 3-5 yıl vadeli finansal kiralama; teşvikli ekipman kirasında %1 KDV uygulanabilir (GTİP bazında teyit şart). YTB leasing üzerinden kullanılabilir.",
       "durum": "teyit-bekliyor",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.isleasing.com.tr"
+      "kaynakUrl": "https://www.isleasing.com.tr",
+      "not": "%1 KDV uygulaması GTİP bazında ürün özelinde teyit gerektirir; güncel uygulama bu turda doğrulanamadı."
     },
     {
       "id": "enerjisa-esco",
@@ -196,7 +191,61 @@
       "ozet": "Yatırımsız model: performans bazlı satış sözleşmesiyle Enerjisa kurar, tesis enerjiyi satın alır. Yüksek tüketimli ticari/endüstriyel tesisler için uygundur.",
       "durum": "teyit-bekliyor",
       "sonKontrol": "2026-08-08",
-      "kaynakUrl": "https://www.enerjisa.com.tr"
+      "kaynakUrl": "https://www.enerjisa.com.tr",
+      "not": "Program sayfası bu turda doğrulanamadı; güncel koşulları Enerjisa'dan teyit edin."
+    },
+    {
+      "id": "ziraat-sulama",
+      "ad": "Güneş Enerjili Sulama Kredisi",
+      "kurum": "Ziraat Bankası",
+      "tur": "banka",
+      "kitle": [
+        "tarimsal"
+      ],
+      "ozet": "Modern basınçlı sulama sistemiyle birlikte güneş enerjisi kurulumu, elektrik temini, derin kuyu açılması ve teçhizatını kapsayan çiftçiye özel yatırım kredisi.",
+      "durum": "aktif",
+      "sonKontrol": "2026-08-08",
+      "kaynakUrl": "https://www.ziraatbank.com.tr/tr/kurumsal/krediler/tarim-sektoru-kredileri/gunes-enerjili-sulama-kredisi"
+    },
+    {
+      "id": "halkbank-proje",
+      "ad": "Orta/Uzun Vadeli Proje Kredileri",
+      "kurum": "Halkbank",
+      "tur": "banka",
+      "kitle": [
+        "isletme"
+      ],
+      "ozet": "Yatırım kredisinde 3 yılı ödemesiz toplam 10 yıl, işletme kredisinde 1 yılı ödemesiz toplam 5 yıl vade; TL/YP, sabit veya değişken faiz. Büyük çatı ve arazi GES yatırımlarında FKA kredisine alternatif.",
+      "durum": "aktif",
+      "sonKontrol": "2026-08-08",
+      "kaynakUrl": "https://www.halkbank.com.tr/tr/ticari-kurumsal/krediler/nakit-krediler/orta-uzun-vadeli-krediler"
+    },
+    {
+      "id": "denizbank-geff",
+      "ad": "GEFF Türkiye (KOBİ Bankacılığı)",
+      "kurum": "DenizBank (EBRD kaynaklı)",
+      "tur": "banka",
+      "kitle": [
+        "isletme"
+      ],
+      "ozet": "EBRD GEFF Türkiye kredi hattının aracı bankalarından; yeşil teknoloji yatırımlarına finansmanla birlikte Temiz Teknoloji Fonu destekli, faydalanıcıya bedelsiz teknik destek paketi içerir.",
+      "durum": "aktif",
+      "sonKontrol": "2026-08-08",
+      "kaynakUrl": "https://www.denizbank.com/krediler/kobi-bankaciligi/geff-turkiye"
+    },
+    {
+      "id": "kkydp",
+      "ad": "Kırsal Kalkınma Yatırımlarının Desteklenmesi (KKYDP)",
+      "kurum": "Tarım ve Orman Bakanlığı",
+      "tur": "devlet",
+      "kitle": [
+        "tarimsal"
+      ],
+      "ozet": "Tarımsal işletme yatırımlarına hibe; başvuru ildeki Tarım ve Orman Müdürlüğüne yapılır, asgari 250.000 TL yatırım desteklenir. Sulama amaçlı GES'lerde IPARD/TKDK'ya alternatif kanal.",
+      "durum": "donemsel",
+      "sonKontrol": "2026-08-08",
+      "kaynakUrl": "https://www.tarimorman.gov.tr",
+      "not": "Başvuru pencereleri tebliğle açılır; güncel dönem ilanını il müdürlüğünden kontrol edin."
     }
   ]
 }

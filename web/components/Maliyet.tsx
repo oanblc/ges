@@ -50,7 +50,15 @@ export default function Maliyet() {
     const alt = kw * altBirim * carpan;
     const ust = kw * ustBirim * carpan;
     const batarya = bataryali ? bataryaKwh * BATARYA_TL_KWH : 0;
-    return { alt, ust, altBirim, ustBirim, batarya, kdvli: segment === "ticari" ? [alt * 1.2, ust * 1.2] : null };
+    return {
+      alt,
+      ust,
+      // birim maliyet gösterimi toplamla aynı çarpanı içermeli (denetim bulgusu, 8 Ağu 2026)
+      altBirim: altBirim * carpan,
+      ustBirim: ustBirim * carpan,
+      batarya,
+      kdvli: segment === "ticari" ? [alt * 1.2, ust * 1.2] : null,
+    };
   }, [segment, kw, cati, bataryali, bataryaKwh]);
 
   const segDegistir = (yeni: Segment) => {

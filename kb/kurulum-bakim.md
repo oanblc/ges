@@ -36,8 +36,8 @@ teyit: TSE HYB GES şartı yok gibi (artı puan olarak konumla); TR GES yangın 
 - OPEX planlaması: yatırımın ~%1-2/yıl (sektör kabulü — "planlama varsayımı" olarak yayınla); en büyük kalem ömürde 1-2 inverter değişimi.
 
 ## 6. Arıza/garanti
-- Ürün garantisi (10-15 yıl): malzeme/işçilik. Performans garantisi (25-30 yıl lineer): 25. yılda %80-85 güç; fiziksel hasarı kapsamaz.
-- İnverter: standart 5 yıl (uzatılabilir 10-20; mikroda 20-25); distribütör onaylı garanti belgesi iste (paralel ithalde TR garantisi olmayabilir).
+- Ürün garantisi (markaya göre 10-15 yıl, yaygın bant 12-15): malzeme/işçilik. Performans garantisi (25-30 yıl lineer): 25. yılda %80-85 güç; fiziksel hasarı kapsamaz. (8 Ağu 2026: ekipman-fiyatlar.md ile eşitlendi.)
+- İnverter: standart 5-10 yıl (ek ücretle 20'ye kadar uzatılabilir; mikroda 12-25); distribütör onaylı garanti belgesi iste (paralel ithalde TR garantisi olmayabilir). (8 Ağu 2026: ekipman-fiyatlar.md ile eşitlendi.)
 - Kurulumcu iflası: panel/inverter garantisi ÜRETİCİDE devam eder; biten şey işçilik+O&M taahhüdü → belgeler üretici/distribütör adına + seri no kaydı.
 - Hasar sigortası: 5 iş günü içinde ihbar → eksper (1 Temmuz 2026'dan beri otomatik bağımsız atama) → ekspertiz → tazminat; IEC test uyumu tazminatta önemli.
 
