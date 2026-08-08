@@ -1,6 +1,6 @@
 ---
 konu: Fatura kalem sözlüğü + şirket format farkları (parser referansı)
-guncelleme: 2026-08-06
+guncelleme: 2026-08-08
 durum: yayin (Ozan onayi 6 Agu 2026)
 teyit: reaktif sınır eşikleri kaynaklar arasında farklı — EPDK Tarifeler Yönetmeliği'nden kesinleştirilecek
 ---
@@ -52,3 +52,15 @@ Enerjisa (3 sayfa), CK Boğaziçi (2), Aydem Perakende, OEPSAŞ, Aksa, EÇE (4),
 Covolt (4), Akıllı Tarife (2), Memurlar.net, Sepaş, Gediz, Witteh, Gündem Enerji, Mullinix,
 Entegro, ENOPTIMAL, Piagrid, BirFatura, GİB e-Belge, Sopyo, BKA Hukuk, Enerji Uzmanları Derneği,
 Gazelektrik. (Erişim: 6 Ağustos 2026)
+
+## Devlet desteği satırı (mesken) — 8 Ağu 2026 eklemesi (Ozan onaylı ST araştırmasından)
+- Tedarikçi SMS/faturalarındaki "tüketim bedeli X TL olup devlet desteği ... mahsuplaştırıldıktan
+  sonra ödenecek tutar Y TL" kalıbı: devletin mesken ulusal tarifesindeki AKTİF ENERJİ bedeline
+  uyguladığı sübvansiyonun görünür gösterimi. GES'le, hibeyle veya başvuruyla İLGİSİ YOK.
+- Kapsam: mesken abonelerine OTOMATİK; başvuru gerekmez. Sınır: yıllık tüketim 4.000 kWh'i
+  (≈ aylık 333 kWh ≈ ~984 ₺ tüketim) aşan mesken destekli tarifeden çıkar, SKTT'ye geçer
+  (EPDK 30.10.2025 kararı, 2026 limiti; 2025'te 5.000 idi — eşik DARALIYOR). Ticarethane/sanayi
+  eşiği 15.000 kWh/yıl. Tesisat bazlı uygulanır.
+- Destek yalnız aktif enerjiye; dağıtım bedeli ve vergilere destek yok. Süresi: kampanya değil,
+  EPDK tarife kararlarıyla süren düzen — bitiş tarihi yok ama kapsam her yıl kısılıyor
+  (asistan: "GES'in konut gerekçesini güçlendiren trend" bağlamıyla anlatabilir).
