@@ -20,8 +20,8 @@ const YAZILAR = [
       "İzin yükünden kurulum maliyetine iki modelin 2026 karşılaştırması: $/kW bantları, maliyet dağılımı grafiği, arazi tarafının az bilinen izin adımları ve hangi durumda hangisinin mantıklı olduğu.",
     tarih: "8 Ağustos 2026",
     etiket: "Yatırım",
-    gorsel: "/kapak-arazi-cati.svg",
-    gorselAlt: "Arazi GES panel sıraları ile çatı GES'li ev karşılaştırması",
+    gorsel: "/kapak-arazi-cati.jpg",
+    gorselAlt: "Solda arazi tipi güneş santrali sıraları, sağda kiremit çatıya panel montajı",
   },
   {
     yol: "/blog/faturadaki-devlet-destegi",
