@@ -64,6 +64,33 @@ def _sse(olay, veri):
     return f"event: {olay}\ndata: {json.dumps(veri, ensure_ascii=False)}\n\n"
 
 
+# Kapı katmanı: sohbetin İLK mesajı selamlaşma/sohbet-dışıysa bilgi tabanı ve
+# denetim hiç çalışmadan ucuz modelle karşılanır (~%99 maliyet tasarrufu).
+KAPI_SISTEM = (
+    "Sen gesdanismani.com'daki GES (çatı güneş enerjisi) asistanının kapı katmanısın. "
+    "Kullanıcının mesajı güneş enerjisi, elektrik, fatura, tarife, mevzuat, kurulum, "
+    "maliyet veya hesapla İLGİLİYSE ya da EMİN DEĞİLSEN yalnızca DEVAM yaz, başka hiçbir "
+    "şey yazma. Mesaj yalnızca selamlaşma/teşekkür/hal hatır sormaysa: 1-2 cümlelik sıcak, "
+    "sade Türkçe bir karşılık ver ve güneş enerjisiyle ilgili sorusunu sormaya davet et. "
+    "Emoji kullanma; ton profesyonel ve samimi olsun. Başka konularda bilgi veya tavsiye verme."
+)
+
+
+def _kapi(istemci, soru: str):
+    """İlk mesaj sohbet-dışıysa ucuz cevabı döndürür; GES konusuysa None."""
+    try:
+        k = istemci.messages.create(
+            model="claude-haiku-4-5-20251001", max_tokens=150,
+            system=KAPI_SISTEM, messages=[{"role": "user", "content": soru[:500]}],
+        )
+        metin = "".join(b.text for b in k.content if b.type == "text").strip()
+        if metin and not metin.startswith("DEVAM"):
+            return metin
+    except Exception:
+        pass
+    return None
+
+
 def _metin(yanit):
     return "".join(b.text for b in yanit.content if b.type == "text")
 
@@ -145,6 +172,14 @@ async def sohbet_ucu(istek: Request):
         try:
             istemci = _al()
             soru = mesajlar[-1]["content"]
+            # Kapı: yalnız sohbetin ilk, ek içermeyen mesajında (takip mesajları
+            # bağlam gerektirdiğinden her zaman ana akışa gider)
+            if len(mesajlar) == 1 and isinstance(soru, str):
+                kisa = _kapi(istemci, soru)
+                if kisa:
+                    yield _sse("delta", {"t": kisa})
+                    yield _sse("bitti", {})
+                    return
             sistem = [{"type": "text", "text": SISTEM + _kb_yukle(),
                        "cache_control": {"type": "ephemeral", "ttl": "1h"}}]
             gecmis = list(mesajlar)
