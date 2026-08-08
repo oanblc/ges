@@ -1,0 +1,8 @@
+# Asistan servisi — kök bağlamdan build edilir (kb/ klasörüne ihtiyaç duyar)
+FROM python:3.12-slim
+WORKDIR /app
+COPY ajan/requirements.txt ajan/requirements.txt
+RUN pip install --no-cache-dir -r ajan/requirements.txt
+COPY ajan ajan
+COPY kb kb
+CMD ["sh", "-c", "python -m uvicorn servis:app --app-dir ajan --host 0.0.0.0 --port ${PORT:-8756}"]
