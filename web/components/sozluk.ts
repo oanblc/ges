@@ -55,6 +55,14 @@ export const SOZLUK: Record<string, string> = {
     "Mühendislik + tedarik + kurulum işini tek elden üstlenen anahtar teslim yüklenici modeli; ticari GES fiyatları genelde EPC bedeli olarak verilir.",
   "e-TUYS":
     "Sanayi ve Teknoloji Bakanlığı'nın elektronik teşvik başvuru sistemi — Yatırım Teşvik Belgesi buradan alınır.",
+  "SKTT":
+    "Son Kaynak Tedarik Tarifesi — tüketim eşiğini aşan ya da sözleşmesi biten abonelere uygulanan piyasa endeksli tarife: (PTF+YEKDEM)×katsayı. Devlet desteği içermez.",
+  "KBK":
+    "Kurulca Belirlenen Katsayı — SKTT fiyatındaki çarpan; EPDK belirler (2025: 1,0938).",
+  "serbest tüketici":
+    "Yıllık tüketimi belirlenen limitin (2026: 500 kWh) üzerindeki, tedarikçisini seçme hakkı olan abone — fiilen bütün aboneler.",
+  "kademeli tarife":
+    "Mesken tarifesinde aylık ~240 kWh'e kadar düşük (destekli), üzeri yüksek fiyat uygulanan yapı.",
   "duck curve":
     "Ördek eğrisi — güneşin bol olduğu öğle saatlerinde elektrik fiyatının düşüp akşam yükselmesiyle oluşan günlük fiyat deseni.",
 };

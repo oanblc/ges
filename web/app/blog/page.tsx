@@ -14,6 +14,16 @@ export const metadata: Metadata = {
 
 const YAZILAR = [
   {
+    yol: "/blog/faturadaki-devlet-destegi",
+    baslik: "Faturadaki 'devlet desteği' nedir, neden her yıl azalıyor?",
+    ozet:
+      "Tedarikçi mesajlarındaki 'devlet desteği mahsuplaştırıldı' satırının anlamı: kim alır, 4.000 kWh eşiği neden önemli, SKTT'ye düşmek ne demek — ve daralan destek GES kararınızı nasıl etkiler.",
+    tarih: "8 Ağustos 2026",
+    etiket: "Tarifeler",
+    gorsel: "/hero-solar.jpg",
+    gorselAlt: "Güneş panelleri ve elektrik şebekesi",
+  },
+  {
     yol: "/blog/saatlik-mahsuplasma-rehberi",
     baslik: "Saatlik mahsuplaşma adım adım: yeni dönemde işletme GES'i nasıl kazandırır?",
     ozet:
