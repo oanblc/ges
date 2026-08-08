@@ -462,13 +462,14 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .as-wrap{display:grid; grid-template-columns:1fr 330px; gap:0; min-height:600px;
   border-top:1px solid var(--border); margin-top:18px}
 @media(max-width:920px){.as-wrap{grid-template-columns:1fr}}
-.as-main{display:flex; flex-direction:column; background:var(--soft); padding:0 0 16px}
+.as-main{display:flex; flex-direction:column; background:var(--soft); padding:0 0 16px;
+  align-self:flex-start; width:100%}
 .as-side{border-left:1px solid var(--border); background:var(--surface); padding:22px 20px;
   display:flex; flex-direction:column; gap:16px}
 @media(max-width:920px){.as-side{border-left:0; border-top:1px solid var(--border)}}
 
 .chat{flex:1; padding:20px 26px 8px; display:flex; flex-direction:column; gap:14px;
-  overflow-y:auto; min-height:340px}
+  overflow-y:auto; max-height:60vh; min-height:340px}
 .as-bos{max-width:56ch; margin:auto; text-align:center; padding:24px 0}
 .as-bos p{font-size:14.5px}
 .as-ornekler{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px}

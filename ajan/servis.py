@@ -211,8 +211,16 @@ async def sohbet_ucu(istek: Request):
                 yield _sse("denetim", {"sonuc": "onay"})
             yield _sse("bitti", {})
         except Exception as e:
-            yield _sse("hata", {"mesaj": f"Beklenmeyen hata ({type(e).__name__}); "
-                                         "lütfen yeniden deneyin."})
+            metin = str(e)
+            if "credit balance" in metin or "billing" in metin.lower():
+                # API bakiyesi bitti — kullanıcıya bakım mesajı, log'a gerçek neden
+                print(f"KRİTİK: API kredi bakiyesi tükendi — {metin[:200]}", flush=True)
+                yield _sse("hata", {"mesaj": "Asistan kısa bir bakımda; lütfen biraz sonra "
+                                             "yeniden deneyin."})
+            else:
+                print(f"HATA ({type(e).__name__}): {metin[:300]}", flush=True)
+                yield _sse("hata", {"mesaj": f"Beklenmeyen hata ({type(e).__name__}); "
+                                             "lütfen yeniden deneyin."})
         finally:
             _eszamanli.release()
 
