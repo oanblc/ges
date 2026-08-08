@@ -307,6 +307,9 @@ Cevabı bilgi tabanına karşı denetle:
 5. ÖLÇÜLÜLÜK: SORUN yalnız kullanıcıyı YANILTACAK esaslı hatalar içindir. Rakam bilgi
    tabanındaki bandın içindeyse, sapma yuvarlama düzeyindeyse ya da yalnız kaynak
    adlandırması tartışmalıysa (ör. PVGIS/GEPA) SORUN yazma — ONAY ver.
+6. KAPSAM: Üslup, vurgu ve kapsam tercihleri denetim konusu DEĞİLDİR. "Şu nokta daha
+   güçlü vurgulanmalıydı", "şu kb bölümüyle ilişkilendirilmemiş", "konuya ek bilgi
+   vermiş" türü gözlemler için SORUN yazma; cevap olgusal olarak doğruysa ONAY ver.
 ÇIKTI FORMATI (başka bir şey yazma):
 - Sorun yoksa tek satır: ONAY
 - Sorun varsa: SORUN satırı + her hata için "- [iddia] → [doğrusu, kb dayanağıyla]"

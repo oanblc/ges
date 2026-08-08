@@ -94,6 +94,23 @@ def _sse(olay, veri):
     return f"event: {olay}\ndata: {json.dumps(veri, ensure_ascii=False)}\n\n"
 
 
+# Gemini, kb disiplinine Opus kadar kendiliğinden uymuyor; denetçi retlerini
+# azaltmak için sistem talimatına bu kesin kurallar eklenir (2026-08-08 vakası:
+# spekülatif sayaç detayı + fizibilite girdisi uydurma → güvenli yanıta düşüş).
+GEMINI_EK = (
+    "\n\nEK KESİN KURALLAR:\n"
+    "- Her olgusal iddiayı (rakam, kural, senaryo, teknik detay) YALNIZ bilgi "
+    "tabanına dayandır. Bilgi tabanında olmayan bir detayı doğru bilsen bile "
+    "YAZMA; gerekirse 'bu detayı danışmanımızla netleştirin' de.\n"
+    "- Fizibilite/amortisman hesabı için zorunlu girdiler yalnız şunlardır: "
+    "(1) konut mu işletme mi, (2) aylık fatura tutarı (TL), (3) il. Bu üçü "
+    "dışında zorunlu girdi isteme, bu üçünden birini atlama.\n"
+    "- Kullanıcı maliyet/hesap/amortisman SORMADIYSA cevabın sonuna fizibilite "
+    "girdisi isteği ekleme; sorusuna odaklan.\n"
+    "- Yaptırım, ceza ve risk senaryolarında yalnız bilgi tabanında yazılı "
+    "sonuçları say; kendi senaryonu ekleme.\n"
+)
+
 # Kapı katmanı: sohbetin İLK mesajı selamlaşma/sohbet-dışıysa bilgi tabanı ve
 # denetim hiç çalışmadan ucuz modelle karşılanır (~%99 maliyet tasarrufu).
 KAPI_SISTEM = (
@@ -219,7 +236,7 @@ async def sohbet_ucu(istek: Request):
                     yield _sse("delta", {"t": kisa})
                     yield _sse("bitti", {})
                     return
-            sistem = SISTEM + _kb_yukle()
+            sistem = SISTEM + GEMINI_EK + _kb_yukle()
             icerikler = [{"role": "user" if m["role"] == "user" else "model",
                           "parts": gemini.parcalar(m["content"])} for m in mesajlar]
             metin = ""
