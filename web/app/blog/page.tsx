@@ -20,8 +20,8 @@ const YAZILAR = [
       "Tedarikçi mesajlarındaki 'devlet desteği mahsuplaştırıldı' satırının anlamı: kim alır, 4.000 kWh eşiği neden önemli, SKTT'ye düşmek ne demek — ve daralan destek GES kararınızı nasıl etkiler.",
     tarih: "8 Ağustos 2026",
     etiket: "Tarifeler",
-    gorsel: "/hero-solar.jpg",
-    gorselAlt: "Güneş panelleri ve elektrik şebekesi",
+    gorsel: "/kapak-devlet-destegi.svg",
+    gorselAlt: "Devlet desteği satırı vurgulanmış elektrik faturası ve daralan destek eşiği grafiği",
   },
   {
     yol: "/blog/saatlik-mahsuplasma-rehberi",
@@ -60,7 +60,12 @@ export default function Blog() {
           {YAZILAR.map((y) => (
             <article key={y.yol} className="dk-kart blog-kart">
               <a href={y.yol} className="kapak" aria-hidden="true" tabIndex={-1}>
-                <Image src={y.gorsel} alt={y.gorselAlt} width={480} height={280} />
+                {y.gorsel.endsWith(".svg") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={y.gorsel} alt={y.gorselAlt} width={480} height={280} />
+                ) : (
+                  <Image src={y.gorsel} alt={y.gorselAlt} width={480} height={280} />
+                )}
               </a>
               <div className="dk-ust">
                 <span className="dk-kurum">{y.etiket}</span>
