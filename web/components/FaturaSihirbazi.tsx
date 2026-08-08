@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Atac, Ok } from "./Icons";
 import { Aciklamali } from "./Terim";
-import LeadKilidi from "./LeadKilidi";
 import { ILLER, MALIYET_BANT, CATI_CARPANI } from "@/data/kb";
 import { konutHesap, isletmeHesap, type HesapSonuc } from "@/lib/hesap";
 
@@ -239,7 +238,6 @@ export default function FaturaSihirbazi() {
 
       {adim === 3 && sonuc && bant && (
         <div className="fs-sonuc">
-          <LeadKilidi kaynak="Fatura analizi sihirbazı">
           <div className="roi-out fs-out">
             <div className="ro one">
               <div className="rv">
@@ -287,7 +285,6 @@ export default function FaturaSihirbazi() {
           <p className="roi-note"><Aciklamali>Satış geliri "abone grubu çıplak enerji bedeli" esasıyla, EPDK tarifesiyle hesaplanır;
             yıllık üretimin tüketiminizin 2 katını aşan kısmı bedelsiz YEKDEM'e devredilir. Sonuçlar
             ön fizibilitedir; kesin tasarım yerinde keşif ister.</Aciklamali></p>
-          </LeadKilidi>
           <div className="tool-cta">
             <a
               className="gt-btn small"

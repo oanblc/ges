@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { BATARYA_TL_KWH, CATI_CARPANI, EKIPMAN, MALIYET_BANT, MALIYET_KALEMLERI } from "@/data/kb";
 import { Ok } from "./Icons";
 import { Aciklamali } from "./Terim";
-import LeadKilidi from "./LeadKilidi";
 
 /**
  * "Ne kadar param gider?" — kurulum maliyeti tahmini.
@@ -43,8 +42,6 @@ export default function Maliyet() {
   const [cati, setCati] = useState<Cati>("kiremit");
   const [bataryali, setBataryali] = useState(false);
   const [bataryaKwh, setBataryaKwh] = useState(10);
-  // kilit ancak kullanıcı araca dokunduktan sonra devreye girer
-  const [dokundu, setDokundu] = useState(false);
 
   const s = SEG[segment];
 
@@ -99,7 +96,7 @@ export default function Maliyet() {
   return (
     <>
     <div className="b-grid">
-      <div className="roi-form" style={{ padding: 0 }} onChangeCapture={() => setDokundu(true)}>
+      <div className="roi-form" style={{ padding: 0 }}>
         <div className="rtoggle" aria-label="Sistem tipi">
           <button className={segment === "konut" ? "on" : ""} aria-pressed={segment === "konut"} onClick={() => segDegistir("konut")}>
             Konut çatısı
@@ -156,7 +153,6 @@ export default function Maliyet() {
           </div>
         )}
 
-        <LeadKilidi kaynak="Kurulum maliyeti aracı" beklet={!dokundu}>
         <div className="roi-out">
           <div className="ro">
             <div className="rv">
@@ -186,7 +182,6 @@ export default function Maliyet() {
             Yatırım Teşvik Belgesi KDV istisnası sağlayabilir — Destekler sayfasına bakın.
           </p>
         )}
-        </LeadKilidi>
       </div>
 
       <div>
