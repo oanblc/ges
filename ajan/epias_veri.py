@@ -73,7 +73,8 @@ def _sorgula(url: str, tgt: str, govde: dict) -> dict:
 
 def main() -> None:
     _env_yukle()
-    bugun = dt.date.today()
+    # Bugünün PTF'si saat 14:00'ten önce yayınlanmaz (EPİAŞ SEF1124) — bitiş her zaman DÜN.
+    bugun = dt.date.today() - dt.timedelta(days=1)
     baslangic = bugun - dt.timedelta(days=60)
     tarih = lambda g, s: f"{g.isoformat()}T{s}+03:00"
 
