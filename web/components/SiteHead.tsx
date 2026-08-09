@@ -88,6 +88,12 @@ export default function SiteHead({ aktif }: { aktif: AktifSayfa }) {
           )
         )}
       </nav>
+      <Link className="ara-dugme" href="/hesap" aria-label="Hesabım" title="Hesabım">
+        <svg className="i" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+        </svg>
+      </Link>
       <Link className="ara-dugme" href="/arama" aria-label="Sitede ara" title="Sitede ara">
         <svg className="i" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
@@ -125,6 +131,13 @@ export default function SiteHead({ aktif }: { aktif: AktifSayfa }) {
               </div>
             )
           )}
+          <Link className="mobil-ara" href="/hesap" onClick={() => setAcik(false)}>
+            <svg className="i" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+            </svg>
+            Hesabım
+          </Link>
           <Link className="mobil-ara" href="/arama" onClick={() => setAcik(false)}>
             <svg className="i" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />

@@ -1345,6 +1345,160 @@ async def yonetim_ayarlar_kaydet(istek: Request):
     return {"durum": "kaydedildi", **yeni}
 
 
+# --- üyelik ---
+UYE_DIZIN = LEAD_DIZIN.parent / "uye"
+_EPOSTA_BICIM = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+
+
+def _uye_dosya(eposta: str) -> Path:
+    import hashlib
+    return UYE_DIZIN / (hashlib.sha256(eposta.encode()).hexdigest()[:24] + ".json")
+
+
+def _sifre_ozeti(sifre: str, tuz: str = "") -> tuple[str, str]:
+    import hashlib
+    import secrets
+    tuz = tuz or secrets.token_hex(16)
+    ozet = hashlib.pbkdf2_hmac("sha256", sifre.encode(), bytes.fromhex(tuz), 200_000).hex()
+    return tuz, ozet
+
+
+def _uye_hosgeldin_html(ad: str) -> str:
+    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#2A3B36;line-height:1.6">
+<h2 style="color:#0A4A3C">Aramıza hoş geldiniz</h2>
+<p>Merhaba {ad},</p>
+<p>gesdanismani.com üyeliğiniz oluşturuldu. Artık taleplerinizi ve analizlerinizi
+tek yerden yürütebilirsiniz.</p>
+<p>İlk adım için önerilerimiz:</p>
+<ul>
+<li><a href="https://www.gesdanismani.com/simulasyon" style="color:#0A6B5C">Güneş sahası simülasyonu</a> — ilinize göre üretim ve geri ödeme</li>
+<li><a href="https://www.gesdanismani.com/fatura-analizi" style="color:#0A6B5C">Fatura analizi</a> — faturanızdan GES planınıza</li>
+<li><a href="https://www.gesdanismani.com/asistan" style="color:#0A6B5C">GES Asistanı</a> — güncel mevzuatla soru-cevap</li>
+</ul>
+<p style="margin-top:24px">Saygılarımızla,<br><b>GES Danışmanı</b><br>
+<span style="font-size:13px;color:#6B7B74">Bu ileti, gesdanismani.com'daki üyelik kaydınız üzerine gönderilmiştir.</span></p>
+</div>"""
+
+
+def _sifirla_html(ad: str, baglanti: str) -> str:
+    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#2A3B36;line-height:1.6">
+<h2 style="color:#0A4A3C">Şifre sıfırlama</h2>
+<p>Merhaba {ad},</p>
+<p>gesdanismani.com hesabınız için şifre sıfırlama isteği aldık. Yeni şifrenizi
+belirlemek için aşağıdaki bağlantıya tıklayın; bağlantı 2 saat geçerlidir.</p>
+<p><a href="{baglanti}" style="display:inline-block;background:#0A6B5C;color:#fff;
+padding:10px 22px;border-radius:8px;text-decoration:none">Şifremi sıfırla</a></p>
+<p style="font-size:13px;color:#6B7B74">Bu isteği siz yapmadıysanız bu iletiyi yok sayabilirsiniz;
+şifreniz değişmez.</p>
+</div>"""
+
+
+@app.post("/uye/kayit")
+async def uye_kayit(istek: Request):
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    ad = str(govde.get("ad", "")).strip()[:80]
+    eposta = str(govde.get("eposta", "")).strip().lower()[:120]
+    sifre = str(govde.get("sifre", ""))[:100]
+    if len(ad) < 2:
+        return JSONResponse({"hata": "Adınızı girin."}, status_code=400)
+    if not _EPOSTA_BICIM.match(eposta):
+        return JSONResponse({"hata": "Geçerli bir e-posta girin."}, status_code=400)
+    if len(sifre) < 8:
+        return JSONResponse({"hata": "Şifre en az 8 karakter olmalı."}, status_code=400)
+    dosya = _uye_dosya(eposta)
+    if dosya.exists():
+        return JSONResponse({"hata": "Bu e-posta ile zaten bir hesap var."}, status_code=409)
+    tuz, ozet = _sifre_ozeti(sifre)
+    UYE_DIZIN.mkdir(parents=True, exist_ok=True)
+    dosya.write_text(json.dumps({
+        "ad": ad, "eposta": eposta, "tuz": tuz, "ozet": ozet,
+        "kayit": datetime.datetime.now().isoformat(timespec="seconds"),
+    }, ensure_ascii=False), encoding="utf-8")
+    _eposta_arkaplan(eposta, "Aramıza hoş geldiniz — GES Danışmanı", _uye_hosgeldin_html(ad))
+    return {"durum": "ok", "ad": ad, "eposta": eposta}
+
+
+@app.post("/uye/giris")
+async def uye_giris(istek: Request):
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    eposta = str(govde.get("eposta", "")).strip().lower()[:120]
+    sifre = str(govde.get("sifre", ""))[:100]
+    dosya = _uye_dosya(eposta)
+    if not dosya.exists():
+        return JSONResponse({"hata": "E-posta ya da şifre hatalı."}, status_code=401)
+    kayit = json.loads(dosya.read_text(encoding="utf-8"))
+    _, ozet = _sifre_ozeti(sifre, kayit["tuz"])
+    import hmac as _hmac
+    if not _hmac.compare_digest(ozet, kayit["ozet"]):
+        return JSONResponse({"hata": "E-posta ya da şifre hatalı."}, status_code=401)
+    return {"durum": "ok", "ad": kayit["ad"], "eposta": eposta}
+
+
+@app.post("/uye/sifre-unut")
+async def uye_sifre_unut(istek: Request):
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    eposta = str(govde.get("eposta", "")).strip().lower()[:120]
+    dosya = _uye_dosya(eposta)
+    if dosya.exists():
+        import secrets
+        kayit = json.loads(dosya.read_text(encoding="utf-8"))
+        jeton = secrets.token_urlsafe(32)
+        kayit["sifirla_jeton"] = jeton
+        kayit["jeton_sonu"] = time.time() + 2 * 3600
+        dosya.write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+        baglanti = (f"https://www.gesdanismani.com/sifre-sifirla"
+                    f"?jeton={jeton}&eposta={eposta}")
+        _eposta_arkaplan(eposta, "Şifre sıfırlama — GES Danışmanı",
+                         _sifirla_html(kayit["ad"], baglanti))
+    # hesap var/yok bilgisi sızdırılmaz
+    return {"durum": "ok"}
+
+
+@app.post("/uye/sifre-sifirla")
+async def uye_sifre_sifirla(istek: Request):
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    eposta = str(govde.get("eposta", "")).strip().lower()[:120]
+    jeton = str(govde.get("jeton", ""))[:100]
+    sifre = str(govde.get("sifre", ""))[:100]
+    if len(sifre) < 8:
+        return JSONResponse({"hata": "Şifre en az 8 karakter olmalı."}, status_code=400)
+    dosya = _uye_dosya(eposta)
+    if not dosya.exists():
+        return JSONResponse({"hata": "Bağlantı geçersiz."}, status_code=400)
+    kayit = json.loads(dosya.read_text(encoding="utf-8"))
+    import hmac as _hmac
+    if (not jeton or not kayit.get("sifirla_jeton")
+            or not _hmac.compare_digest(jeton, kayit.get("sifirla_jeton", ""))
+            or time.time() > float(kayit.get("jeton_sonu", 0))):
+        return JSONResponse({"hata": "Bağlantı geçersiz ya da süresi dolmuş."}, status_code=400)
+    tuz, ozet = _sifre_ozeti(sifre)
+    kayit.update(tuz=tuz, ozet=ozet)
+    kayit.pop("sifirla_jeton", None)
+    kayit.pop("jeton_sonu", None)
+    dosya.write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    return {"durum": "ok", "ad": kayit["ad"], "eposta": eposta}
+
+
 @app.post("/lead")
 async def lead_ucu(istek: Request):
     ip = _gercek_ip(istek)

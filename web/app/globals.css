@@ -746,6 +746,36 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .teklif-rapor table{border-collapse:collapse; margin:10px 0; font-size:13px}
 .teklif-rapor td,.teklif-rapor th{border:1px solid #E9ECE5; padding:7px 11px; text-align:left}
 
+/* ---------- üyelik ---------- */
+.uye-sayfa{display:flex; justify-content:center; padding:48px 20px 70px; background:var(--soft)}
+.uye-kutu{width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border);
+  border-radius:18px; padding:30px 28px; display:flex; flex-direction:column; gap:16px;
+  box-shadow:0 14px 40px rgba(0,40,35,.07)}
+.uye-kutu.genis{max-width:640px}
+.uye-kutu h1{font-size:22px; margin:0; color:var(--title)}
+.uye-kutu h2{font-size:15px; margin:10px 0 0; color:var(--title)}
+.uye-not{margin:0; font-size:13.5px; color:var(--text); line-height:1.55}
+.uye-kutu label{display:flex; flex-direction:column; gap:6px; font-size:13.5px;
+  font-weight:600; color:var(--title)}
+.uye-kutu label input{border:1px solid var(--border); border-radius:11px; padding:11px 14px;
+  font:inherit; font-size:15px; background:var(--soft); color:var(--title)}
+.uye-kutu label input:focus{outline:none; border-color:var(--theme)}
+.uye-kutu label small{font-weight:400; color:var(--text); font-size:12px}
+.uye-kutu .gt-btn{justify-content:center}
+.uye-hata{margin:0; font-size:13.5px; color:#A03535}
+.uye-bilgi{margin:0; font-size:13.5px; color:var(--theme)}
+.uye-alt{display:flex; flex-direction:column; gap:8px; font-size:13.5px; color:var(--text);
+  border-top:1px solid var(--border); padding-top:14px}
+.uye-alt a{color:var(--theme); font-weight:600}
+.hesap-araclar{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px}
+.hesap-arac{display:flex; flex-direction:column; gap:3px; border:1px solid var(--border);
+  border-radius:13px; padding:13px 16px; text-decoration:none}
+.hesap-arac:hover{border-color:var(--theme)}
+.hesap-arac b{color:var(--title); font-size:14px}
+.hesap-arac span{color:var(--text); font-size:12.5px}
+.uye-cikis{border:none; background:none; color:#A03535; font:inherit; font-size:13.5px;
+  font-weight:600; cursor:pointer; text-align:left; padding:0}
+
 /* ---------- arama sayfası ---------- */
 .arama-govde{max-width:760px; margin:0 auto; padding:8px 20px 60px}
 .arama-kutu{display:flex; align-items:center; gap:12px; background:var(--surface);
