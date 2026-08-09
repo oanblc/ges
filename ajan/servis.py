@@ -786,8 +786,14 @@ async def yonetim_ozet(istek: Request):
     if _yetkisiz(istek):
         return JSONResponse({"hata": "yetkisiz"}, status_code=401)
     bugun = time.strftime("%Y-%m-%d")
-    with _kilit:
-        gunluk = dict(_gunluk)
+    # Sayaçlar bellek yerine kalıcı kayıtlardan: deploy'lar sayacı sıfırlamasın
+    try:
+        log_dosya = LOG_DIZIN / f"sohbet-{bugun}.jsonl"
+        sohbet_sayisi = sum(1 for _ in log_dosya.open(encoding="utf-8")) if log_dosya.exists() else 0
+    except Exception:
+        sohbet_sayisi = 0
+    lead_sayisi = sum(1 for d in _lead_dosyalar() if d.stem.startswith(bugun))
+    gunluk = {"gun": bugun, "sohbet": sohbet_sayisi, "lead": lead_sayisi}
     dosyalar = _lead_dosyalar()
     veriler = {}
     for ad, dosya in (("piyasa", "piyasa-canli"), ("denetim", "denetim"),
@@ -811,7 +817,7 @@ async def yonetim_ozet(istek: Request):
         except Exception:
             continue
     return {
-        "gun": gunluk if gunluk.get("gun") == bugun else {"gun": bugun, "sohbet": 0, "lead": 0},
+        "gun": gunluk,
         "tavanlar": {"sohbet": GUNLUK_SOHBET_TAVANI, "lead": GUNLUK_LEAD_TAVANI,
                      "saatlik": SAAT_LIMIT},
         "talep": {"toplam": len(dosyalar), "bekleyen": bekleyen},
