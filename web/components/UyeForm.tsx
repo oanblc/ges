@@ -20,10 +20,12 @@ export default function UyeForm({ tur }: { tur: Tur }) {
   const [bekliyor, setBekliyor] = useState(false);
   const [mesaj, setMesaj] = useState("");
   const [tamam, setTamam] = useState(false);
+  const [donus, setDonus] = useState("");
 
   useEffect(() => {
-    if (tur !== "sifre-sifirla") return;
     const p = new URLSearchParams(window.location.search);
+    setDonus(p.get("donus") || "");
+    if (tur !== "sifre-sifirla") return;
     setJeton(p.get("jeton") || "");
     setEposta(p.get("eposta") || "");
   }, [tur]);
@@ -54,7 +56,7 @@ export default function UyeForm({ tur }: { tur: Tur }) {
       );
       return;
     }
-    window.location.href = "/hesap";
+    window.location.href = donus && donus.startsWith("/") ? donus : "/hesap";
   }
 
   return (
@@ -124,13 +126,13 @@ export default function UyeForm({ tur }: { tur: Tur }) {
           <>
             <Link href="/sifremi-unuttum">Şifremi unuttum</Link>
             <span>
-              Hesabınız yok mu? <Link href="/kayit">Kayıt olun</Link>
+              Hesabınız yok mu? <Link href={donus ? `/kayit?donus=${encodeURIComponent(donus)}` : "/kayit"}>Kayıt olun</Link>
             </span>
           </>
         )}
         {tur === "kayit" && (
           <span>
-            Zaten üye misiniz? <Link href="/giris">Giriş yapın</Link>
+            Zaten üye misiniz? <Link href={donus ? `/giris?donus=${encodeURIComponent(donus)}` : "/giris"}>Giriş yapın</Link>
           </span>
         )}
         {(tur === "sifre-unut" || tur === "sifre-sifirla") && (

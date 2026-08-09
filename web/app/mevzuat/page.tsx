@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import MevzuatArama from "@/components/MevzuatArama";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
+import UyeKilit from "@/components/UyeKilit";
+import { uyeOku } from "@/lib/uye";
 import mevzuat from "@/data/mevzuat.json";
 import { SunDolu } from "@/components/Icons";
 
@@ -19,7 +21,8 @@ const tarihTr = (iso: string) =>
     year: "numeric",
   });
 
-export default function Mevzuat() {
+export default async function Mevzuat() {
+  const uye = await uyeOku();
   return (
     <div className="wrap">
       <SiteHead aktif="mevzuat" />
@@ -40,7 +43,7 @@ export default function Mevzuat() {
         </div>
 
         <section className="dk-bolum" style={{ paddingBottom: 48 }} aria-label="Mevzuat kütüphanesi">
-          <MevzuatArama />
+          {uye ? <MevzuatArama /> : <UyeKilit donus="/mevzuat" />}
         </section>
       </main>
       <SiteFoot notu="Özetler bilgilendirme amaçlıdır; resmî metin Resmî Gazete'dir." />

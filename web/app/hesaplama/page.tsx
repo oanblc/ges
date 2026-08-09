@@ -3,6 +3,8 @@ import Batarya from "@/components/Batarya";
 import Maliyet from "@/components/Maliyet";
 import Roi from "@/components/Roi";
 import SiteHead from "@/components/SiteHead";
+import UyeKilit from "@/components/UyeKilit";
+import { uyeOku } from "@/lib/uye";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import { Ayarlar, Grafik, Kalkan, SunDolu } from "@/components/Icons";
@@ -14,7 +16,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hesaplama" },
 };
 
-export default function Hesaplama() {
+export default async function Hesaplama() {
+  const uye = await uyeOku();
   return (
     <div className="wrap">
       <SiteHead aktif="hesaplama" />
@@ -65,7 +68,7 @@ export default function Hesaplama() {
             Ne kadar para gider? Bantlar 2026 piyasa tekliflerinden ve EPC fiyat listelerinden
             derlenmiştir; kesin rakam yerinde keşifle netleşir.
           </p>
-          <Maliyet />
+          {uye ? <Maliyet /> : <UyeKilit donus="/hesaplama" />}
         </section>
 
         <section className="tool" id="roi" aria-labelledby="roiBaslik">
@@ -75,7 +78,7 @@ export default function Hesaplama() {
           <p className="tanim">
             Faturanız ve ilinize göre önerilen kapasite, tahmini yatırım ve geri ödeme süresi.
           </p>
-          <Roi />
+          {uye && <Roi />}
         </section>
 
         <section className="tool" id="batarya" aria-labelledby="batBaslik">
@@ -86,7 +89,7 @@ export default function Hesaplama() {
             GES'inize batarya eklemek mantıklı mı, kaç kWh gerekir? Konutta akşam tüketiminizden
             hesaplayın; işletmede sayaç profilinizle asistana hesaplatın.
           </p>
-          <Batarya />
+          {uye && <Batarya />}
         </section>
       </div>
 

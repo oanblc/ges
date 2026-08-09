@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import PoliceSihirbazi from "@/components/PoliceSihirbazi";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
+import UyeKilit from "@/components/UyeKilit";
+import { uyeOku } from "@/lib/uye";
 import { SunDolu } from "@/components/Icons";
 
 export const metadata: Metadata = {
@@ -11,7 +13,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/police-analizi" },
 };
 
-export default function PoliceAnalizi() {
+export default async function PoliceAnalizi() {
+  const uye = await uyeOku();
   return (
     <div className="wrap">
       <SiteHead aktif="police" />
@@ -35,7 +38,7 @@ export default function PoliceAnalizi() {
 
       <div className="calc-grid">
         <section className="tool genis" aria-label="Poliçe sihirbazı">
-          <PoliceSihirbazi />
+          {uye ? <PoliceSihirbazi /> : <UyeKilit donus="/police-analizi" />}
         </section>
       </div>
 

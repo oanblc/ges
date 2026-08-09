@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import FaturaSihirbazi from "@/components/FaturaSihirbazi";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
+import UyeKilit from "@/components/UyeKilit";
+import { uyeOku } from "@/lib/uye";
 import { META } from "@/data/kb";
 import { SunDolu } from "@/components/Icons";
 
@@ -12,7 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/fatura-analizi" },
 };
 
-export default function FaturaAnalizi() {
+export default async function FaturaAnalizi() {
+  const uye = await uyeOku();
   return (
     <div className="wrap">
       <SiteHead aktif="fatura" />
@@ -36,7 +39,7 @@ export default function FaturaAnalizi() {
 
       <div className="calc-grid">
         <section className="tool genis" aria-label="Fatura sihirbazı">
-          <FaturaSihirbazi />
+          {uye ? <FaturaSihirbazi /> : <UyeKilit donus="/fatura-analizi" />}
         </section>
       </div>
 

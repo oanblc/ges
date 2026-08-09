@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import TeklifSihirbazi from "@/components/TeklifSihirbazi";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
+import UyeKilit from "@/components/UyeKilit";
+import { uyeOku } from "@/lib/uye";
 import { SunDolu } from "@/components/Icons";
 
 export const metadata: Metadata = {
@@ -11,7 +13,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/teklif-analizi" },
 };
 
-export default function TeklifAnalizi() {
+export default async function TeklifAnalizi() {
+  const uye = await uyeOku();
   return (
     <div className="wrap">
       <SiteHead aktif="teklif" />
@@ -35,7 +38,7 @@ export default function TeklifAnalizi() {
 
       <div className="calc-grid">
         <section className="tool genis" aria-label="Teklif sihirbazı">
-          <TeklifSihirbazi />
+          {uye ? <TeklifSihirbazi /> : <UyeKilit donus="/teklif-analizi" />}
         </section>
       </div>
 

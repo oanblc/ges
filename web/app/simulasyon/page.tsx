@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Simulasyon from "@/components/Simulasyon";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
+import UyeKilit from "@/components/UyeKilit";
+import { uyeOku } from "@/lib/uye";
 import { SunDolu } from "@/components/Icons";
 
 export const metadata: Metadata = {
@@ -11,7 +13,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/simulasyon" },
 };
 
-export default function SimulasyonSayfa() {
+export default async function SimulasyonSayfa() {
+  const uye = await uyeOku();
   return (
     <div className="wrap">
       <SiteHead aktif="simulasyon" />
@@ -34,7 +37,7 @@ export default function SimulasyonSayfa() {
 
       <div className="calc-grid">
         <section className="tool genis" aria-label="Güneş sahası simülasyonu">
-          <Simulasyon />
+          {uye ? <Simulasyon /> : <UyeKilit donus="/simulasyon" />}
         </section>
       </div>
 

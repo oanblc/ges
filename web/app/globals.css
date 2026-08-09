@@ -747,6 +747,14 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .teklif-rapor td,.teklif-rapor th{border:1px solid #E9ECE5; padding:7px 11px; text-align:left}
 
 /* ---------- üyelik ---------- */
+.uye-kilit{max-width:520px; margin:26px auto; background:var(--surface); border:1px solid var(--border);
+  border-radius:18px; padding:38px 34px; text-align:center; display:flex; flex-direction:column;
+  align-items:center; gap:10px; box-shadow:0 14px 40px rgba(0,40,35,.07)}
+.uye-kilit .kilit-ikon{width:44px; height:44px; color:var(--theme)}
+.uye-kilit h2{margin:0; font-size:19px; color:var(--title)}
+.uye-kilit p{margin:0; font-size:14px; color:var(--text); line-height:1.6; max-width:380px}
+.kilit-dugmeler{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; justify-content:center}
+
 .uye-sayfa{display:flex; justify-content:center; padding:48px 20px 70px; background:var(--soft)}
 .uye-kutu{width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border);
   border-radius:18px; padding:30px 28px; display:flex; flex-direction:column; gap:16px;
