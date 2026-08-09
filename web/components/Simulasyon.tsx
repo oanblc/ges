@@ -513,6 +513,13 @@ export default function Simulasyon() {
               </g>
               <text x="668" y="452" textAnchor="middle" fontSize="13" fill="#5E6660" fontWeight="600" id="araziEtiket">Tesis</text>
             </g>
+            <g id="batKutu" transform="translate(212 342)" opacity="0">
+              <path d="M0 18 L34 2 L68 18 L34 34 Z" fill="#0A6B5C" stroke="#004540" strokeWidth="1.6" strokeLinejoin="round" />
+              <path d="M0 18 L0 52 L34 68 L34 34 Z" fill="#08574B" stroke="#004540" strokeWidth="1.6" strokeLinejoin="round" />
+              <path d="M68 18 L68 52 L34 68 L34 34 Z" fill="#063F37" stroke="#004540" strokeWidth="1.6" strokeLinejoin="round" />
+              <rect id="batSeviye" x="8" y="40" width="0" height="8" rx="3" transform="skewY(24)" fill="#FFE175" />
+              <text x="34" y="88" textAnchor="middle" fontSize="12" fill="#5E6660" fontWeight="600">Batarya</text>
+            </g>
             {/* ışın demeti */}
             <g id="isinDemeti" stroke="#E8C43C" strokeWidth="2.5" strokeLinecap="round" opacity="0" fill="none"></g>
             <g id="parcaciklar"></g>
