@@ -305,62 +305,167 @@ export default function Simulasyon() {
       panelYaz({ u: 0, t: 0, satis: 0, alis: 0, bat: 0 },
         { uretim: 0, oz: 0, satis: 0, alis: 0, batVer: 0, kazanc: 0 });
     }
+    type Donem = { uretim: number; tuketim: number; oz: number; satis: number; alis: number;
+      batVer: number; kazanc: number; gessiz: number; gesli: number };
+    function donemHesabi(mevsim: "kis" | "bahar" | "yaz", gunSayisi: number, fi: { alis: number; satis: number }): Donem {
+      const eskiMevsim = S.mevsim; S.mevsim = mevsim;
+      const gun = gunHesabi(1);
+      S.mevsim = eskiMevsim;
+      const t = toplamHesap(24, gun);
+      const satisDegeri = S.grup === "mesken" ? fi.alis * 0.85 : fi.satis;
+      const d: Donem = {
+        uretim: t.uretim * gunSayisi, tuketim: (S.tuketim / 30) * gunSayisi,
+        oz: (t.oz + t.batVer) * gunSayisi, satis: t.satis * gunSayisi, alis: t.alis * gunSayisi,
+        batVer: t.batVer * gunSayisi, kazanc: t.kazanc * gunSayisi, gessiz: 0, gesli: 0,
+      };
+      d.gessiz = d.tuketim * fi.alis;
+      d.gesli = Math.max(0, d.alis * fi.alis - d.satis * satisDegeri);
+      return d;
+    }
     function karneGoster() {
       const f = (v: number) => Math.round(v).toLocaleString("tr-TR");
-      const tlB = (v: number) => v.toFixed(2).replace(".", ",");
       const fi = fiyatlar();
       const pb = panelBilgi();
       const binf = (v: number) => v >= 1_000_000
         ? (v / 1_000_000).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " M₺"
         : Math.round(v / 1000).toLocaleString("tr-TR") + " bin ₺";
+      const satisDegeri = S.grup === "mesken" ? fi.alis * 0.85 : fi.satis;
 
-      // Bugün: oynatılan gün (seçili hava). Ay/yıl: ortalama koşullar (hava=1.0).
-      const bugun = toplamHesap(24);
-      const ortalamaGun = gunHesabi(1);
-      const ort = toplamHesap(24, ortalamaGun);
-      const ay = { uretim: ort.uretim * 30, satis: ort.satis * 30, alis: ort.alis * 30, kazanc: ort.kazanc * 30 };
-      const yillikUretim = S.guc * ILLER[S.il].verim * (S.tip === "arazi" ? ARAZI : 1);
-      const ozOran = ort.uretim ? (ort.oz + ort.batVer) / ort.uretim : 0.7;
-      const yillikKazanc = yillikUretim * (ozOran * fi.alis + (1 - ozOran) * fi.satis);
+      // Bugün: oynatılan gün. Aylık: seçili mevsimin tipik günü ×30.
+      // Yıllık: mevsim ağırlıklı (kış 90 + geçiş 183 + yaz 92 gün, her biri kendi PVGIS profiliyle).
+      const bt = toplamHesap(24);
+      const bugun: Donem = {
+        uretim: bt.uretim, tuketim: S.tuketim / 30, oz: bt.oz + bt.batVer, satis: bt.satis,
+        alis: bt.alis, batVer: bt.batVer, kazanc: bt.kazanc,
+        gessiz: (S.tuketim / 30) * fi.alis,
+        gesli: Math.max(0, bt.alis * fi.alis - bt.satis * satisDegeri),
+      };
+      const ay = donemHesabi(S.mevsim, 30, fi);
+      const kisY = donemHesabi("kis", 90, fi), baharY = donemHesabi("bahar", 183, fi),
+        yazY = donemHesabi("yaz", 92, fi);
+      const yil: Donem = { uretim: 0, tuketim: 0, oz: 0, satis: 0, alis: 0, batVer: 0,
+        kazanc: 0, gessiz: 0, gesli: 0 };
+      for (const d of [kisY, baharY, yazY]) {
+        yil.uretim += d.uretim; yil.tuketim += d.tuketim; yil.oz += d.oz; yil.satis += d.satis;
+        yil.alis += d.alis; yil.batVer += d.batVer; yil.kazanc += d.kazanc;
+        yil.gessiz += d.gessiz; yil.gesli += d.gesli;
+      }
       const seg = S.grup === "mesken" ? "konut" : "ticari";
       const bantlar = MALIYET_BANT[seg as keyof typeof MALIYET_BANT] as ReadonlyArray<readonly [number, number, number]>;
       let alt = bantlar[bantlar.length - 1][1], ust = bantlar[bantlar.length - 1][2];
       for (const [maks, a, u] of bantlar) if (S.guc <= maks) { alt = a; ust = u; break; }
-      const bugunOz = bugun.oz + bugun.batVer;
 
+      const oran = (d: Donem) => (d.uretim ? Math.round((d.oz / d.uretim) * 100) : 0);
+      const dusus = (d: Donem) => (d.gessiz ? Math.max(0, Math.min(100, Math.round((1 - d.gesli / d.gessiz) * 100))) : 0);
+      const emanetAd = S.grup === "mesken" ? "Şebekeye emanet" : "Şebekeye satış";
+      const satirlar: Array<[string, (d: Donem) => string]> = [
+        ["Üretim (kWh)", (d) => f(d.uretim)],
+        ["Tüketim (kWh)", (d) => f(d.tuketim)],
+        ["Öz tüketim (kWh)", (d) => `${f(d.oz)} · %${oran(d)}`],
+        ...(S.batarya ? [["Bataryadan beslenen (kWh)", (d: Donem) => f(d.batVer)] as [string, (d: Donem) => string]] : []),
+        [emanetAd + " (kWh)", (d) => f(d.satis)],
+        ["Şebekeden alış (kWh)", (d) => f(d.alis)],
+        ["GES'siz fatura (₺)", (d) => "≈ " + f(d.gessiz)],
+        ["GES ile fatura (₺)", (d) => "≈ " + f(d.gesli)],
+        ["Fatura düşüşü", (d) => "%" + dusus(d)],
+        ["Net kazanç (₺)", (d) => "+" + f(d.kazanc)],
+      ];
       el("sonucBaslik").textContent =
         `${S.guc.toLocaleString("tr-TR")} kWp · ${pb.adet.toLocaleString("tr-TR")} panel (${pb.alan.toLocaleString("tr-TR")} m²) · ${S.il}`;
-      el("sonucGun").innerHTML = `
-        <h4>Bugün <small>(oynattığın ${({ kis: "kış", bahar: "bahar", yaz: "yaz" } as Record<string, string>)[S.mevsim]} günü, ${({ acik: "açık", parcali: "ortalama", bulutlu: "bulutlu" } as Record<string, string>)[S.hava]} hava)</small></h4>
-        <div><span>Üretim</span><b>${f(bugun.uretim)} kWh</b></div>
-        <div><span>Öz tüketim</span><b>%${bugun.uretim ? Math.round((bugunOz / bugun.uretim) * 100) : 0} · ${f(bugunOz)} kWh</b></div>
-        <div><span>Şebekeye ${S.grup === "mesken" ? "emanet" : "satış"}</span><b>${f(bugun.satis)} kWh</b></div>
-        <div><span>Şebekeden alış</span><b>${f(bugun.alis)} kWh</b></div>
-        <div class="vurgu"><span>Cebinde kalan</span><b>+${f(bugun.kazanc)} ₺</b></div>
-        <p class="dip">Önlenen fatura ${f(bugunOz)} kWh × ${tlB(fi.alis)} ₺ + ${S.grup === "mesken" ? "mahsup emaneti" : "satış"} ${f(bugun.satis)} kWh × ${tlB(S.grup === "mesken" ? fi.alis * 0.85 : fi.satis)} ₺</p>`;
-      const gessizFatura = S.tuketim * fi.alis;
-      const satisDegeri = S.grup === "mesken" ? fi.alis * 0.85 : fi.satis;
-      const gesliFatura = Math.max(0, ay.alis * fi.alis - ay.satis * satisDegeri);
-      const dusus = gessizFatura ? Math.round((1 - gesliFatura / gessizFatura) * 100) : 0;
-      el("sonucAy").innerHTML = `
-        <h4>Aylık <small>(${({ kis: "kış", bahar: "bahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim]} ayı, ortalama hava)</small></h4>
-        <div><span>Üretim</span><b>${f(ay.uretim)} kWh</b></div>
-        <div><span>Tüketimin</span><b>${f(S.tuketim)} kWh</b></div>
-        <div><span>GES'siz fatura</span><b>≈ ${f(gessizFatura)} ₺</b></div>
-        <div><span>GES ile fatura</span><b>≈ ${f(gesliFatura)} ₺${gesliFatura === 0 ? " (alacaklısın)" : ""}</b></div>
-        <div class="vurgu"><span>Fatura düşüşü</span><b>%${Math.max(0, Math.min(100, dusus))}</b></div>
-        <p class="dip">Mevsimin tipik günü × 30; satış/mahsup geliri faturadan düşülmüş hâli. Hava seçimi yalnız oynatılan günü etkiler.</p>`;
-      el("sonucYil").innerHTML = `
-        <h4>Yıllık <small>(4 mevsim, gerçek PVGIS verimi)</small></h4>
-        <div><span>Üretim</span><b>≈ ${f(yillikUretim)} kWh</b></div>
-        <div><span>Yıllık kazanç</span><b>≈ ${f(yillikKazanc)} ₺</b></div>
-        <div><span>Kurulum maliyeti</span><b>${binf(S.guc * alt)} – ${binf(S.guc * ust)}</b></div>
-        <div class="vurgu"><span>Kaba geri ödeme</span><b>≈ ${(S.guc * alt / yillikKazanc).toFixed(1).replace(".", ",")} – ${(S.guc * ust / yillikKazanc).toFixed(1).replace(".", ",")} yıl</b></div>
-        <p class="dip">Güncel kb maliyet bantları; kesin rakam için Detaylı Hesap.</p>`;
+      const havaAd = ({ acik: "açık", parcali: "ortalama", bulutlu: "bulutlu" } as Record<string, string>)[S.hava];
+      const mevsimAd = ({ kis: "kış", bahar: "bahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim];
+      el("sonucTablo").innerHTML = `
+        <thead><tr><th>Kalem</th><th>Bugün<small>${mevsimAd} günü, ${havaAd}</small></th>
+        <th>Aylık<small>${mevsimAd} ayı, ort. hava</small></th>
+        <th>Yıllık<small>mevsim ağırlıklı</small></th></tr></thead>
+        <tbody>${satirlar.map(([ad, fn]) =>
+          `<tr class="${ad.startsWith("Net") ? "vurgu" : ""}"><td>${ad}</td><td>${fn(bugun)}</td><td>${fn(ay)}</td><td>${fn(yil)}</td></tr>`).join("")}
+        </tbody>`;
+      el("yatirimOzet").innerHTML = `
+        <div><span>Tahmini kurulum maliyeti</span><b>${binf(S.guc * alt)} – ${binf(S.guc * ust)}</b></div>
+        <div><span>Kaba geri ödeme</span><b>≈ ${(S.guc * alt / yil.kazanc).toFixed(1).replace(".", ",")} – ${(S.guc * ust / yil.kazanc).toFixed(1).replace(".", ",")} yıl</b></div>
+        <div><span>Yıllık özgül üretim (PVGIS)</span><b>${f(ILLER[S.il].verim)} kWh/kWp</b></div>`;
+      sonRapor = { bugun, ay, yil, kisY, baharY, yazY, pb, fi, alt, ust, satirlar };
       const kutu = el("sonuclar");
       kutu.hidden = false;
       kutu.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+
+    // ---- PDF raporu: yeni pencerede biçimli rapor + yazdırma (PDF olarak kaydet) ----
+    let sonRapor: { bugun: Donem; ay: Donem; yil: Donem; kisY: Donem; baharY: Donem; yazY: Donem;
+      pb: { adet: number; alan: number }; fi: { alis: number; satis: number };
+      alt: number; ust: number; satirlar: Array<[string, (d: Donem) => string]> } | null = null;
+    function raporIndir() {
+      if (!sonRapor) return;
+      const { bugun, ay, yil, kisY, baharY, yazY, pb, fi, alt, ust, satirlar } = sonRapor;
+      const f = (v: number) => Math.round(v).toLocaleString("tr-TR");
+      const tlB = (v: number) => v.toFixed(2).replace(".", ",");
+      const bugunTarih = new Date().toLocaleDateString("tr-TR");
+      const grupAd = ({ mesken: "Mesken", ticarethane: "Ticarethane", sanayi: "Sanayi" } as Record<string, string>)[S.grup];
+      const mevsimAd = ({ kis: "kış", bahar: "bahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim];
+      const havaAd = ({ acik: "açık", parcali: "ortalama", bulutlu: "bulutlu" } as Record<string, string>)[S.hava];
+      const saatSatir = saatler.map((s) =>
+        `<tr><td>${String(s.h).padStart(2, "0")}:00</td><td>${s.u.toFixed(1)}</td><td>${s.t.toFixed(1)}</td>
+         <td>${s.oz.toFixed(1)}</td><td>${s.satis.toFixed(1)}</td><td>${s.alis.toFixed(1)}</td></tr>`).join("");
+      const mahsupKural = S.grup === "mesken"
+        ? "Mesken aboneliğinde AYLIK mahsuplaşma uygulanır: ay içindeki toplam veriş ile çekiş ay sonunda netleştirilir; fazla üretim çıplak enerji bedeliyle değerlendirilir."
+        : "İşletme aboneliklerinde 1 Mayıs 2026 itibarıyla SAATLİK mahsuplaşma uygulanır: her saat kendi içinde netleşir; o saatteki fazla üretim çıplak enerji bedelinden satılır, eksik vergili tarifeden alınır.";
+      const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8">
+<title>GES Simülasyon Raporu — ${S.il}</title>
+<style>
+  body{font-family:"Avenir Next","Segoe UI",system-ui,sans-serif; color:#252525; margin:34px; font-size:12.5px; line-height:1.5}
+  h1{font-size:21px; color:#004540; margin:0 0 2px}
+  .alt{color:#5E6660; margin-bottom:18px; font-size:12px}
+  h2{font-size:14px; color:#004540; margin:20px 0 8px; border-bottom:2px solid #004540; padding-bottom:3px}
+  table{width:100%; border-collapse:collapse; font-size:11.5px}
+  th,td{border:1px solid #D9DDD4; padding:5px 8px; text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{background:#F0F3EC; color:#004540}
+  tr.vurgu td{font-weight:700; background:#F6FBF4}
+  .iki{display:flex; gap:26px} .iki>div{flex:1}
+  .kutu{background:#F6F8F3; border:1px solid #E2E5DE; border-radius:8px; padding:10px 14px; margin:8px 0}
+  .not{font-size:10.5px; color:#5E6660; margin-top:16px; border-top:1px solid #D9DDD4; padding-top:10px}
+  @page{margin:14mm}
+</style></head><body>
+<h1>Güneş Sahası Simülasyon Raporu</h1>
+<div class="alt">gesdanismani.com · ${bugunTarih} · Bu rapor eğitim amaçlı simülasyon çıktısıdır.</div>
+<h2>1. Sistem Bilgileri</h2>
+<div class="kutu">
+  <b>${S.guc.toLocaleString("tr-TR")} kWp</b> ${S.tip === "cati" ? "çatı" : "arazi"} GES · ${S.il} ·
+  ${grupAd} aboneliği (${S.gerilim}) · ≈ ${pb.adet.toLocaleString("tr-TR")} adet ${EKIPMAN.panelWp} Wp panel,
+  ${pb.alan.toLocaleString("tr-TR")} m² panel alanı${S.batarya ? ` · ${S.batarya} kWh batarya` : ""} ·
+  Aylık tüketim ${S.tuketim.toLocaleString("tr-TR")} kWh (${({ gunduz: "gündüz yoğun", aksam: "akşam yoğun", vardiya: "7/24" } as Record<string, string>)[S.profil]} profil)
+</div>
+<h2>2. Özet Karne</h2>
+<table><thead><tr><th>Kalem</th><th>Bugün (${mevsimAd}, ${havaAd})</th><th>Aylık (${mevsimAd})</th><th>Yıllık (mevsim ağırlıklı)</th></tr></thead>
+<tbody>${satirlar.map(([ad, fn]) => `<tr class="${ad.startsWith("Net") ? "vurgu" : ""}"><td>${ad}</td><td>${fn(bugun)}</td><td>${fn(ay)}</td><td>${fn(yil)}</td></tr>`).join("")}</tbody></table>
+<h2>3. Oynatılan Günün Saatlik Dökümü (${mevsimAd} günü, ${havaAd} hava)</h2>
+<p>${mahsupKural}</p>
+<table><thead><tr><th>Saat</th><th>Üretim (kW)</th><th>Tüketim (kW)</th><th>Öz tüketim (kW)</th><th>${S.grup === "mesken" ? "Emanet" : "Satış"} (kW)</th><th>Alış (kW)</th></tr></thead>
+<tbody>${saatSatir}</tbody></table>
+<h2>4. Mevsimlere Göre Yıllık Dağılım</h2>
+<table><thead><tr><th>Dönem</th><th>Üretim (kWh)</th><th>Öz tüketim (kWh)</th><th>${S.grup === "mesken" ? "Emanet" : "Satış"} (kWh)</th><th>Alış (kWh)</th><th>Net kazanç (₺)</th></tr></thead><tbody>
+<tr><td>Kış (90 gün)</td><td>${f(kisY.uretim)}</td><td>${f(kisY.oz)}</td><td>${f(kisY.satis)}</td><td>${f(kisY.alis)}</td><td>+${f(kisY.kazanc)}</td></tr>
+<tr><td>Bahar/Sonbahar (183 gün)</td><td>${f(baharY.uretim)}</td><td>${f(baharY.oz)}</td><td>${f(baharY.satis)}</td><td>${f(baharY.alis)}</td><td>+${f(baharY.kazanc)}</td></tr>
+<tr><td>Yaz (92 gün)</td><td>${f(yazY.uretim)}</td><td>${f(yazY.oz)}</td><td>${f(yazY.satis)}</td><td>${f(yazY.alis)}</td><td>+${f(yazY.kazanc)}</td></tr>
+<tr class="vurgu"><td>Yıl toplamı</td><td>${f(yil.uretim)}</td><td>${f(yil.oz)}</td><td>${f(yil.satis)}</td><td>${f(yil.alis)}</td><td>+${f(yil.kazanc)}</td></tr>
+</tbody></table>
+<h2>5. Yatırım Özeti</h2>
+<div class="iki"><div class="kutu">Tahmini kurulum maliyeti<br><b>${(S.guc * alt / 1e6).toFixed(1).replace(".", ",")} – ${(S.guc * ust / 1e6).toFixed(1).replace(".", ",")} M₺</b> aralığı (güncel piyasa bantları)</div>
+<div class="kutu">Kaba geri ödeme süresi<br><b>≈ ${(S.guc * alt / yil.kazanc).toFixed(1).replace(".", ",")} – ${(S.guc * ust / yil.kazanc).toFixed(1).replace(".", ",")} yıl</b> (yıllık net kazançla)</div></div>
+<div class="not"><b>Varsayımlar ve kaynaklar:</b> Üretim profilleri PVGIS v5.2 (${S.il}, 30° eğim, %14 sistem kaybı, 2020 saatlik serisi);
+yıllık özgül üretim ${f(ILLER[S.il].verim)} kWh/kWp. Fiyatlar EPDK güncel tarifeleri: vergili alış ${tlB(fi.alis)} ₺/kWh,
+${S.grup === "mesken" ? "mahsup emanet değeri ≈ " + tlB(fi.alis * 0.85) : "satış (çıplak enerji bedeli) " + tlB(fi.satis)} ₺/kWh.
+İnverter kırpma tavanı DC/AC ${EKIPMAN.dcAcOran}. Batarya tur verimi %95.
+Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz — kişisel hesap için gesdanismani.com/hesaplama ve fatura analizi kullanılmalıdır.</div>
+<script>window.onload = () => setTimeout(() => window.print(), 300);</script>
+</body></html>`;
+      const p = window.open("", "_blank");
+      if (!p) return;
+      p.document.write(html);
+      p.document.close();
+    }
+
     function dongu() {
       if (!oynuyor) return;
       zaman += 0.016 * HIZLAR[hizIx] * 0.55;
@@ -390,6 +495,7 @@ export default function Simulasyon() {
       hizIx = (hizIx + 1) % HIZLAR.length;
       (e.currentTarget as HTMLElement).textContent = "Hız " + HIZLAR[hizIx] + "×";
     };
+    el("raporBtn").onclick = raporIndir;
     el("tekrar").onclick = () => {
       el("sonuclar").hidden = true;
       sifirla();
@@ -575,12 +681,12 @@ export default function Simulasyon() {
           <h2>Gün Sonu Karnesi</h2>
           <span id="sonucBaslik"></span>
         </div>
-        <div className="sonuc-izgara">
-          <div className="sonuc-kart" id="sonucGun"></div>
-          <div className="sonuc-kart" id="sonucAy"></div>
-          <div className="sonuc-kart one" id="sonucYil"></div>
+        <div className="sonuc-tablo-kutu">
+          <table className="sonuc-tablo" id="sonucTablo"></table>
         </div>
+        <div className="yatirim-ozet" id="yatirimOzet"></div>
         <div className="karne-cta">
+          <button className="gt-btn small" id="raporBtn" type="button">PDF Raporu İndir</button>
           <a className="gt-btn small line" href="/hesaplama">Detaylı Hesap</a>
           <a className="gt-btn small line" href="/fatura-analizi">Fatura Analizi</a>
           <button className="gt-btn small" id="tekrar" type="button">Tekrar Simüle Et</button>
