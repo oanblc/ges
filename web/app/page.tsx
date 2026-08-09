@@ -127,8 +127,8 @@ export default function Anasayfa() {
           <span className="cic">
             <Ayarlar />
           </span>
-          <div className="v">4 araç</div>
-          <div className="k"><Aciklamali>Maliyet · Getiri · Batarya · Fatura analizi</Aciklamali></div>
+          <div className="v">7 araç</div>
+          <div className="k"><Aciklamali>Hesaplama · Fatura · Teklif · Poliçe · Simülasyon · Asistan · Mevzuat</Aciklamali></div>
         </div>
         <div>
           <span className="cic">
