@@ -26,7 +26,6 @@ export default function YonetimKabuk({
         <Link href="/" className="brand">
           <Marka />
         </Link>
-        <span className="yp-rozet">Yönetim</span>
         <nav className="yp-sekmeler" aria-label="Yönetim menüsü">
           {SEKMELER.map(([yol, ad]) => (
             <Link key={yol} href={yol} className={aktif === yol ? "on" : ""}
