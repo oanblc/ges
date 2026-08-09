@@ -746,6 +746,10 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
   return (
     <div className="simx" ref={kok}>
       <div className="girdiler">
+        <div className="girdi-ust">
+          <span>Sistemini kur</span>
+          <button className="yardim-ac" id="yardimAc" type="button">📖 Yardım</button>
+        </div>
         <div className="birincil">
           <div className="grup"><span>Kurulum
             <button className="terim" data-tip="Paneller bir binanın çatısına da, boş bir araziye de kurulabilir. Arazide gölgesiz yerleşim ve daha iyi havalandırma sayesinde üretim biraz daha yüksektir." aria-label="Kurulum nedir" type="button">?</button></span>
