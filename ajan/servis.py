@@ -14,6 +14,7 @@ Not: Çekirdek mantık asistan.py'de; burada yalnız akış orkestrasyonu ve kor
 import datetime
 import json
 import os
+import re
 import subprocess
 import threading
 import time
@@ -442,6 +443,122 @@ async def fatura_ayikla(istek: Request):
         return JSONResponse({"hata": f"Fatura okunamadı ({type(e).__name__}); daha net bir "
                                      "fotoğrafla deneyin."}, status_code=502)
     return alanlar
+
+
+# ---- Yönetim paneli uçları (web'deki /yonetim sayfaları bu API'yi kullanır) ----
+# Koruma: paylaşılan gizli anahtar başlığı; anahtar yalnız web sunucusunda ve burada.
+YONETIM_ANAHTAR = os.environ.get("YONETIM_ANAHTAR", "")
+GECERLI_LEAD_DURUM = {"aranmadi", "arandi", "kapandi"}
+_LEAD_ID = re.compile(r"^[0-9T\-]{10,30}$")
+
+
+def _yetkisiz(istek):
+    return not YONETIM_ANAHTAR or istek.headers.get("x-yonetim-anahtar") != YONETIM_ANAHTAR
+
+
+def _lead_dosyalar():
+    if not LEAD_DIZIN.exists():
+        return []
+    return sorted(LEAD_DIZIN.glob("*.json"), reverse=True)
+
+
+@app.get("/yonetim/ozet")
+async def yonetim_ozet(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    bugun = time.strftime("%Y-%m-%d")
+    with _kilit:
+        gunluk = dict(_gunluk)
+    dosyalar = _lead_dosyalar()
+    veriler = {}
+    for ad, dosya in (("piyasa", "piyasa-canli"), ("denetim", "denetim"),
+                      ("destekler", "destekler")):
+        try:
+            d = json.loads((ROOT / "kb" / "veri" / f"{dosya}.json").read_text(encoding="utf-8"))
+            veriler[ad] = (d.get("guncelleme") or d.get("cekim_zamani") or "?")[:16].replace("T", " ")
+        except Exception:
+            veriler[ad] = None
+    try:
+        taslaklar = sorted((ROOT / "kb" / "taslak").glob("*.md"), reverse=True)[:10]
+        taslak = {"sayi": len(list((ROOT / "kb" / "taslak").glob("*.md"))),
+                  "son": [t.name for t in taslaklar]}
+    except Exception:
+        taslak = {"sayi": 0, "son": []}
+    bekleyen = 0
+    for d in dosyalar:
+        try:
+            if json.loads(d.read_text(encoding="utf-8")).get("durum", "aranmadi") == "aranmadi":
+                bekleyen += 1
+        except Exception:
+            continue
+    return {
+        "gun": gunluk if gunluk.get("gun") == bugun else {"gun": bugun, "sohbet": 0, "lead": 0},
+        "tavanlar": {"sohbet": GUNLUK_SOHBET_TAVANI, "lead": GUNLUK_LEAD_TAVANI,
+                     "saatlik": SAAT_LIMIT},
+        "talep": {"toplam": len(dosyalar), "bekleyen": bekleyen},
+        "veriGuncellemeleri": veriler,
+        "taslak": taslak,
+    }
+
+
+@app.get("/yonetim/talepler")
+async def yonetim_talepler(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    liste = []
+    for d in _lead_dosyalar()[:200]:
+        try:
+            k = json.loads(d.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        ozet = k.get("ozet") or {}
+        liste.append({
+            "id": d.stem,
+            "zaman": k.get("zaman", ""),
+            "iletisim": k.get("iletisim", ""),
+            "durum": k.get("durum", "aranmadi"),
+            "tip": ozet.get("tip") if isinstance(ozet, dict) else None,
+            "il": ozet.get("il") if isinstance(ozet, dict) else None,
+            "sicaklik": ozet.get("sicaklik") if isinstance(ozet, dict) else None,
+        })
+    return {"talepler": liste}
+
+
+@app.get("/yonetim/talep")
+async def yonetim_talep(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    kimlik = istek.query_params.get("id", "")
+    if not _LEAD_ID.match(kimlik):
+        return JSONResponse({"hata": "geçersiz id"}, status_code=400)
+    dosya = LEAD_DIZIN / f"{kimlik}.json"
+    if not dosya.exists():
+        return JSONResponse({"hata": "bulunamadı"}, status_code=404)
+    k = json.loads(dosya.read_text(encoding="utf-8"))
+    k["id"] = kimlik
+    k.setdefault("durum", "aranmadi")
+    return k
+
+
+@app.post("/yonetim/talep-durum")
+async def yonetim_talep_durum(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    kimlik = str(govde.get("id", ""))
+    durum = str(govde.get("durum", ""))
+    if not _LEAD_ID.match(kimlik) or durum not in GECERLI_LEAD_DURUM:
+        return JSONResponse({"hata": "geçersiz istek"}, status_code=400)
+    dosya = LEAD_DIZIN / f"{kimlik}.json"
+    if not dosya.exists():
+        return JSONResponse({"hata": "bulunamadı"}, status_code=404)
+    k = json.loads(dosya.read_text(encoding="utf-8"))
+    k["durum"] = durum
+    dosya.write_text(json.dumps(k, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"durum": durum}
 
 
 @app.post("/lead")

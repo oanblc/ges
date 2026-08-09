@@ -456,6 +456,68 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .yazi .fig svg{width:100%; height:auto; display:block}
 .yazi .fig figcaption{font-size:12.5px; color:var(--text); margin-top:12px; line-height:1.5}
 .yazi .dk-cta{margin-left:0; margin-right:0}
+/* ---------- yönetim paneli ---------- */
+.yp-wrap{min-height:100vh; background:#F3F5F0}
+.yp-ust{display:flex; align-items:center; gap:16px; padding:14px 28px; background:var(--surface);
+  border-bottom:1px solid var(--border)}
+.yp-rozet{background:var(--theme); color:#fff; font-size:11.5px; font-weight:700;
+  letter-spacing:.05em; text-transform:uppercase; padding:4px 10px; border-radius:999px}
+.yp-sekmeler{display:flex; gap:18px; margin-left:16px; font-size:14px}
+.yp-sekmeler a{color:var(--text); text-decoration:none; padding:8px 0}
+.yp-sekmeler a.on{color:var(--theme); font-weight:600; box-shadow:0 2px 0 var(--theme)}
+.yp-cik{margin-left:auto; font-size:13px; color:var(--text)}
+.yp-icerik{max-width:1080px; margin:0 auto; padding:30px 24px 60px}
+.yp-icerik h1{font-size:24px; margin:0 0 20px}
+.yp-icerik h2{font-size:16px; margin:28px 0 12px}
+.yp-kartlar{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px}
+.yp-kart{background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:18px 20px; display:flex; flex-direction:column; gap:2px}
+.yp-kart b{font-size:28px; font-family:var(--font-epilogue), sans-serif; color:var(--title)}
+.yp-kart span{font-size:13.5px; color:var(--text)}
+.yp-kart small{font-size:12px; color:#8A8F87}
+.yp-kart.vurgu{border-color:var(--theme); box-shadow:0 0 0 1px var(--theme) inset}
+.yp-tablo-kutu{background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  overflow-x:auto}
+.yp-tablo-kutu table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px}
+.yp-tablo-kutu th{text-align:left; padding:11px 16px; background:#F3F5F0; font-size:12.5px}
+.yp-tablo-kutu td{padding:11px 16px; border-top:1px solid #E9ECE5; vertical-align:top}
+.yp-tablo-kutu tr.bekliyor td{background:#FFFBE8}
+.yp-tablo-kutu a{color:var(--theme); font-weight:600; text-decoration:none}
+.yp-durum{display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600}
+.yp-durum.aranmadi{background:#FFE175; color:#5C4A00}
+.yp-durum.arandi{background:#DCEFE4; color:#1F8A5D}
+.yp-durum.kapandi{background:#E9ECE5; color:#525252}
+.yp-liste{margin:0; padding-left:18px; font-size:13.5px; line-height:1.9; color:var(--text)}
+.yp-hata{color:#A5620D; font-size:14px}
+.yp-giris{min-height:100vh; display:flex; align-items:center; justify-content:center; background:#F3F5F0}
+.yp-giris-kart{background:var(--surface); border:1px solid var(--border); border-radius:20px;
+  padding:36px 34px; width:min(92vw,380px); display:flex; flex-direction:column; gap:12px;
+  box-shadow:0 18px 44px rgba(0,40,35,.08)}
+.yp-giris-kart h1{margin:6px 0 0; font-size:21px}
+.yp-giris-kart p{margin:0 0 8px; font-size:13.5px; color:var(--text)}
+.yp-giris-kart input{border:1px solid var(--border); border-radius:11px; padding:11px 14px;
+  font:inherit}
+.yp-giris-kart .sun svg{width:30px; height:30px}
+.yp-detay-ust{display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  flex-wrap:wrap; margin-bottom:6px}
+.yp-detay-ust h1{margin-bottom:2px}
+.yp-detay-zaman{font-size:13px; color:#8A8F87}
+.yp-durum-secim{display:inline-flex; border:1px solid var(--border); border-radius:11px;
+  overflow:hidden; background:var(--surface)}
+.yp-durum-secim button{border:none; background:none; padding:9px 14px; font:inherit; font-size:13px;
+  cursor:pointer; color:var(--text)}
+.yp-durum-secim button+button{border-left:1px solid var(--border)}
+.yp-durum-secim button.on{font-weight:700; color:#252525}
+.yp-durum-secim button.on.aranmadi{background:#FFE175}
+.yp-durum-secim button.on.arandi{background:#DCEFE4; color:#1F8A5D}
+.yp-durum-secim button.on.kapandi{background:#E9ECE5}
+.yp-sohbet{display:flex; flex-direction:column; gap:10px}
+.yp-mesaj{background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:12px 16px; font-size:13.5px}
+.yp-mesaj.ziyaretci{border-left:3px solid var(--theme)}
+.yp-mesaj b{display:block; font-size:12px; margin-bottom:4px; color:#8A8F87}
+.yp-mesaj p{margin:0; white-space:pre-wrap; line-height:1.6}
+
 .sss-yerlesim{padding-top:24px}
 .sss-bolum{margin-bottom:34px}
 .sss-bolum h2{margin:0 0 14px}
