@@ -517,6 +517,28 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .yp-mesaj.ziyaretci{border-left:3px solid var(--theme)}
 .yp-mesaj b{display:block; font-size:12px; margin-bottom:4px; color:#8A8F87}
 .yp-mesaj p{margin:0; white-space:pre-wrap; line-height:1.6}
+.yp-filtreler{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+.yp-filtreler a{font-size:12.5px; padding:6px 12px; border-radius:999px; text-decoration:none;
+  border:1px solid var(--border); background:var(--surface); color:var(--text)}
+.yp-filtreler a.on{background:var(--theme); border-color:var(--theme); color:#fff; font-weight:600}
+.yp-kayit{background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:0}
+.yp-kayit summary{display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer;
+  list-style:none; font-size:13.5px}
+.yp-kayit summary::-webkit-details-marker{display:none}
+.yp-kayit-soru{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-weight:600; color:#252525}
+.yp-kayit-zaman{flex:0 0 auto; font-size:12px; color:#8A8F87}
+.yp-kayit>p{margin:0; padding:0 16px 14px; font-size:13.5px; line-height:1.6; white-space:pre-wrap;
+  color:var(--text)}
+.yp-kayit.guvenli-yanit, .yp-kayit.hata{border-left:3px solid #A5620D}
+.yp-taslak{margin:0; padding:4px 16px 16px; font-size:12.5px; line-height:1.6;
+  white-space:pre-wrap; word-break:break-word; font-family:ui-monospace, Menlo, monospace;
+  color:var(--text)}
+.yp-okundu{flex:0 0 auto; border:1px solid var(--border); background:none; border-radius:999px;
+  padding:5px 12px; font:inherit; font-size:12px; cursor:pointer; color:var(--text)}
+.yp-okundu.on{background:#DCEFE4; border-color:#1F8A5D; color:#1F8A5D; font-weight:600}
+.yp-aciklama{font-size:13.5px; color:var(--text); margin:-8px 0 18px; max-width:70ch}
 
 .sss-yerlesim{padding-top:24px}
 .sss-bolum{margin-bottom:34px}

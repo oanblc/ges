@@ -4,6 +4,8 @@ import { Sun } from "./Icons";
 const SEKMELER: Array<[string, string]> = [
   ["/yonetim", "Genel Bakış"],
   ["/yonetim/talepler", "Talepler"],
+  ["/yonetim/sohbetler", "Sohbetler"],
+  ["/yonetim/onay", "Onay Kutusu"],
 ];
 
 export default function YonetimKabuk({

@@ -28,8 +28,29 @@ from asistan import (ARACLAR, GUVENLI_YANIT, SISTEM, _denetle, _istemci, _kb_yuk
                      fatura_analizi, fizibilite, lead_ozeti)
 
 ROOT = Path(__file__).resolve().parent.parent
-# Railway'de kalıcı volume bu yola bağlanır (LEAD_DIZIN=/app/kb/lead); yerelde repo içi.
+# Railway'de kalıcı volume bu yola bağlanır (LEAD_DIZIN=/veri/lead); yerelde repo içi.
 LEAD_DIZIN = Path(os.environ.get("LEAD_DIZIN", str(ROOT / "kb" / "lead")))
+# Sohbet logları da aynı volume'da yaşar (/veri/log) — panel Sohbet Kayıtları buradan beslenir.
+LOG_DIZIN = Path(os.environ.get("LOG_DIZIN", str(LEAD_DIZIN.parent / "log")))
+
+
+def _sohbet_logla(soru: str, cevap: str, durum: str, ekli: bool = False, sure: float = 0.0):
+    """Her sohbeti günlük JSONL dosyasına yazar; hata loglamayı asla akışa bulaştırmaz."""
+    try:
+        LOG_DIZIN.mkdir(parents=True, exist_ok=True)
+        kayit = {
+            "zaman": datetime.datetime.now().isoformat(timespec="seconds"),
+            "durum": durum,  # kapi | onay | onay-revize | guvenli-yanit | hata
+            "ekli": ekli,
+            "sure_sn": round(sure, 1),
+            "soru": (soru or "")[:1000],
+            "cevap": (cevap or "")[:4000],
+        }
+        dosya = LOG_DIZIN / f"sohbet-{time.strftime('%Y-%m-%d')}.jsonl"
+        with dosya.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(kayit, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
 
 app = FastAPI()
 _istemci_tekil = None
@@ -221,6 +242,8 @@ async def sohbet_ucu(istek: Request):
         if not _eszamanli.acquire(blocking=False):
             yield _sse("hata", {"mesaj": "Şu an yoğunluk var; lütfen birkaç dakika sonra deneyin."})
             return
+        baslangic = time.time()
+        soru = ""
         try:
             istemci = _al()
             son_icerik = mesajlar[-1]["content"]
@@ -236,6 +259,7 @@ async def sohbet_ucu(istek: Request):
                 if kisa:
                     yield _sse("delta", {"t": kisa})
                     yield _sse("bitti", {})
+                    _sohbet_logla(soru, kisa, "kapi", sure=time.time() - baslangic)
                     return
             sistem = SISTEM + GEMINI_EK + _kb_yukle()
             icerikler = [{"role": "user" if m["role"] == "user" else "model",
@@ -274,6 +298,7 @@ async def sohbet_ucu(istek: Request):
             if not metin:
                 yield _sse("duzeltme", {"metin": GUVENLI_YANIT})
                 yield _sse("bitti", {})
+                _sohbet_logla(soru, "", "guvenli-yanit", ekli=ekli, sure=time.time() - baslangic)
                 return
 
             yield _sse("durum", {"mesaj": "denetleniyor"})
@@ -292,11 +317,16 @@ async def sohbet_ucu(istek: Request):
                 if yeni and _denetle(soru, yeni, istemci).startswith("ONAY"):
                     yield _sse("duzeltme", {"metin": yeni})
                     yield _sse("denetim", {"sonuc": "onay", "revize": True})
+                    _sohbet_logla(soru, yeni, "onay-revize", ekli=ekli,
+                                  sure=time.time() - baslangic)
                 else:
                     yield _sse("duzeltme", {"metin": GUVENLI_YANIT})
                     yield _sse("denetim", {"sonuc": "guvenli-yanit"})
+                    _sohbet_logla(soru, metin, "guvenli-yanit", ekli=ekli,
+                                  sure=time.time() - baslangic)
             else:
                 yield _sse("denetim", {"sonuc": "onay"})
+                _sohbet_logla(soru, metin, "onay", ekli=ekli, sure=time.time() - baslangic)
             yield _sse("bitti", {})
         except Exception as e:
             metin = str(e)
@@ -310,6 +340,8 @@ async def sohbet_ucu(istek: Request):
                 print(f"HATA ({type(e).__name__}): {metin[:300]}", flush=True)
                 yield _sse("hata", {"mesaj": f"Beklenmeyen hata ({type(e).__name__}); "
                                              "lütfen yeniden deneyin."})
+            _sohbet_logla(soru, f"[{type(e).__name__}] {metin[:200]}", "hata",
+                          sure=time.time() - baslangic)
         finally:
             _eszamanli.release()
 
@@ -559,6 +591,85 @@ async def yonetim_talep_durum(istek: Request):
     k["durum"] = durum
     dosya.write_text(json.dumps(k, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"durum": durum}
+
+
+@app.get("/yonetim/sohbetler")
+async def yonetim_sohbetler(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    kayitlar = []
+    if LOG_DIZIN.exists():
+        for dosya in sorted(LOG_DIZIN.glob("sohbet-*.jsonl"), reverse=True)[:14]:
+            try:
+                satirlar = dosya.read_text(encoding="utf-8").splitlines()
+            except Exception:
+                continue
+            for satir in reversed(satirlar):
+                try:
+                    kayitlar.append(json.loads(satir))
+                except ValueError:
+                    continue
+                if len(kayitlar) >= 300:
+                    break
+            if len(kayitlar) >= 300:
+                break
+    return {"sohbetler": kayitlar}
+
+
+# Taslak "okundu" durumu volume'da tutulur — repo dosyaları her deploy'da tazelense
+# de işaretler kalıcı kalır.
+OKUNAN_DOSYA = LEAD_DIZIN.parent / "okunan-taslaklar.json"
+_TASLAK_AD = re.compile(r"^[\w\-.çğıöşüÇĞİÖŞÜ]+\.md$")
+
+
+def _okunanlar() -> set:
+    try:
+        return set(json.loads(OKUNAN_DOSYA.read_text(encoding="utf-8")))
+    except Exception:
+        return set()
+
+
+@app.get("/yonetim/taslaklar")
+async def yonetim_taslaklar(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    okunan = _okunanlar()
+    liste = []
+    dizin = ROOT / "kb" / "taslak"
+    if dizin.exists():
+        for d in sorted(dizin.glob("*.md"), reverse=True)[:60]:
+            try:
+                icerik = d.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            liste.append({
+                "ad": d.name,
+                "okundu": d.name in okunan,
+                "boyut": len(icerik),
+                "icerik": icerik[:20000],
+            })
+    return {"taslaklar": liste}
+
+
+@app.post("/yonetim/taslak-okundu")
+async def yonetim_taslak_okundu(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    ad = str(govde.get("ad", ""))
+    if not _TASLAK_AD.match(ad) or ".." in ad:
+        return JSONResponse({"hata": "geçersiz ad"}, status_code=400)
+    okunan = _okunanlar()
+    if govde.get("okundu", True):
+        okunan.add(ad)
+    else:
+        okunan.discard(ad)
+    OKUNAN_DOSYA.parent.mkdir(parents=True, exist_ok=True)
+    OKUNAN_DOSYA.write_text(json.dumps(sorted(okunan), ensure_ascii=False), encoding="utf-8")
+    return {"okundu": ad in okunan}
 
 
 @app.post("/lead")
