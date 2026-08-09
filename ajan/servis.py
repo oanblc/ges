@@ -107,6 +107,22 @@ def _eposta_gonder(kime: str, konu: str, html: str) -> None:
     Ayar eksikse sessizce atlar. Ayrı iş parçacığında çağrılır."""
     if not kime:
         return
+    kopru = str(_ayar().get("eposta_kopru") or os.environ.get("EPOSTA_KOPRU", "")).strip()
+    if kopru.startswith("https://"):
+        import urllib.request
+        istek = urllib.request.Request(
+            kopru,
+            data=json.dumps({"kime": kime, "konu": konu, "html": html}).encode(),
+            headers={"Content-Type": "application/json"}, method="POST")
+        try:
+            with urllib.request.urlopen(istek, timeout=30) as yanit:
+                govde = yanit.read().decode()[:200]
+            if '"ok"' not in govde and "ok" not in govde:
+                print(f"köprü beklenmedik yanıt ({kime}): {govde}")
+            return
+        except Exception as e:
+            print(f"köprü gönderemedi ({kime}): {type(e).__name__}: {e}")
+            return
     if RESEND_ANAHTAR:
         import urllib.request
         istek = urllib.request.Request(
@@ -133,6 +149,17 @@ def _eposta_gonder(kime: str, konu: str, html: str) -> None:
     mesaj["Subject"] = konu
     mesaj["From"] = formataddr(("GES Danışmanı", ayar["kullanici"]))
     mesaj["To"] = kime
+    kopru = str(_ayar().get("eposta_kopru") or os.environ.get("EPOSTA_KOPRU", "")).strip()
+    if kopru.startswith("https://"):
+        import urllib.request
+        try:
+            k_istek = urllib.request.Request(
+                kopru, data=json.dumps({"kuru": True}).encode(),
+                headers={"Content-Type": "application/json"}, method="POST")
+            with urllib.request.urlopen(k_istek, timeout=20) as yanit:
+                sonuc["kopru"] = yanit.read().decode()[:120]
+        except Exception as e:
+            sonuc["kopru"] = f"{type(e).__name__}: {e}"
     try:
         if ayar["port"] == 465:
             baglanti = smtplib.SMTP_SSL(ayar["sunucu"], ayar["port"], timeout=25)
@@ -906,6 +933,17 @@ def eposta_tani(istek: Request):
             sonuc[f"tcp_{port}"] = "açık"
         except Exception as e:
             sonuc[f"tcp_{port}"] = f"{type(e).__name__}: {e}"
+    kopru = str(_ayar().get("eposta_kopru") or os.environ.get("EPOSTA_KOPRU", "")).strip()
+    if kopru.startswith("https://"):
+        import urllib.request
+        try:
+            k_istek = urllib.request.Request(
+                kopru, data=json.dumps({"kuru": True}).encode(),
+                headers={"Content-Type": "application/json"}, method="POST")
+            with urllib.request.urlopen(k_istek, timeout=20) as yanit:
+                sonuc["kopru"] = yanit.read().decode()[:120]
+        except Exception as e:
+            sonuc["kopru"] = f"{type(e).__name__}: {e}"
     try:
         if ayar["port"] == 465:
             b = smtplib.SMTP_SSL(ayar["sunucu"], 465, timeout=15)
@@ -1263,6 +1301,7 @@ async def yonetim_ayarlar(istek: Request):
         "smtp_kullanici": str(a.get("smtp_kullanici") or SMTP_KULLANICI),
         "smtp_sifre_var": bool(a.get("smtp_sifre") or SMTP_SIFRE),
         "bildirim_eposta": str(a.get("bildirim_eposta") or BILDIRIM_EPOSTA),
+        "eposta_kopru": str(a.get("eposta_kopru") or ""),
         "varsayilanlar": {"saat_limit": SAAT_LIMIT, "gunluk_sohbet": GUNLUK_SOHBET_TAVANI,
                           "gunluk_lead": GUNLUK_LEAD_TAVANI},
     }
@@ -1287,9 +1326,9 @@ async def yonetim_ayarlar_kaydet(istek: Request):
         yeni[anahtar] = deger
     yeni["bakim"] = bool(govde.get("bakim"))
     # SMTP alanları: boş şifre "değiştirme" demek; diğerleri olduğu gibi yazılır
-    for alan in ("smtp_sunucu", "smtp_kullanici", "bildirim_eposta"):
+    for alan in ("smtp_sunucu", "smtp_kullanici", "bildirim_eposta", "eposta_kopru"):
         if alan in govde:
-            yeni[alan] = str(govde.get(alan) or "").strip()[:200]
+            yeni[alan] = str(govde.get(alan) or "").strip()[:400]
     if "smtp_port" in govde:
         try:
             yeni["smtp_port"] = max(1, min(65535, int(govde.get("smtp_port") or 465)))

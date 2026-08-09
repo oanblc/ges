@@ -20,6 +20,7 @@ type Ayarlar = {
   smtp_kullanici: string;
   smtp_sifre_var: boolean;
   bildirim_eposta: string;
+  eposta_kopru: string;
   varsayilanlar: Record<string, number>;
 };
 
@@ -54,6 +55,7 @@ export default async function AyarlarSayfa() {
             smtp_kullanici: ayarlar.smtp_kullanici ?? "",
             smtp_sifre_var: !!ayarlar.smtp_sifre_var,
             bildirim_eposta: ayarlar.bildirim_eposta ?? "",
+            eposta_kopru: ayarlar.eposta_kopru ?? "",
           }}
         />
       )}

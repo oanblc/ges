@@ -12,6 +12,7 @@ type Ayarlar = {
   smtp_kullanici: string;
   smtp_sifre_var: boolean;
   bildirim_eposta: string;
+  eposta_kopru: string;
 };
 
 const ALANLAR: Array<["saat_limit" | "gunluk_sohbet" | "gunluk_lead", string, string]> = [
@@ -58,6 +59,15 @@ export default function AyarlarForm({ ilk }: { ilk: Ayarlar }) {
     const d = await res.json().catch(() => ({}));
     if (!res.ok) {
       setTaniMesaj(d.hata || "Tanı çalıştırılamadı.");
+      return;
+    }
+    const kopru = String(d.kopru || "");
+    if (kopru.includes("ok")) {
+      setTaniMesaj("✓ E-posta köprüsü çalışıyor — gönderim hazır.");
+      return;
+    }
+    if (kopru) {
+      setTaniMesaj(`✕ Köprü hatası: ${kopru.slice(0, 100)}`);
       return;
     }
     const giris = String(d.smtp_giris || "");
@@ -150,6 +160,21 @@ export default function AyarlarForm({ ilk }: { ilk: Ayarlar }) {
           autoComplete="new-password"
           placeholder={ayarlar.smtp_sifre_var ? "••••••••" : ""}
           onChange={(e) => setSifre(e.target.value)}
+        />
+      </label>
+      <label className="yp-alan">
+        <span>
+          <b>E-posta köprüsü (Apps Script)</b>
+          <small>
+            Doluysa gönderim SMTP yerine bu adres üzerinden yapılır — Railway&apos;in SMTP
+            engelini aşar. Boş bırakılırsa SMTP denenir.
+          </small>
+        </span>
+        <input
+          type="text"
+          value={ayarlar.eposta_kopru}
+          placeholder="https://script.google.com/macros/s/…/exec"
+          onChange={(e) => setAyarlar({ ...ayarlar, eposta_kopru: e.target.value })}
         />
       </label>
       <label className="yp-alan">
