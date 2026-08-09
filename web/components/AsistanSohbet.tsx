@@ -238,10 +238,9 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
         {mesajlar.length === 0 && (
           <div className="as-bos">
             <p>
-              Çatı güneş enerjisiyle ilgili her sorunuzu sorun — cevaplar resmî kaynaklara
-              dayanır, hesaplar güncel tarifelerle yapılır. Fatura fotoğrafınızı ataç
-              düğmesiyle ekleyin ya da doğrudan buraya yapıştırın (Cmd/Ctrl+V); kalem kalem
-              analiz edelim.
+              Çatı güneş enerjisiyle ilgili sorularınızı yanıtlıyoruz; cevaplar resmî
+              kaynaklara ve güncel tarifelere dayanır. Faturanızın fotoğrafını eklerseniz
+              birlikte inceleyelim.
             </p>
             <div className="as-ornekler">
               {ORNEK_SORULAR.map((o) => (
