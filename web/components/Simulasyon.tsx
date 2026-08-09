@@ -15,8 +15,9 @@ type Profil = { verim: number; profil: Record<"kis" | "bahar" | "yaz", number[]>
 const ILLER = (PVGIS as { iller: Record<string, Profil> }).iller;
 
 const kr = (v: number) => v / 100;
+// hesap.ts nihai fiyat formülüyle birebir: BTV ve fon yalnız enerji matrahına uygulanır
 const vergili = (enerji: number, dagitim: number, btv: number, kdv: number) =>
-  (kr(enerji) * (1 + TARIFE.fon) + kr(dagitim)) * (1 + btv) * (1 + kdv);
+  (kr(enerji) * (1 + TARIFE.fon + btv) + kr(dagitim)) * (1 + kdv);
 const FIYAT = {
   mesken: { alis: vergili(TARIFE.mesken.enerjiK2, TARIFE.mesken.dagitim, TARIFE.mesken.btv, TARIFE.mesken.kdv),
             satis: kr(TARIFE.mesken.enerjiK2) },
@@ -30,13 +31,19 @@ const FIYAT = {
               satis: kr(TARIFE.sanayiOG.enerji) },
 };
 
-const HAVA = { acik: 1.25, parcali: 1.0, bulutlu: 0.45 };
+// "Ortalama" = PVGIS tipik günü (1.0). "Açık" gün/ortalama oranı mevsime bağlıdır:
+// kışın açık gün ortalamanın çok üstündedir, yazın zaten çoğu gün açıktır.
+const HAVA: Record<string, Record<"kis" | "bahar" | "yaz", number>> = {
+  acik: { kis: 1.6, bahar: 1.3, yaz: 1.12 },
+  parcali: { kis: 1, bahar: 1, yaz: 1 },
+  bulutlu: { kis: 0.22, bahar: 0.22, yaz: 0.25 },
+};
 const PROFIL = {
   gunduz: [0.35,0.3,0.3,0.3,0.35,0.5,0.8,1,1.15,1.2,1.2,1.15,1.1,1.15,1.2,1.15,1.05,0.9,0.7,0.55,0.5,0.45,0.4,0.35],
   aksam: [0.5,0.4,0.35,0.3,0.3,0.35,0.5,0.7,0.6,0.5,0.5,0.55,0.6,0.55,0.5,0.55,0.7,1,1.3,1.4,1.35,1.15,0.9,0.65],
   vardiya: Array(24).fill(1),
 };
-const ARAZI = 1.08;
+const ARAZI = 1.05;
 
 export default function Simulasyon() {
   const kok = useRef<HTMLDivElement>(null);
@@ -44,7 +51,7 @@ export default function Simulasyon() {
   useEffect(() => {
     const el = (id: string) => document.getElementById(id)!;
     const S = { tip: "cati", grup: "ticarethane", gerilim: "AG", il: "İzmir",
-      mevsim: "bahar" as "kis" | "bahar" | "yaz", hava: "acik" as keyof typeof HAVA,
+      mevsim: "bahar" as "kis" | "bahar" | "yaz", hava: "acik" as "acik" | "parcali" | "bulutlu",
       guc: 50, tuketim: 9000, profil: "gunduz" as keyof typeof PROFIL, batarya: 0 };
 
     const ilSec = el("il") as HTMLSelectElement;
@@ -125,12 +132,13 @@ export default function Simulasyon() {
       const saatler: Saat[] = [];
       let bat = 0;
       for (let h = 0; h < 24; h++) {
-        const u = (profil[h] / 1000) * S.guc * HAVA[S.hava] * (S.tip === "arazi" ? ARAZI : 1);
+        const ham = (profil[h] / 1000) * S.guc * HAVA[S.hava][S.mevsim] * (S.tip === "arazi" ? ARAZI : 1);
+        const u = Math.min(ham, S.guc / EKIPMAN.dcAcOran); // inverter kırpma tavanı (DC/AC 1,2)
         const t = (sekil[h] / toplamSekil) * gunlukTuk;
         const oz = Math.min(u, t);
         let fazla = u - oz, eksik = t - oz, batAksi = 0;
         if (S.batarya) {
-          if (fazla > 0) { const al = Math.min(fazla, S.batarya - bat); bat += al * 0.95; fazla -= al; batAksi = al; }
+          if (fazla > 0) { const al = Math.min(fazla, (S.batarya - bat) / 0.95); bat += al * 0.95; fazla -= al; batAksi = al; }
           else if (eksik > 0 && bat > 0) { const ver = Math.min(eksik, bat); bat -= ver; eksik -= ver; batAksi = -ver; }
         }
         saatler.push({ h, u, t, oz, satis: fazla, alis: eksik, bat, batAksi });
@@ -252,7 +260,8 @@ export default function Simulasyon() {
         <tr><td>Öz tüketim</td><td>%${t.uretim ? Math.round((ozKwh / t.uretim) * 100) : 0} · ${f(ozKwh)} kWh</td></tr>
         <tr><td>Şebekeye ${S.grup === "mesken" ? "emanet" : "satış"}</td><td>${f(t.satis)} kWh</td></tr>
         <tr><td>Şebekeden alış</td><td>${f(t.alis)} kWh</td></tr>
-        ${S.batarya ? `<tr><td>Bataryadan beslenen</td><td>${f(t.batVer)} kWh</td></tr>` : ""}
+        ${S.batarya ? `<tr><td>Bataryadan beslenen</td><td>${f(t.batVer)} kWh</td></tr>
+        <tr class="kalem"><td>→ Bataryada kalan (yarına devreder)</td><td>${f(saatler[23].bat)} kWh</td></tr>` : ""}
         ${acilim}
         <tr class="buyuk"><td>Cebinde kalan (bugün)</td><td>+${f(t.kazanc)} ₺</td></tr>`;
       el("perde").classList.add("acik");
@@ -302,7 +311,7 @@ export default function Simulasyon() {
       <div className="girdiler">
         <div className="birincil">
           <div className="grup"><span>Kurulum
-            <button className="terim" data-tip="Paneller bir binanın çatısına da, boş bir araziye de kurulabilir. Arazide açı serbest olduğu için üretim biraz daha yüksektir." aria-label="Kurulum nedir" type="button">?</button></span>
+            <button className="terim" data-tip="Paneller bir binanın çatısına da, boş bir araziye de kurulabilir. Arazide gölgesiz yerleşim ve daha iyi havalandırma sayesinde üretim biraz daha yüksektir." aria-label="Kurulum nedir" type="button">?</button></span>
             <div className="cipler" data-ad="tip">
               <button className="cip on" data-deger="cati" type="button">Çatı</button>
               <button className="cip" data-deger="arazi" type="button">Arazi</button></div></div>
