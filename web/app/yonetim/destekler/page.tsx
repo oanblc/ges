@@ -51,7 +51,7 @@ export default async function DesteklerYonetim() {
             </p>
           )}
           <div className="yp-tablo-kutu">
-            <table>
+            <table className="destek-tablo">
               <thead>
                 <tr>
                   <th>Destek</th>

@@ -795,6 +795,9 @@ a.yp-kart:hover{border-color:var(--theme)}
 .yp-tablo-kutu th{text-align:left; padding:11px 16px; background:#F3F5F0; font-size:12.5px}
 .yp-tablo-kutu td{padding:11px 16px; border-top:1px solid #E9ECE5; vertical-align:top}
 .yp-tablo-kutu tr.bekliyor td{background:#FFFBE8}
+.destek-tablo{min-width:680px}
+.destek-tablo td:first-child{min-width:280px}
+.destek-tablo td:not(:first-child), .destek-tablo th:not(:first-child){white-space:nowrap}
 .yp-tablo-kutu a{color:var(--theme); font-weight:600; text-decoration:none}
 .yp-durum{display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600}
 .yp-durum.aranmadi{background:#FFE175; color:#5C4A00}
