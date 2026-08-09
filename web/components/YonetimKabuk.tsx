@@ -6,6 +6,10 @@ const SEKMELER: Array<[string, string]> = [
   ["/yonetim/talepler", "Talepler"],
   ["/yonetim/sohbetler", "Sohbetler"],
   ["/yonetim/onay", "Onay Kutusu"],
+  ["/yonetim/destekler", "Destekler"],
+  ["/yonetim/sss", "SSS"],
+  ["/yonetim/denetim", "Denetim"],
+  ["/yonetim/ayarlar", "Ayarlar"],
 ];
 
 export default function YonetimKabuk({

@@ -327,15 +327,24 @@ EK_NOTU = (
 
 
 def _denetle(soru: str, cevap: str, istemci, ekli: bool = False) -> str:
-    """İkinci geçiş: taslak cevabı kb'ye karşı denetler (öncelik Sonnet).
+    """İkinci geçiş: taslak cevabı kb'ye karşı denetler.
 
-    Anthropic bakiyesi/erişimi düştüğünde asistanı tamamen susturmamak için
-    denetim Gemini'ye yedeklenir (2026-08-08: bakiye tükenince tüm cevaplar
-    'bakımda' mesajına düşmüştü). Çapraz aile denetimi tercih, Gemini yedek.
+    2026-08-09 kararı (Ozan): birincil denetçi Gemini — maliyet ve tek fatura;
+    Gemini erişilemezse Sonnet devreye girer (Anthropic bakiyesi varsa).
     """
     talimat = DENETIM_TALIMATI + (EK_NOTU if ekli else "")
     icerik = f"{talimat}\n\n<soru>{soru}</soru>\n\n<taslak_cevap>{cevap}</taslak_cevap>"
+    import gemini
     try:
+        p = gemini.uret(SISTEM + _kb_yukle(),
+                        [{"role": "user", "parts": [{"text": icerik}]}], max_cikti=1024)
+        metin = "".join(x.get("text", "") for x in p).strip()
+        if metin:
+            return metin
+        raise RuntimeError("Gemini denetimi boş döndü")
+    except Exception as hata:
+        print(f"UYARI: Gemini denetimi düştü ({type(hata).__name__}: {str(hata)[:120]}) "
+              "— Sonnet yedeğine geçildi.", flush=True)
         yanit = istemci.beta.messages.create(
             model="claude-sonnet-5",
             max_tokens=1024,
@@ -349,16 +358,6 @@ def _denetle(soru: str, cevap: str, istemci, ekli: bool = False) -> str:
             messages=[{"role": "user", "content": icerik}],
         )
         return "".join(b.text for b in yanit.content if b.type == "text").strip()
-    except Exception as hata:
-        print(f"UYARI: Sonnet denetimi düştü ({type(hata).__name__}: {str(hata)[:120]}) "
-              "— Gemini yedeğine geçildi.", flush=True)
-        import gemini
-        p = gemini.uret(SISTEM + _kb_yukle(),
-                        [{"role": "user", "parts": [{"text": icerik}]}], max_cikti=1024)
-        metin = "".join(x.get("text", "") for x in p).strip()
-        if not metin:
-            raise
-        return metin
 
 
 LEAD_SEMASI = {
@@ -398,18 +397,31 @@ def lead_ozeti(mesajlar: list, istemci) -> dict:
                     dokum.append(f"{m['role']}: {getattr(b, 'text', None) or b.get('text', '')}")
                 elif tur == "tool_result":
                     dokum.append(f"[hesap sonucu]: {b.get('content', '')[:300]}")
-    yanit = istemci.messages.create(
-        model="claude-sonnet-5",
-        max_tokens=4096,
-        output_config={"effort": "low",
-                       "format": {"type": "json_schema", "schema": LEAD_SEMASI}},
-        messages=[{
-            "role": "user",
-            "content": ("Aşağıdaki GES danışmanlık sohbetinden lead özeti çıkar. Bilinmeyen "
-                        "alanlara null yaz, tahmin etme.\n\n" + "\n".join(dokum)),
-        }],
-    )
-    return json.loads(next(b.text for b in yanit.content if b.type == "text"))
+    gorev = ("Aşağıdaki GES danışmanlık sohbetinden lead özeti çıkar. Bilinmeyen "
+             "alanlara null yaz, tahmin etme.\n\n" + "\n".join(dokum))
+    try:
+        yanit = istemci.messages.create(
+            model="claude-sonnet-5",
+            max_tokens=4096,
+            output_config={"effort": "low",
+                           "format": {"type": "json_schema", "schema": LEAD_SEMASI}},
+            messages=[{"role": "user", "content": gorev}],
+        )
+        return json.loads(next(b.text for b in yanit.content if b.type == "text"))
+    except Exception as hata:
+        # Anthropic erişilemezse özet Gemini'den (zorunlu araç çağrısıyla) üretilir
+        print(f"UYARI: Sonnet lead özeti düştü ({type(hata).__name__}) — Gemini yedeği.",
+              flush=True)
+        import gemini
+        p = gemini.uret("Lead özeti üret; bilinmeyen alanlara null yaz, tahmin etme.",
+                        [{"role": "user", "parts": [{"text": gorev}]}],
+                        araclar=[{"name": "lead_ozeti", "description": "Lead özeti",
+                                  "input_schema": LEAD_SEMASI}],
+                        zorunlu_arac="lead_ozeti", max_cikti=2048)
+        veri = gemini.arac_cagrisi(p, "lead_ozeti")
+        if veri is None:
+            raise
+        return veri
 
 
 def _istemci():

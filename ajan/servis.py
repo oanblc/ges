@@ -77,7 +77,35 @@ GUNLUK_LEAD_TAVANI = int(os.environ.get("GUNLUK_LEAD_TAVANI", "100"))
 _gunluk = {"gun": "", "sohbet": 0, "lead": 0}
 
 
+# Çalışma zamanı ayarları — panelin Ayarlar sayfası volume'daki dosyaya yazar;
+# env değerleri varsayılan kalır, dosyadaki değerler onları geçersiz kılar.
+AYAR_DOSYA = LEAD_DIZIN.parent / "ayarlar.json"
+
+
+def _ayar() -> dict:
+    try:
+        return json.loads(AYAR_DOSYA.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _ayar_deger(anahtar: str, varsayilan: int) -> int:
+    try:
+        deger = int(_ayar().get(anahtar, 0))
+        return deger if deger > 0 else varsayilan
+    except (TypeError, ValueError):
+        return varsayilan
+
+
+def _bakimda():
+    if _ayar().get("bakim"):
+        return JSONResponse({"hata": "Asistan kısa bir bakımda; lütfen daha sonra deneyin."},
+                            status_code=503)
+    return None
+
+
 def _gunluk_asildi_mi(tur, tavan):
+    tavan = _ayar_deger(f"gunluk_{tur}", tavan)
     bugun = time.strftime("%Y-%m-%d")
     with _kilit:
         if _gunluk["gun"] != bugun:
@@ -92,7 +120,7 @@ def _sinirli_mi(ip):
     simdi = time.time()
     with _kilit:
         gecmis = [t for t in _istekler.get(ip, []) if simdi - t < 3600]
-        if len(gecmis) >= SAAT_LIMIT:
+        if len(gecmis) >= _ayar_deger("saat_limit", SAAT_LIMIT):
             _istekler[ip] = gecmis
             return True
         gecmis.append(simdi)
@@ -220,6 +248,9 @@ def saglik():
 @app.post("/sohbet")
 async def sohbet_ucu(istek: Request):
     ip = _gercek_ip(istek)
+    bakim = _bakimda()
+    if bakim:
+        return bakim
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "Saatlik soru sınırına ulaşıldı; lütfen daha sonra deneyin."},
                             status_code=429)
@@ -378,6 +409,9 @@ MEVZUAT_ARACI = [{
 async def mevzuat_soru(istek: Request):
     """Mevzuat sayfasının AI araması — yalnız mevzuat kayıtlarını gören ucuz model (Haiku)."""
     ip = _gercek_ip(istek)
+    bakim = _bakimda()
+    if bakim:
+        return bakim
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
                             status_code=429)
@@ -440,6 +474,9 @@ AYIKLAMA_ARACI = [{
 async def fatura_ayikla(istek: Request):
     """Fatura görseli/PDF'inden alanları okur — fatura sihirbazının ilk adımı."""
     ip = _gercek_ip(istek)
+    bakim = _bakimda()
+    if bakim:
+        return bakim
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
                             status_code=429)
@@ -670,6 +707,182 @@ async def yonetim_taslak_okundu(istek: Request):
     OKUNAN_DOSYA.parent.mkdir(parents=True, exist_ok=True)
     OKUNAN_DOSYA.write_text(json.dumps(sorted(okunan), ensure_ascii=False), encoding="utf-8")
     return {"okundu": ad in okunan}
+
+
+# ---- GitHub içerik yazıcı — panel düzenlemeleri repoya commit edilir; push,
+# Railway'de iki servisi yeniden deploy ederek siteyi günceller. ----
+_GITHUB_REPO = "oanblc/ges"
+
+
+def _github_basliklar():
+    token = os.environ.get("GITHUB_TOKEN", "")
+    if not token:
+        raise RuntimeError("GITHUB_TOKEN tanımlı değil")
+    return {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+            "User-Agent": "gesdanismani-panel", "Content-Type": "application/json"}
+
+
+def _github_oku(yol: str) -> str:
+    import base64
+    import urllib.request
+    istek = urllib.request.Request(
+        f"https://api.github.com/repos/{_GITHUB_REPO}/contents/{yol}?ref=main",
+        headers=_github_basliklar())
+    with urllib.request.urlopen(istek, timeout=30) as r:
+        d = json.loads(r.read().decode())
+    return base64.b64decode(d["content"]).decode("utf-8")
+
+
+def _github_yaz(yol: str, icerik: str, mesaj: str) -> None:
+    import base64
+    import urllib.request
+    basliklar = _github_basliklar()
+    api = f"https://api.github.com/repos/{_GITHUB_REPO}/contents/{yol}"
+    sha = None
+    try:
+        with urllib.request.urlopen(
+                urllib.request.Request(f"{api}?ref=main", headers=basliklar), timeout=30) as r:
+            sha = json.loads(r.read().decode()).get("sha")
+    except Exception:
+        pass
+    govde = {"message": mesaj, "branch": "main",
+             "content": base64.b64encode(icerik.encode("utf-8")).decode()}
+    if sha:
+        govde["sha"] = sha
+    istek = urllib.request.Request(api, data=json.dumps(govde).encode(),
+                                   headers=basliklar, method="PUT")
+    with urllib.request.urlopen(istek, timeout=30) as r:
+        r.read()
+
+
+@app.get("/yonetim/denetim")
+async def yonetim_denetim(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        return json.loads((ROOT / "kb" / "veri" / "denetim.json").read_text(encoding="utf-8"))
+    except Exception:
+        return JSONResponse({"hata": "denetim verisi okunamadı"}, status_code=500)
+
+
+@app.get("/yonetim/destekler")
+async def yonetim_destekler(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        veri = json.loads((ROOT / "kb" / "veri" / "destekler.json").read_text(encoding="utf-8"))
+    except Exception:
+        return JSONResponse({"hata": "destek verisi okunamadı"}, status_code=500)
+    veri["yazilabilir"] = bool(os.environ.get("GITHUB_TOKEN"))
+    return veri
+
+
+@app.post("/yonetim/destek-durum")
+async def yonetim_destek_durum(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    kimlik = str(govde.get("id", ""))
+    durum = str(govde.get("durum", ""))
+    if durum not in {"aktif", "pasif", "donemsel", "teyit-bekliyor"}:
+        return JSONResponse({"hata": "geçersiz durum"}, status_code=400)
+    dosya = ROOT / "kb" / "veri" / "destekler.json"
+    veri = json.loads(dosya.read_text(encoding="utf-8"))
+    kayit = next((d for d in veri["destekler"] if d.get("id") == kimlik), None)
+    if kayit is None:
+        return JSONResponse({"hata": "kayıt bulunamadı"}, status_code=404)
+    kayit["durum"] = durum
+    kayit["not"] = (kayit.get("not") or "").strip()
+    veri["guncelleme"] = time.strftime("%Y-%m-%d")
+    metin = json.dumps(veri, ensure_ascii=False, indent=2) + "\n"
+    dosya.write_text(metin, encoding="utf-8")  # panel anında güncel görsün
+    try:
+        mesaj = f"Panel: {kimlik} durumu → {durum}"
+        _github_yaz("kb/veri/destekler.json", metin, mesaj)
+        _github_yaz("web/data/destekler.json", metin, mesaj)
+    except Exception as hata:
+        return JSONResponse({"hata": f"Siteye yansıtılamadı: {type(hata).__name__} "
+                                     "(GITHUB_TOKEN kontrol edin)"}, status_code=502)
+    return {"durum": durum, "not": "Site birkaç dakika içinde yeniden yayınlanacak."}
+
+
+@app.get("/yonetim/sss")
+async def yonetim_sss(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    if not os.environ.get("GITHUB_TOKEN"):
+        return {"yazilabilir": False, "veri": None}
+    try:
+        return {"yazilabilir": True, "veri": json.loads(_github_oku("web/data/sss.json"))}
+    except Exception as hata:
+        return JSONResponse({"hata": f"SSS okunamadı: {type(hata).__name__}"}, status_code=502)
+
+
+@app.post("/yonetim/sss-kaydet")
+async def yonetim_sss_kaydet(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    veri = govde.get("veri")
+    if (not isinstance(veri, dict) or not isinstance(veri.get("kategoriler"), list)
+            or not all(isinstance(k, dict) and isinstance(k.get("sorular"), list)
+                       for k in veri["kategoriler"])):
+        return JSONResponse({"hata": "geçersiz SSS verisi"}, status_code=400)
+    veri["guncelleme"] = time.strftime("%-d ") + [
+        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz",
+        "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][int(time.strftime("%m")) - 1] + \
+        time.strftime(" %Y")
+    try:
+        _github_yaz("web/data/sss.json",
+                    json.dumps(veri, ensure_ascii=False, indent=1) + "\n",
+                    "Panel: SSS güncellendi")
+    except Exception as hata:
+        return JSONResponse({"hata": f"Kaydedilemedi: {type(hata).__name__}"}, status_code=502)
+    return {"durum": "kaydedildi", "not": "Site birkaç dakika içinde yeniden yayınlanacak."}
+
+
+@app.get("/yonetim/ayarlar")
+async def yonetim_ayarlar(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    a = _ayar()
+    return {
+        "saat_limit": _ayar_deger("saat_limit", SAAT_LIMIT),
+        "gunluk_sohbet": _ayar_deger("gunluk_sohbet", GUNLUK_SOHBET_TAVANI),
+        "gunluk_lead": _ayar_deger("gunluk_lead", GUNLUK_LEAD_TAVANI),
+        "bakim": bool(a.get("bakim")),
+        "varsayilanlar": {"saat_limit": SAAT_LIMIT, "gunluk_sohbet": GUNLUK_SOHBET_TAVANI,
+                          "gunluk_lead": GUNLUK_LEAD_TAVANI},
+    }
+
+
+@app.post("/yonetim/ayarlar")
+async def yonetim_ayarlar_kaydet(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    yeni = {}
+    for anahtar, ust in (("saat_limit", 1000), ("gunluk_sohbet", 10000), ("gunluk_lead", 2000)):
+        try:
+            deger = int(govde.get(anahtar, 0))
+        except (TypeError, ValueError):
+            return JSONResponse({"hata": f"{anahtar} sayı olmalı"}, status_code=400)
+        if not 1 <= deger <= ust:
+            return JSONResponse({"hata": f"{anahtar} 1-{ust} aralığında olmalı"}, status_code=400)
+        yeni[anahtar] = deger
+    yeni["bakim"] = bool(govde.get("bakim"))
+    AYAR_DOSYA.parent.mkdir(parents=True, exist_ok=True)
+    AYAR_DOSYA.write_text(json.dumps(yeni, ensure_ascii=False), encoding="utf-8")
+    return {"durum": "kaydedildi", **yeni}
 
 
 @app.post("/lead")

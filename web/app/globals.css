@@ -539,6 +539,32 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
   padding:5px 12px; font:inherit; font-size:12px; cursor:pointer; color:var(--text)}
 .yp-okundu.on{background:#DCEFE4; border-color:#1F8A5D; color:#1F8A5D; font-weight:600}
 .yp-aciklama{font-size:13.5px; color:var(--text); margin:-8px 0 18px; max-width:70ch}
+.yp-sekmeler{flex-wrap:wrap}
+.yp-destek-durum{display:flex; flex-direction:column; gap:4px}
+.yp-destek-durum select{border:1px solid var(--border); border-radius:9px; padding:7px 10px;
+  font:inherit; font-size:12.5px; background:var(--surface)}
+.yp-destek-durum small{font-size:11px; color:#1F8A5D}
+.yp-sss-arac{display:flex; align-items:center; gap:14px; margin:0 0 18px; position:sticky;
+  top:0; background:#F3F5F0; padding:10px 0; z-index:5}
+.yp-sss-mesaj{font-size:13px; color:var(--text)}
+.yp-sss-kategori{margin-bottom:26px}
+.yp-sss-kategori .yp-kayit{margin-bottom:8px}
+.yp-sss-form{display:flex; flex-direction:column; gap:8px; padding:0 16px 14px}
+.yp-sss-form input, .yp-sss-form textarea{border:1px solid var(--border); border-radius:10px;
+  padding:9px 12px; font:inherit; font-size:13.5px; width:100%; resize:vertical}
+.yp-sil{flex:0 0 auto; border:1px solid #E4B7B7; color:#A03535; background:none;
+  border-radius:999px; padding:4px 11px; font:inherit; font-size:12px; cursor:pointer}
+.yp-ekle{border:1px dashed var(--border); background:none; border-radius:11px; width:100%;
+  padding:9px; font:inherit; font-size:13px; color:var(--text); cursor:pointer; margin-top:2px}
+.yp-ayarlar{display:flex; flex-direction:column; gap:12px; max-width:640px}
+.yp-alan{display:flex; align-items:center; justify-content:space-between; gap:18px;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 18px}
+.yp-alan span{display:flex; flex-direction:column; gap:2px}
+.yp-alan b{font-size:14px}
+.yp-alan small{font-size:12.5px; color:var(--text)}
+.yp-alan input[type=number]{width:110px; border:1px solid var(--border); border-radius:10px;
+  padding:9px 12px; font:inherit}
+.yp-alan input[type=checkbox]{width:20px; height:20px; accent-color:var(--theme)}
 
 .sss-yerlesim{padding-top:24px}
 .sss-bolum{margin-bottom:34px}
