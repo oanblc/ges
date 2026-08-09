@@ -233,14 +233,23 @@ export default function Simulasyon() {
         `${S.guc} kWp · ${S.il} · ${({ kis: "kış", bahar: "ilkbahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim]} günü · ` +
         `${({ acik: "açık", parcali: "ortalama", bulutlu: "bulutlu" } as Record<string, string>)[S.hava]} hava`;
       const pb = panelBilgi();
+      const fi = fiyatlar();
+      const ozKwh = t.oz + t.batVer;
+      const tlB = (v: number) => v.toFixed(2).replace(".", ",");
+      const acilim = S.grup === "mesken"
+        ? `<tr class="kalem"><td>→ Öz tüketim değeri: ${f(ozKwh)} kWh × ${tlB(fi.alis)} ₺</td><td>${f(ozKwh * fi.alis)} ₺</td></tr>
+           <tr class="kalem"><td>→ Aylık mahsuba emanet: ${f(t.satis)} kWh (≈%85 değerle)</td><td>${f(t.satis * fi.alis * 0.85)} ₺</td></tr>`
+        : `<tr class="kalem"><td>→ Önlenen fatura: ${f(ozKwh)} kWh × ${tlB(fi.alis)} ₺ (vergili alış)</td><td>${f(ozKwh * fi.alis)} ₺</td></tr>
+           <tr class="kalem"><td>→ Satış geliri: ${f(t.satis)} kWh × ${tlB(fi.satis)} ₺ (enerji bedeli)</td><td>${f(t.satis * fi.satis)} ₺</td></tr>`;
       el("karneTablo").innerHTML = `
         <tr><td>Panel</td><td>${pb.adet} adet · ${pb.alan.toLocaleString("tr-TR")} m²</td></tr>
-        <tr><td>Üretim</td><td>${f(t.uretim)} kWh</td></tr>
-        <tr><td>Öz tüketim oranı</td><td>%${t.uretim ? Math.round(((t.oz + t.batVer) / t.uretim) * 100) : 0}</td></tr>
+        <tr><td>Günlük üretim</td><td>${f(t.uretim)} kWh</td></tr>
+        <tr><td>Öz tüketim</td><td>%${t.uretim ? Math.round((ozKwh / t.uretim) * 100) : 0} · ${f(ozKwh)} kWh</td></tr>
         <tr><td>Şebekeye ${S.grup === "mesken" ? "emanet" : "satış"}</td><td>${f(t.satis)} kWh</td></tr>
         <tr><td>Şebekeden alış</td><td>${f(t.alis)} kWh</td></tr>
         ${S.batarya ? `<tr><td>Bataryadan beslenen</td><td>${f(t.batVer)} kWh</td></tr>` : ""}
-        <tr class="buyuk"><td>Cebinde kalan</td><td>+${f(t.kazanc)} ₺</td></tr>`;
+        ${acilim}
+        <tr class="buyuk"><td>Cebinde kalan (bugün)</td><td>+${f(t.kazanc)} ₺</td></tr>`;
       el("perde").classList.add("acik");
     }
     function dongu() {

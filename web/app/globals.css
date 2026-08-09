@@ -544,11 +544,12 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .simx .akis{display:flex; align-items:center; gap:9px}
 .simx .akis i{width:10px; height:10px; border-radius:3px; flex:none}
 .simx .akis b{margin-left:auto; font-family:ui-monospace,monospace; font-variant-numeric:tabular-nums}
-.simx .cubuklar{display:flex; align-items:flex-end; gap:2px; height:86px; margin-top:4px}
-.simx .cubuklar span{flex:1; display:flex; flex-direction:column-reverse; gap:1px}
-.simx .cubuklar em{display:block; border-radius:2px 2px 0 0; min-height:0}
-.simx .cubuklar .u{background:#E8C43C}
-.simx .cubuklar .t{background:#B3C9C4; border-radius:0}
+.simx .cubuklar{display:flex; align-items:flex-end; gap:2px; height:86px; margin-top:4px;
+  overflow:hidden}
+.simx .cubuklar span{flex:1; position:relative; height:100%}
+.simx .cubuklar em{position:absolute; bottom:0; border-radius:2px 2px 0 0}
+.simx .cubuklar .t{left:0; right:0; background:#B3C9C4}
+.simx .cubuklar .u{left:15%; right:15%; background:#E8C43C; z-index:2}
 .simx .grafik-aciklama{display:flex; gap:14px; font-size:11px; color:var(--text); margin-top:8px}
 .simx .grafik-aciklama i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px}
 .simx .canli-sayi{display:grid; grid-template-columns:1fr 1fr; gap:8px}
@@ -566,6 +567,8 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .simx .karne table{width:100%; border-collapse:collapse; font-size:14px}
 .simx .karne td{padding:8px 0; border-bottom:1px dashed var(--border)}
 .simx .karne td:last-child{text-align:right; font-family:ui-monospace,monospace; font-weight:700}
+.simx .karne tr.kalem td{font-size:12px; color:var(--text); border-bottom:none; padding:3px 0}
+.simx .karne tr.kalem td:last-child{font-weight:600}
 .simx .karne tr.buyuk td{border-bottom:none; padding-top:14px; font-size:16px}
 .simx .karne tr.buyuk td:last-child{color:#1F8A5D; font-size:20px}
 .simx .panel-sayi{font-size:11px; color:var(--text); font-family:ui-monospace,monospace}
