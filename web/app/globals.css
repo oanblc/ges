@@ -46,6 +46,29 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .brand .sun{width:44px;height:44px;border-radius:999px;background:var(--theme);display:flex;align-items:center;justify-content:center; position:relative; flex:none}
 .brand .sun::after{content:""; position:absolute; inset:-4px; border-radius:999px; border:2px solid var(--theme2); opacity:.7}
 .brand .sun svg{stroke:var(--theme2); width:24px; height:24px; animation:gunes-don 16s linear infinite}
+/* marka kilidi: şarj animasyonlu panel (Ozan'ın logo taslağından; şarj rengi tema sarısı) */
+.marka-panel{position:relative; width:38px; height:32px; overflow:hidden; border-radius:5px;
+  transform:perspective(66px) rotateX(22deg); flex:0 0 auto}
+.marka-grid{display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+  gap:2.5px; width:100%; height:100%}
+.marka-grid i{border-radius:1.5px; background:#CBD5D2; animation:marka-sarj 1.8s ease-in-out infinite}
+.marka-grid i:nth-child(2),.marka-grid i:nth-child(4){animation-delay:.12s}
+.marka-grid i:nth-child(3),.marka-grid i:nth-child(5),.marka-grid i:nth-child(7){animation-delay:.24s}
+.marka-grid i:nth-child(6),.marka-grid i:nth-child(8){animation-delay:.36s}
+.marka-grid i:nth-child(9){animation-delay:.48s}
+.marka-sweep{position:absolute; inset:-20% -60%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);
+  animation:marka-supur 1.8s linear infinite}
+@keyframes marka-sarj{
+  0%,100%{background:#CBD5D2; box-shadow:none}
+  22%{background:#FFE175; box-shadow:0 0 10px rgba(255,225,117,.8)}
+  55%{background:color-mix(in srgb, #FFE175 35%, #CBD5D2); box-shadow:none}
+}
+@keyframes marka-supur{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+@media (prefers-reduced-motion:reduce){
+  .marka-grid i{animation:none; background:#FFE175; opacity:.85}
+  .marka-sweep{display:none}
+}
 @keyframes gunes-don{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion: reduce){.brand .sun svg{animation:none}}
 .brand-yazi{display:flex; flex-direction:column; line-height:1.05; letter-spacing:-.4px}

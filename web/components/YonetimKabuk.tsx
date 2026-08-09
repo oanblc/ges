@@ -1,6 +1,6 @@
 import Link from "next/link";
 import CikisDugme from "./CikisDugme";
-import { Sun } from "./Icons";
+import Marka from "./Marka";
 
 const SEKMELER: Array<[string, string]> = [
   ["/yonetim", "Genel Bakış"],
@@ -24,12 +24,7 @@ export default function YonetimKabuk({
     <div className="yp-wrap">
       <header className="yp-ust">
         <Link href="/" className="brand">
-          <span className="sun">
-            <Sun />
-          </span>
-          <span className="brand-yazi">
-            gesdanismani<i>.com</i>
-          </span>
+          <Marka />
         </Link>
         <span className="yp-rozet">Yönetim</span>
         <nav className="yp-sekmeler" aria-label="Yönetim menüsü">

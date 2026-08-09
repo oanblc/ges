@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Sun, Ok } from "./Icons";
+import Marka from "./Marka";
+import { Ok } from "./Icons";
 
 export type AktifSayfa =
   | "anasayfa" | "asistan" | "surec" | "hesaplama" | "fatura"
@@ -58,13 +59,7 @@ export default function SiteHead({ aktif }: { aktif: AktifSayfa }) {
         İçeriğe atla
       </a>
       <Link href="/" className="brand">
-        <span className="sun">
-          <Sun />
-        </span>
-        <span className="brand-yazi">
-          gesdanismani
-          <i>.com</i>
-        </span>
+        <Marka />
       </Link>
       <nav className="nav" aria-label="Ana menü">
         {MENU.map((g) =>
