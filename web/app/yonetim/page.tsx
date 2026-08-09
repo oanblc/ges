@@ -52,16 +52,16 @@ export default async function GenelBakis() {
               <span>bugünkü talep</span>
               <small>tavan {ozet.tavanlar.lead}</small>
             </div>
-            <div className="yp-kart vurgu">
+            <a className="yp-kart vurgu" href="/yonetim/talepler">
               <b>{ozet.talep.bekleyen}</b>
               <span>aranmayı bekleyen talep</span>
-              <small>toplam {ozet.talep.toplam} kayıt</small>
-            </div>
-            <div className="yp-kart">
+              <small>toplam {ozet.talep.toplam} kayıt → talepleri aç</small>
+            </a>
+            <a className="yp-kart" href="/yonetim/onay">
               <b>{ozet.taslak.sayi}</b>
               <span>taslak rapor</span>
-              <small>ajan çıktıları (kb/taslak)</small>
-            </div>
+              <small>ajan çıktıları → onay kutusunu aç</small>
+            </a>
           </div>
 
           <h2>Veri güncellemeleri</h2>

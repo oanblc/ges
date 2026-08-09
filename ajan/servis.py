@@ -335,6 +335,9 @@ async def sohbet_ucu(istek: Request):
             yield _sse("durum", {"mesaj": "denetleniyor"})
             karar = _denetle(soru, metin, istemci, ekli=ekli)
             if karar.startswith("SORUN"):
+                # Ön yüz taslağı gizleyip "mühendis kontrolü" animasyonu gösterir;
+                # nihai (revize) cevap duzeltme olayıyla tek parça gelir.
+                yield _sse("duzeltme-basladi", {})
                 # Tek revizyon hakkı (akışsız), sonra yeniden denetim; geçmezse güvenli yanıt
                 duzeltme_istegi = icerikler + [
                     {"role": "model", "parts": [{"text": metin}]},

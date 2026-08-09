@@ -59,7 +59,15 @@ export default async function Talepler() {
               {talepler.map((t) => (
                 <tr key={t.id} className={t.durum === "aranmadi" ? "bekliyor" : ""}>
                   <td>{t.zaman.replace("T", " ").slice(0, 16)}</td>
-                  <td>{t.iletisim || "—"}</td>
+                  <td>
+                    {t.iletisim ? (
+                      <a href={t.iletisim.includes("@") ? `mailto:${t.iletisim}` : `tel:${t.iletisim.replace(/\s/g, "")}`}>
+                        {t.iletisim}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td>
                     {[t.tip, t.il, t.sicaklik ? `ilgi: ${t.sicaklik}` : null]
                       .filter(Boolean)

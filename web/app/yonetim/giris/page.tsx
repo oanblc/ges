@@ -39,6 +39,8 @@ export default function YonetimGiris() {
         <p>Bu alan site yöneticisine özeldir.</p>
         <input
           type="password"
+          name="password"
+          autoComplete="current-password"
           value={sifre}
           onChange={(e) => setSifre(e.target.value)}
           placeholder="Yönetici şifresi"

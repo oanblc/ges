@@ -70,7 +70,15 @@ export default async function TalepDetay({ params }: { params: Promise<{ id: str
         <>
           <div className="yp-detay-ust">
             <div>
-              <h1>{talep.iletisim || "İletişim bırakılmamış"}</h1>
+              <h1>
+                {talep.iletisim ? (
+                  <a href={talep.iletisim.includes("@") ? `mailto:${talep.iletisim}` : `tel:${talep.iletisim.replace(/\s/g, "")}`}>
+                    {talep.iletisim}
+                  </a>
+                ) : (
+                  "İletişim bırakılmamış"
+                )}
+              </h1>
               <span className="yp-detay-zaman">{talep.zaman.replace("T", " ")}</span>
             </div>
             <TalepDurum id={talep.id} durum={talep.durum} />

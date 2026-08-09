@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CikisDugme from "./CikisDugme";
 import { Sun } from "./Icons";
 
 const SEKMELER: Array<[string, string]> = [
@@ -39,7 +40,10 @@ export default function YonetimKabuk({
             </Link>
           ))}
         </nav>
-        <Link href="/" className="yp-cik">Siteye dön</Link>
+        <span className="yp-sag">
+          <Link href="/" className="yp-cik">Siteye dön</Link>
+          <CikisDugme />
+        </span>
       </header>
       <main className="yp-icerik">{children}</main>
     </div>

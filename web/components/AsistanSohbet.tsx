@@ -14,6 +14,7 @@ type Mesaj = {
   ekAd?: string;
   denetim?: "onay" | "guvenli-yanit";
   akiyor?: boolean;
+  gozden?: boolean; // denetçi revizyonu sürüyor — taslak gizli, animasyon gösterilir
 };
 
 type Ek = { ad: string; mime: string; veri: string };
@@ -146,7 +147,11 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
             setDurum("yazıyor");
             mesajGuncelle((m) => ({ ...m, content: m.content + d.t }));
           } else if (olay === "durum") setDurum(d.mesaj);
-          else if (olay === "duzeltme") mesajGuncelle((m) => ({ ...m, content: d.metin }));
+          else if (olay === "duzeltme-basladi") {
+            setDurum("kontrol ediliyor");
+            mesajGuncelle((m) => ({ ...m, gozden: true }));
+          } else if (olay === "duzeltme")
+            mesajGuncelle((m) => ({ ...m, content: d.metin, gozden: false }));
           else if (olay === "denetim")
             mesajGuncelle((m) => ({ ...m, denetim: d.sonuc === "onay" ? "onay" : "guvenli-yanit" }));
           else if (olay === "hata") throw new Error(d.mesaj);
@@ -267,7 +272,21 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
                 <Sohbet className="i" /> GES Asistanı
               </div>
               <div className="govde">
-                {m.content ? (
+                {m.gozden ? (
+                  <div className="gozden" role="status">
+                    <svg className="disli" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" fill="none" stroke="currentColor" strokeWidth="1.7" />
+                      <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                    </svg>
+                    <div>
+                      <b>Mühendis kontrolünden geçiyor</b>
+                      <span>Cevap, bilgi tabanına göre son kez doğrulanıyor — birkaç saniye…</span>
+                      <div className="gozden-cizgiler" aria-hidden="true">
+                        <i /><i /><i />
+                      </div>
+                    </div>
+                  </div>
+                ) : m.content ? (
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
