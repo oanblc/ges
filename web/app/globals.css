@@ -41,22 +41,24 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 @media (prefers-reduced-motion: reduce){ .gt-btn::before{transition:none} }
 
 /* ---------- üst menü ---------- */
-.site-head{display:flex; align-items:center; gap:24px; padding:16px 32px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:50}
+.site-head{display:flex; align-items:center; gap:24px; padding:10px 32px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:50}
+.site-head .nav, .site-head .baslik-cta, .site-head .menu-dugme{align-self:center}
 .brand{display:flex; align-items:center; gap:12px; font-family:var(--font-epilogue), sans-serif; font-weight:700; font-size:18px; color:var(--title); text-decoration:none}
 .brand .sun{width:44px;height:44px;border-radius:999px;background:var(--theme);display:flex;align-items:center;justify-content:center; position:relative; flex:none}
 .brand .sun::after{content:""; position:absolute; inset:-4px; border-radius:999px; border:2px solid var(--theme2); opacity:.7}
 .brand .sun svg{stroke:var(--theme2); width:24px; height:24px; animation:gunes-don 16s linear infinite}
-/* marka yazısı: taslaktaki gibi mono, tek satır, harf aralıklı; .com amber */
+/* marka yazısı: taslaktaki gibi mono, panelin ALTINDA, harf aralıklı; .com amber */
+.brand{flex-direction:column; gap:7px; align-items:center}
 .brand .brand-yazi{flex-direction:row; font-family:var(--font-jbmono), ui-monospace, monospace;
-  font-weight:500; font-size:13px; letter-spacing:.22em; text-transform:uppercase;
+  font-weight:500; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase;
   color:var(--title); line-height:1; white-space:nowrap}
-.brand .brand-yazi i{font-size:13px; font-weight:500; letter-spacing:.22em; color:#C77F06}
+.brand .brand-yazi i{font-size:11.5px; font-weight:500; letter-spacing:.2em; color:#C77F06}
 @media(max-width:480px){
-  .brand .brand-yazi, .brand .brand-yazi i{font-size:11px; letter-spacing:.16em}
+  .brand .brand-yazi, .brand .brand-yazi i{font-size:10px; letter-spacing:.15em}
 }
 /* marka kilidi: şarj animasyonlu panel (Ozan'ın logo taslağından; şarj rengi tema sarısı) */
-.marka-panel{position:relative; width:38px; height:32px; overflow:hidden; border-radius:5px;
-  transform:perspective(66px) rotateX(22deg); flex:0 0 auto}
+.marka-panel{position:relative; width:46px; height:39px; overflow:hidden; border-radius:6px;
+  transform:perspective(80px) rotateX(22deg); flex:0 0 auto}
 .marka-grid{display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
   gap:2.5px; width:100%; height:100%}
 .marka-grid i{border-radius:1.5px; background:#CBD5D2; animation:marka-sarj 1.8s ease-in-out infinite}
