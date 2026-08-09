@@ -50,6 +50,50 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   const oncekiSayiRef = useRef(0);      // yeni mesaj eklenmesini ayırt eder
   const [asagidaYeni, setAsagidaYeni] = useState(false);
 
+  // Sohbet geçmişi sekme oturumunda saklanır — sayfa yenilenince kaybolmaz,
+  // sekme kapanınca temizlenir (kişisel veri kalıcı olmaz).
+  const YEREL_ANAHTAR = "gd-sohbet";
+  const yuklendiRef = useRef(false);
+  useEffect(() => {
+    try {
+      const ham = sessionStorage.getItem(YEREL_ANAHTAR);
+      if (ham) {
+        const eski = JSON.parse(ham) as Mesaj[];
+        if (Array.isArray(eski) && eski.length) {
+          setMesajlar((simdiki) => (simdiki.length ? simdiki : eski));
+        }
+      }
+    } catch {
+      /* engelli depolama — sessizce geç */
+    }
+    yuklendiRef.current = true;
+  }, []);
+  useEffect(() => {
+    if (!yuklendiRef.current || mesajlar.some((m) => m.akiyor || m.gozden)) return;
+    try {
+      if (mesajlar.length) {
+        sessionStorage.setItem(
+          YEREL_ANAHTAR,
+          JSON.stringify(mesajlar.slice(-30).map(({ role, content, ekAd, denetim }) =>
+            ({ role, content, ekAd, denetim })))
+        );
+      } else {
+        sessionStorage.removeItem(YEREL_ANAHTAR);
+      }
+    } catch {
+      /* dolu/engelli depolama — sessizce geç */
+    }
+  }, [mesajlar]);
+
+  const sohbetiTemizle = () => {
+    setMesajlar([]);
+    try {
+      sessionStorage.removeItem(YEREL_ANAHTAR);
+    } catch {
+      /* yoksay */
+    }
+  };
+
   const kaydirmaIzle = () => {
     const el = kayanRef.current;
     if (!el) return;
@@ -239,6 +283,11 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
 
   return (
     <div className="as-main" onPaste={yapistir}>
+      {mesajlar.length > 0 && !durum && (
+        <button type="button" className="yeni-sohbet" onClick={sohbetiTemizle}>
+          Yeni sohbet
+        </button>
+      )}
       <div className="chat" ref={kayanRef} onScroll={kaydirmaIzle} aria-live="polite">
         {mesajlar.length === 0 && (
           <div className="as-bos">
