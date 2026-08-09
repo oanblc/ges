@@ -756,41 +756,61 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 @keyframes gozden-parla{0%{background-position:120% 0}100%{background-position:-100% 0}}
 @media(prefers-reduced-motion:reduce){.gozden .disli,.gozden-cizgiler i{animation:none}}
 
-/* ---------- yönetim paneli ---------- */
-.yp-wrap{min-height:100vh; background:#F3F5F0}
-.yp-ust{display:flex; align-items:center; gap:16px; background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:14px max(24px, calc((100% - 1032px)/2))}
-.yp-rozet{background:var(--theme); color:#fff; font-size:11.5px; font-weight:700;
-  letter-spacing:.05em; text-transform:uppercase; padding:4px 10px; border-radius:999px}
-.yp-sekmeler{display:flex; gap:18px; margin-left:16px; font-size:14px}
-.yp-sekmeler a{color:var(--text); text-decoration:none; padding:8px 0}
-.yp-sekmeler a.on{color:var(--theme); font-weight:600; box-shadow:0 2px 0 var(--theme)}
-.yp-sag{margin-left:auto; display:flex; align-items:center; gap:14px; flex:0 0 auto}
-.yp-cik{font-size:13px; color:var(--text)}
-.yp-cikis{border:1px solid var(--border); background:none; border-radius:999px;
-  padding:6px 14px; font:inherit; font-size:12.5px; color:var(--text); cursor:pointer}
-.yp-cikis:hover{border-color:#A5620D; color:#A5620D}
+/* ---------- yönetim paneli: ray + üst bar (Altın Ekranı esinli, GES paleti) ---------- */
+.yp-kok{display:flex; min-height:100vh; background:#EEF1EA}
+.yp-rail{width:64px; flex:none; background:var(--surface); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 0;
+  position:sticky; top:0; height:100vh}
+.yp-marka{margin-bottom:10px; display:block}
+.yp-marka .marka-panel.kucuk{width:34px; height:29px; border-radius:6px;
+  transform:perspective(60px) rotateX(18deg)}
+.yp-rail-nav{display:flex; flex-direction:column; gap:6px}
+.yp-ric{width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
+  color:var(--text); border:none; background:none; cursor:pointer; transition:all .15s}
+.yp-ric:hover{background:#F3F5F0; color:var(--theme)}
+.yp-ric.on{background:var(--theme); color:#FFE175}
+.yp-rail-bosluk{flex:1}
+.yp-cikis:hover{background:#FBE9E9; color:#A03535}
+.yp-govde{flex:1; min-width:0; display:flex; flex-direction:column}
+.yp-tepe{display:flex; align-items:center; gap:16px; padding:13px 28px; background:var(--surface);
+  border-bottom:1px solid var(--border); position:sticky; top:0; z-index:30}
+.yp-tepe h3{margin:0; font-size:17px; font-family:var(--font-epilogue), sans-serif; color:var(--title)}
+.yp-tepe-sag{margin-left:auto; display:flex; align-items:center; gap:10px}
+.yp-avatar{width:34px; height:34px; border-radius:999px; background:#FFE175; color:#5C4A00;
+  display:grid; place-items:center; font-weight:800; font-size:13px;
+  font-family:var(--font-epilogue), sans-serif}
+.yp-kimlik{font-size:11.5px; color:var(--text); line-height:1.3}
+.yp-kimlik b{display:block; color:var(--title); font-size:12.5px}
+.yp-icerik{padding:26px 28px 60px; width:100%; max-width:1160px}
+.yp-icerik h1{font-size:20px; margin:0 0 18px; font-family:var(--font-epilogue), sans-serif}
+.yp-icerik h2{font-size:15px; margin:26px 0 12px}
+@media(max-width:760px){
+  .yp-kok{flex-direction:column}
+  .yp-rail{width:100%; height:auto; flex-direction:row; padding:8px 12px; gap:4px;
+    border-right:none; border-bottom:1px solid var(--border); overflow-x:auto; z-index:40}
+  .yp-rail-nav{flex-direction:row; gap:4px}
+  .yp-marka{margin:0 8px 0 0}
+  .yp-tepe{position:static; padding:12px 16px}
+  .yp-icerik{padding:20px 14px 48px}
+  .yp-detay-ust{flex-direction:column}
+}
+
 .yp-kart{text-decoration:none}
 a.yp-kart:hover{border-color:var(--theme)}
 @media(max-width:760px){
-  .yp-ust{flex-wrap:wrap; row-gap:8px; padding:12px 16px}
-  .yp-sekmeler{order:3; flex-basis:100%; margin-left:0; overflow-x:auto; gap:14px;
-    -webkit-overflow-scrolling:touch; white-space:nowrap; padding-bottom:2px}
-  .yp-icerik{padding:22px 14px 48px}
-  .yp-detay-ust{flex-direction:column}
+        .yp-detay-ust{flex-direction:column}
 }
-.yp-icerik{padding:30px max(24px, calc((100% - 1032px)/2)) 60px}
-.yp-icerik h1{font-size:24px; margin:0 0 20px}
-.yp-icerik h2{font-size:16px; margin:28px 0 12px}
 .yp-kartlar{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px}
-.yp-kart{background:var(--surface); border:1px solid var(--border); border-radius:16px;
-  padding:18px 20px; display:flex; flex-direction:column; gap:2px}
+.yp-kart{background:var(--surface); border:1px solid var(--border); border-radius:18px;
+  padding:16px 18px; display:flex; flex-direction:column; gap:2px}
 .yp-kart b{font-size:28px; font-family:var(--font-epilogue), sans-serif; color:var(--title)}
 .yp-kart span{font-size:13.5px; color:var(--text)}
 .yp-kart small{font-size:12px; color:#8A8F87}
-.yp-kart.vurgu{border-color:var(--theme); box-shadow:0 0 0 1px var(--theme) inset}
-.yp-tablo-kutu{background:var(--surface); border:1px solid var(--border); border-radius:16px;
+.yp-kart.vurgu{background:linear-gradient(150deg, #0A6B5C, var(--theme)); border-color:transparent}
+.yp-kart.vurgu b{color:#FFE175}
+.yp-kart.vurgu span{color:rgba(255,255,255,.92)}
+.yp-kart.vurgu small{color:rgba(255,255,255,.65)}
+.yp-tablo-kutu{background:var(--surface); border:1px solid var(--border); border-radius:18px;
   overflow-x:auto}
 .yp-tablo-kutu table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px}
 .yp-tablo-kutu th{text-align:left; padding:11px 16px; background:#F3F5F0; font-size:12.5px}
@@ -856,7 +876,6 @@ a.yp-kart:hover{border-color:var(--theme)}
   padding:5px 12px; font:inherit; font-size:12px; cursor:pointer; color:var(--text)}
 .yp-okundu.on{background:#DCEFE4; border-color:#1F8A5D; color:#1F8A5D; font-weight:600}
 .yp-aciklama{font-size:13.5px; color:var(--text); margin:-8px 0 18px; max-width:70ch}
-.yp-sekmeler{flex-wrap:wrap}
 .yp-destek-durum{display:flex; flex-direction:column; gap:4px}
 .yp-destek-durum select{border:1px solid var(--border); border-radius:9px; padding:7px 10px;
   font:inherit; font-size:12.5px; background:var(--surface)}
