@@ -874,7 +874,7 @@ a.yp-kart:hover{border-color:var(--theme)}
 }
 
 /* ---------- /asistan sohbet sayfası ---------- */
-.as-ust{padding:26px 32px 6px}
+.as-ust{padding-top:26px; padding-bottom:6px}
 .as-ust h1{font-size:24px; letter-spacing:-.6px; margin:0 0 4px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
 .as-ust p{margin:0; font-size:14px}
 .pulse{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:var(--good);
