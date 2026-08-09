@@ -48,11 +48,11 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .brand .sun::after{content:""; position:absolute; inset:-4px; border-radius:999px; border:2px solid var(--theme2); opacity:.7}
 .brand .sun svg{stroke:var(--theme2); width:24px; height:24px; animation:gunes-don 16s linear infinite}
 /* marka yazısı: taslaktaki gibi mono, panelin ALTINDA, harf aralıklı; .com amber */
-.brand{flex-direction:column; gap:7px; align-items:center}
-.brand .brand-yazi{flex-direction:row; font-family:var(--font-jbmono), ui-monospace, monospace;
+.brand{flex-direction:column; gap:11px; align-items:center}
+.brand .brand-yazi{flex-direction:row; align-items:baseline; font-family:var(--font-jbmono), ui-monospace, monospace;
   font-weight:500; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase;
   color:var(--title); line-height:1; white-space:nowrap}
-.brand .brand-yazi i{font-size:11.5px; font-weight:500; letter-spacing:.2em; color:#C77F06}
+.brand .brand-yazi i{font-size:11.5px; font-weight:500; letter-spacing:.2em; line-height:1; color:#C77F06}
 @media(max-width:480px){
   .brand .brand-yazi, .brand .brand-yazi i{font-size:10px; letter-spacing:.15em}
 }
@@ -84,13 +84,13 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .brand-yazi{display:flex; flex-direction:column; line-height:1.05; letter-spacing:-.4px}
 .brand-yazi i{font-style:normal; font-size:11px; font-weight:600; letter-spacing:.22em;
   color:var(--theme); margin-top:3px; text-transform:uppercase}
-.nav{display:flex; gap:20px; margin-left:auto; font-size:14px; color:var(--text); align-items:center}
+.nav{display:flex; gap:22px; margin-left:auto; font-size:14.5px; font-weight:600; color:var(--title); align-items:center}
 .nav a{color:inherit; text-decoration:none}
-.nav a.on{color:var(--theme); font-weight:600}
+.nav a.on{color:var(--theme); font-weight:700}
 .nav-grup{position:relative}
 .nav-grup>button{display:inline-flex; align-items:center; gap:5px; background:none; border:none;
   padding:10px 0; font:inherit; color:inherit; cursor:pointer}
-.nav-grup>button.on{color:var(--theme); font-weight:600}
+.nav-grup>button.on{color:var(--theme); font-weight:700}
 .nav-grup .ok-asagi{width:13px; height:13px; transition:transform .15s}
 .nav-grup:hover .ok-asagi, .nav-grup:focus-within .ok-asagi{transform:rotate(180deg)}
 .nav-acilir{position:absolute; top:100%; left:-14px; display:none; flex-direction:column;
