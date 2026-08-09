@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { EKIPMAN, LIMITLER, MALIYET_BANT, TARIFE } from "@/data/kb";
+import { CATI_CARPANI, EKIPMAN, LIMITLER, MALIYET_BANT, TARIFE } from "@/data/kb";
 import PVGIS from "@/data/pvgis.json";
 
 /**
@@ -44,6 +44,8 @@ const PROFIL = {
   vardiya: Array(24).fill(1),
 };
 const ARAZI = 1.05;
+// Güney baz (PVGIS profilleri güney/30°); diğer cepheler yaklaşık üretim çarpanı
+const CEPHE = { guney: 1.0, dogubati: 0.85, kuzey: 0.6 } as const;
 
 export default function Simulasyon() {
   const kok = useRef<HTMLDivElement>(null);
@@ -52,7 +54,8 @@ export default function Simulasyon() {
     const el = (id: string) => document.getElementById(id)!;
     const S = { tip: "cati", grup: "ticarethane", gerilim: "AG", il: "",
       mevsim: "bahar" as "kis" | "bahar" | "yaz", hava: "acik" as "acik" | "parcali" | "bulutlu",
-      guc: 50, tuketim: 9000, profil: "gunduz" as keyof typeof PROFIL, batarya: 0 };
+      guc: 50, tuketim: 9000, profil: "gunduz" as keyof typeof PROFIL, batarya: 0,
+      cephe: "guney" as keyof typeof CEPHE, cati: "trapez" as keyof typeof CATI_CARPANI };
 
     const ilSec = el("il") as HTMLSelectElement;
     const bosSecenek = new Option("İl seçiniz…", "", true, true);
@@ -103,6 +106,13 @@ export default function Simulasyon() {
         (el("guc") as HTMLInputElement).value = String(S.guc); }
     });
     gucUygulaRef = () => gucUygula(S.guc);
+    el("tamKarsila").onclick = () => {
+      if (!S.il) { ilSec.classList.add("uyar"); ilSec.focus(); return; }
+      const yonK = S.tip === "cati" ? CEPHE[S.cephe] : 1;
+      const verim = ILLER[S.il].verim * (S.tip === "arazi" ? ARAZI : 1) * yonK;
+      const hedef = Math.max(5, Math.round((S.tuketim * 12) / verim / 5) * 5);
+      gucUygula(hedef);
+    };
     ciftBagla("tuketim", "tukSayi", "tuketim", 100, 2000000);
     bagla("batarya", "batCikti", (v) => (v ? v + " kWh" : "yok"), "batarya");
     el("gelismisAc").onclick = (e) => {
@@ -154,6 +164,7 @@ export default function Simulasyon() {
       if (cati) panelDoku(el("panelIzgara"), 3, 4, 352, 316, 32, -15, 26, 12, 26, 24, oran);
       else araziDoku(el("araziIzgara"), oran);
       el("batKutu").setAttribute("transform", cati ? "translate(212 342)" : "translate(120 400)");
+      el("catiAyarGrup").style.display = cati ? "" : "none";
       panelBilgi();
       el("batKutu").setAttribute("opacity", S.batarya ? "1" : "0");
       el("aBatSatir").style.display = S.batarya ? "flex" : "none";
@@ -177,7 +188,8 @@ export default function Simulasyon() {
       const saatler: Saat[] = [];
       let bat = 0;
       for (let h = 0; h < 24; h++) {
-        const ham = (profil[h] / 1000) * S.guc * (havaCarpani ?? HAVA[S.hava][S.mevsim]) * (S.tip === "arazi" ? ARAZI : 1);
+        const yonK = S.tip === "cati" ? CEPHE[S.cephe] : 1;
+        const ham = (profil[h] / 1000) * S.guc * (havaCarpani ?? HAVA[S.hava][S.mevsim]) * (S.tip === "arazi" ? ARAZI : 1) * yonK;
         const u = Math.min(ham, S.guc / EKIPMAN.dcAcOran); // inverter kırpma tavanı (DC/AC 1,2)
         const t = (sekil[h] / toplamSekil) * gunlukTuk;
         const oz = Math.min(u, t);
@@ -354,6 +366,8 @@ export default function Simulasyon() {
       const bantlar = MALIYET_BANT[seg as keyof typeof MALIYET_BANT] as ReadonlyArray<readonly [number, number, number]>;
       let alt = bantlar[bantlar.length - 1][1], ust = bantlar[bantlar.length - 1][2];
       for (const [maks, a, u] of bantlar) if (S.guc <= maks) { alt = a; ust = u; break; }
+      const catiK = S.tip === "cati" ? CATI_CARPANI[S.cati] : 1;
+      alt *= catiK; ust *= catiK;
 
       const oran = (d: Donem) => (d.uretim ? Math.round((d.oz / d.uretim) * 100) : 0);
       const dusus = (d: Donem) => (d.gessiz ? Math.max(0, Math.min(100, Math.round((1 - d.gesli / d.gessiz) * 100))) : 0);
@@ -385,6 +399,30 @@ export default function Simulasyon() {
         <div><span>Tahmini kurulum maliyeti</span><b>${binf(S.guc * alt)} – ${binf(S.guc * ust)}</b></div>
         <div><span>Kaba geri ödeme</span><b>≈ ${(S.guc * alt / yil.kazanc).toFixed(1).replace(".", ",")} – ${(S.guc * ust / yil.kazanc).toFixed(1).replace(".", ",")} yıl</b></div>
         <div><span>Yıllık özgül üretim (PVGIS)</span><b>${f(ILLER[S.il].verim)} kWh/kWp</b></div>`;
+      // 25 yıllık birikimli tasarruf grafiği (bugünkü fiyatlarla) + başabaş bandı
+      const tepe25 = yil.kazanc * 25;
+      let g25 = "";
+      for (let y = 1; y <= 25; y++) {
+        const v = yil.kazanc * y, x = 14 + (y - 1) * 26, h25 = (v / tepe25) * 150;
+        const dolu = v >= S.guc * ust ? "#1F8A5D" : v >= S.guc * alt ? "#7AC6A2" : "#E8C43C";
+        g25 += `<rect x="${x}" y="${168 - h25}" width="20" height="${h25}" rx="3" fill="${dolu}"/>`;
+        if (y % 5 === 0) g25 += `<text x="${x + 10}" y="182" font-size="9" fill="#5E6660" text-anchor="middle">${y}. yıl</text>`;
+      }
+      const cizgi = (deger: number, ad: string) => {
+        const cy = 168 - (deger / tepe25) * 150;
+        return deger <= tepe25 ? `<line x1="10" x2="668" y1="${cy}" y2="${cy}" stroke="#A5620D" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text x="666" y="${cy - 4}" font-size="9.5" fill="#A5620D" text-anchor="end">${ad}</text>` : "";
+      };
+      el("grafik25").innerHTML = g25 + cizgi(S.guc * alt, "yatırım (alt bant)") + cizgi(S.guc * ust, "yatırım (üst bant)");
+      const basabasAlt = (S.guc * alt / yil.kazanc).toFixed(1).replace(".", ","),
+        basabasUst = (S.guc * ust / yil.kazanc).toFixed(1).replace(".", ",");
+      el("grafik25Not").textContent =
+        `Bugünkü tarifelerle birikimli tasarruf; turuncu kesikli çizgiler yatırım bandı. Başabaş ≈ ${basabasAlt}–${basabasUst}. yıl. Elektrik zamları geri ödemeyi genellikle kısaltır.`;
+      const co2 = yil.uretim * 0.42, agac = Math.round(co2 / 22), km = Math.round(co2 / 0.12);
+      el("cevre").innerHTML = `
+        <div><b>${f(co2 / 1000)} ton</b><span>yıllık CO₂ tasarrufu</span></div>
+        <div><b>${f(agac)}</b><span>yetişkin ağaca eşdeğer</span></div>
+        <div><b>${f(km)} km</b><span>araba yoluna eşdeğer</span></div>`;
       sonRapor = { bugun, ay, yil, kisY, baharY, yazY, pb, fi, alt, ust, satirlar };
       const kutu = el("sonuclar");
       kutu.hidden = false;
@@ -432,7 +470,7 @@ export default function Simulasyon() {
 <h2>1. Sistem Bilgileri</h2>
 <div class="kutu">
   <b>${S.guc.toLocaleString("tr-TR")} kWp</b> ${S.tip === "cati" ? "çatı" : "arazi"} GES · ${S.il} ·
-  ${grupAd} aboneliği (${S.gerilim}) · ≈ ${pb.adet.toLocaleString("tr-TR")} adet ${EKIPMAN.panelWp} Wp panel,
+  ${grupAd} aboneliği (${S.gerilim})${S.tip === "cati" ? ` · ${({ guney: "güney", dogubati: "doğu/batı", kuzey: "kuzey" } as Record<string, string>)[S.cephe]} cephe, ${({ trapez: "trapez/sac", teras: "beton teras", kiremit: "kiremit" } as Record<string, string>)[S.cati]} çatı` : ""} · ≈ ${pb.adet.toLocaleString("tr-TR")} adet ${EKIPMAN.panelWp} Wp panel,
   ${pb.alan.toLocaleString("tr-TR")} m² panel alanı${S.batarya ? ` · ${S.batarya} kWh batarya` : ""} ·
   Aylık tüketim ${S.tuketim.toLocaleString("tr-TR")} kWh (${({ gunduz: "gündüz yoğun", aksam: "akşam yoğun", vardiya: "7/24" } as Record<string, string>)[S.profil]} profil)
 </div>
@@ -450,7 +488,12 @@ export default function Simulasyon() {
 <tr><td>Yaz (92 gün)</td><td>${f(yazY.uretim)}</td><td>${f(yazY.oz)}</td><td>${f(yazY.satis)}</td><td>${f(yazY.alis)}</td><td>+${f(yazY.kazanc)}</td></tr>
 <tr class="vurgu"><td>Yıl toplamı</td><td>${f(yil.uretim)}</td><td>${f(yil.oz)}</td><td>${f(yil.satis)}</td><td>${f(yil.alis)}</td><td>+${f(yil.kazanc)}</td></tr>
 </tbody></table>
-<h2>5. Yatırım Özeti</h2>
+<h2>5. Yatırım ve 25 Yıllık Bakış</h2>
+<table><thead><tr><th></th><th>Değer</th></tr></thead><tbody>
+<tr><td>25 yıllık toplam tasarruf (bugünkü fiyatlarla)</td><td>≈ ${f(yil.kazanc * 25)} ₺</td></tr>
+<tr><td>Başabaş (yatırımın döndüğü yıl)</td><td>≈ ${(S.guc * alt / yil.kazanc).toFixed(1).replace(".", ",")} – ${(S.guc * ust / yil.kazanc).toFixed(1).replace(".", ",")}. yıl</td></tr>
+<tr><td>Yıllık CO₂ tasarrufu</td><td>≈ ${f(yil.uretim * 0.42 / 1000)} ton (${f(Math.round(yil.uretim * 0.42 / 22))} yetişkin ağaca eşdeğer)</td></tr>
+</tbody></table>
 <div class="iki"><div class="kutu">Tahmini kurulum maliyeti<br><b>${(S.guc * alt / 1e6).toFixed(1).replace(".", ",")} – ${(S.guc * ust / 1e6).toFixed(1).replace(".", ",")} M₺</b> aralığı (güncel piyasa bantları)</div>
 <div class="kutu">Kaba geri ödeme süresi<br><b>≈ ${(S.guc * alt / yil.kazanc).toFixed(1).replace(".", ",")} – ${(S.guc * ust / yil.kazanc).toFixed(1).replace(".", ",")} yıl</b> (yıllık net kazançla)</div></div>
 <div class="not"><b>Varsayımlar ve kaynaklar:</b> Üretim profilleri PVGIS v5.2 (${S.il}, 30° eğim, %14 sistem kaybı, 2020 saatlik serisi);
@@ -528,6 +571,7 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
             <div className="kaydirici">
               <input type="range" id="guc" min={5} max={1000} step={5} defaultValue={50} />
               <span className="sayi-kutu"><input type="number" id="gucSayi" min={5} max={5000} defaultValue={50} aria-label="Güç (kWp)" /><i>kWp</i></span></div>
+            <button className="tam-karsila" id="tamKarsila" type="button">⚡ Faturamı tam karşıla</button>
             <small className="panel-sayi" id="panelSayi"></small>
             <small className="panel-sayi uyari" id="gucUyari" style={{ display: "none" }}>Konutta yasal üst sınır 25 kW — güç buna çekildi.</small></div>
           <div className="grup"><span>İl</span><select id="il" aria-label="İl"></select></div>
@@ -540,6 +584,16 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
             <div className="cipler" data-ad="gerilim">
               <button className="cip on" data-deger="AG" type="button">AG</button>
               <button className="cip" data-deger="OG" type="button">OG</button></div></div>
+          <div className="grup" id="catiAyarGrup"><span>Çatı Cephesi &amp; Tipi
+            <button className="terim" data-tip="Cephe: panellerin baktığı yön — güney en verimlisidir, doğu/batı ~%15, kuzey ~%40 kayıp yaratır. Çatı tipi montaj maliyetini etkiler (kiremit en işçiliklisi)." aria-label="Cephe ve çatı tipi" type="button">?</button></span>
+            <div className="cipler" data-ad="cephe">
+              <button className="cip on" data-deger="guney" type="button">Güney</button>
+              <button className="cip" data-deger="dogubati" type="button">Doğu/Batı</button>
+              <button className="cip" data-deger="kuzey" type="button">Kuzey</button></div>
+            <div className="cipler" data-ad="cati">
+              <button className="cip on" data-deger="trapez" type="button">Trapez/Sac</button>
+              <button className="cip" data-deger="teras" type="button">Beton Teras</button>
+              <button className="cip" data-deger="kiremit" type="button">Kiremit</button></div></div>
           <div className="grup"><span>Gün Koşulu
             <button className="terim" data-tip="Yalnız oynattığın günün animasyonunu ve 'Bugün' sonucunu etkiler; aylık ve yıllık sonuçlar ortalama koşullardan hesaplanır." aria-label="Gün koşulu neyi etkiler" type="button">?</button></span>
             <div className="cipler" data-ad="mevsim">
@@ -685,6 +739,12 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           <table className="sonuc-tablo" id="sonucTablo"></table>
         </div>
         <div className="yatirim-ozet" id="yatirimOzet"></div>
+        <div className="grafik25-kutu">
+          <h3>25 Yıllık Birikimli Tasarruf</h3>
+          <svg viewBox="0 0 680 186" id="grafik25" role="img" aria-label="25 yıllık birikimli tasarruf grafiği"></svg>
+          <p className="dip" id="grafik25Not"></p>
+        </div>
+        <div className="cevre" id="cevre"></div>
         <div className="karne-cta">
           <button className="gt-btn small" id="raporBtn" type="button">PDF Raporu İndir</button>
           <a className="gt-btn small line" href="/hesaplama">Detaylı Hesap</a>
