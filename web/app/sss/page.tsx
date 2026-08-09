@@ -39,7 +39,7 @@ export default function SikSorulanlar() {
 
   return (
     <div className="wrap">
-      <SiteHead aktif="diger" />
+      <SiteHead aktif="sss" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <main id="icerik">
