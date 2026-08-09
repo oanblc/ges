@@ -22,7 +22,7 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gesdanismani.com"),
+  metadataBase: new URL("https://www.gesdanismani.com"),
   title: {
     default: "GES Danışmanı — Türkiye'nin Güncel Mevzuatlı GES Danışmanlık Platformu",
     template: "%s | GES Danışmanı",
@@ -47,7 +47,7 @@ const kurulusSemasi = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "GES Danışmanı",
-  url: "https://gesdanismani.com",
+  url: "https://www.gesdanismani.com",
   description:
     "Türkiye'de çatı güneş enerjisi (GES) süreçleri için güncel mevzuatlı danışmanlık platformu.",
   areaServed: "TR",
@@ -58,7 +58,7 @@ const siteSemasi = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "GES Danışmanı",
-  url: "https://gesdanismani.com",
+  url: "https://www.gesdanismani.com",
   inLanguage: "tr-TR",
 };
 
