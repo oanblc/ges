@@ -177,43 +177,113 @@ def _eposta_arkaplan(kime: str, konu: str, html: str) -> None:
     threading.Thread(target=_eposta_gonder, args=(kime, konu, html), daemon=True).start()
 
 
-def _hosgeldin_html() -> str:
-    return """<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#2A3B36;line-height:1.6">
-<h2 style="color:#0A4A3C">Talebiniz bize ulaştı</h2>
-<p>Merhaba,</p>
-<p>gesdanismani.com üzerinden bıraktığınız danışmanlık talebini aldık. Sohbet özetiniz ekibimize
-iletildi; en kısa sürede bu adresten ya da bıraktığınız telefondan size dönüş yapacağız.</p>
-<p>Bu arada işinize yarayabilecek araçlar:</p>
-<ul>
-<li><a href="https://www.gesdanismani.com/simulasyon" style="color:#0A6B5C">Güneş sahası simülasyonu</a> — kendi ilinize göre üretim ve geri ödeme</li>
-<li><a href="https://www.gesdanismani.com/fatura-analizi" style="color:#0A6B5C">Fatura analizi</a> — faturanızdan GES planınıza</li>
-<li><a href="https://www.gesdanismani.com/teklif-analizi" style="color:#0A6B5C">Teklif değerlendirme</a> — elinizdeki teklif piyasaya uygun mu</li>
-</ul>
-<p>Sorularınız için asistan her zaman açık: <a href="https://www.gesdanismani.com/asistan" style="color:#0A6B5C">gesdanismani.com/asistan</a></p>
-<p style="margin-top:24px">Saygılarımızla,<br><b>GES Danışmanı</b><br>
-<span style="font-size:13px;color:#6B7B74">Bu ileti, gesdanismani.com'da bıraktığınız danışmanlık talebi üzerine gönderilmiştir.</span></p>
-</div>"""
+def _eposta_kabuk(baslik, icerik, on_metin=""):
+    """Kurumsal e-posta kabuğu: marka bloğu + başlık bandı + içerik kartı + alt bilgi.
+    Görseller dış dosya yerine tabloyla çizilir (her istemcide görünür)."""
+    hucre = ('<td width="9" height="9" bgcolor="#FFD84D" '
+             'style="border-radius:2px;font-size:1px;line-height:1px">&nbsp;</td>')
+    bosluk = '<td width="3" style="font-size:1px">&nbsp;</td>'
+    sira = "<tr>" + hucre + bosluk + hucre + bosluk + hucre + "</tr>"
+    ara = '<tr><td colspan="5" height="3" style="font-size:1px">&nbsp;</td></tr>'
+    logo = ('<table cellpadding="0" cellspacing="0" border="0" '
+            'style="display:inline-table;vertical-align:middle">'
+            + sira + ara + sira + ara + sira + "</table>")
+    return f"""<!DOCTYPE html>
+<html lang="tr"><body style="margin:0;padding:0;background:#EEF1EA">
+<span style="display:none;max-height:0;overflow:hidden">{on_metin}</span>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#EEF1EA">
+<tr><td align="center" style="padding:28px 14px">
+<table width="580" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;width:100%">
+<tr><td bgcolor="#0A4A3C" style="border-radius:16px 16px 0 0;padding:22px 30px">
+  <table cellpadding="0" cellspacing="0" border="0"><tr>
+    <td style="vertical-align:middle;padding-right:12px">{logo}</td>
+    <td style="vertical-align:middle;font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;color:#FFFFFF;font-weight:bold">GESDANISMANI<span style="color:#FFD84D">.COM</span></td>
+  </tr></table>
+</td></tr>
+<tr><td bgcolor="#0A6B5C" style="padding:26px 30px">
+  <h1 style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:23px;line-height:1.3;color:#FFFFFF">{baslik}</h1>
+</td></tr>
+<tr><td bgcolor="#FFFFFF" style="padding:30px;font-family:Arial,Helvetica,sans-serif;font-size:14.5px;line-height:1.7;color:#2A3B36">
+{icerik}
+</td></tr>
+<tr><td bgcolor="#FFFFFF" style="border-radius:0 0 16px 16px;padding:0 30px 26px;font-family:Arial,Helvetica,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td style="border-top:1px solid #E4E9E2;padding-top:18px;font-size:12px;line-height:1.7;color:#7C8B84">
+      <b style="color:#0A4A3C">GES Danışmanı</b> — Türkiye'nin güncel mevzuatlı GES danışmanlık platformu<br>
+      <a href="https://www.gesdanismani.com" style="color:#0A6B5C;text-decoration:none">www.gesdanismani.com</a>
+      &nbsp;·&nbsp; <a href="mailto:info@gesdanismani.com" style="color:#0A6B5C;text-decoration:none">info@gesdanismani.com</a>
+    </td></tr>
+  </table>
+</td></tr>
+<tr><td style="padding:14px 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#9AA69F" align="center">
+Bu ileti gesdanismani.com üzerindeki işleminiz üzerine gönderilmiştir; bilgilendirme amaçlıdır, bağlayıcı görüş niteliği taşımaz.
+</td></tr>
+</table></td></tr></table></body></html>"""
 
 
-def _talep_bildirim_html(kayit: dict) -> str:
+def _dugme(metin, adres):
+    return ('<table cellpadding="0" cellspacing="0" border="0" style="margin:20px 0"><tr>'
+            '<td bgcolor="#0A6B5C" style="border-radius:10px">'
+            f'<a href="{adres}" style="display:inline-block;padding:12px 26px;'
+            'font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;'
+            f'color:#FFFFFF;text-decoration:none">{metin} &rarr;</a></td></tr></table>')
+
+
+def _arac_listesi():
+    araclar = [
+        ("Güneş sahası simülasyonu", "İlinize göre üretim, mahsup ve geri ödeme",
+         "https://www.gesdanismani.com/simulasyon"),
+        ("Fatura analizi", "Faturanızdan GES planınıza",
+         "https://www.gesdanismani.com/fatura-analizi"),
+        ("Teklif değerlendirme", "Elinizdeki teklif piyasaya uygun mu",
+         "https://www.gesdanismani.com/teklif-analizi"),
+    ]
+    satirlar = "".join(
+        '<tr><td style="padding:10px 14px;border:1px solid #E4E9E2;border-radius:10px">'
+        f'<a href="{adres}" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;'
+        f'font-weight:bold;color:#0A6B5C;text-decoration:none">{ad}</a><br>'
+        f'<span style="font-family:Arial,Helvetica,sans-serif;font-size:12.5px;color:#7C8B84">{aciklama}</span>'
+        '</td></tr><tr><td height="8" style="font-size:1px">&nbsp;</td></tr>'
+        for ad, aciklama, adres in araclar)
+    return '<table width="100%" cellpadding="0" cellspacing="0" border="0">' + satirlar + "</table>"
+
+
+def _hosgeldin_html():
+    icerik = ('<p style="margin:0 0 14px">Merhaba,</p>'
+              '<p style="margin:0 0 14px">gesdanismani.com üzerinden bıraktığınız danışmanlık '
+              'talebini aldık. Sohbet özetiniz ekibimize iletildi; en kısa sürede bu adresten ya da '
+              'bıraktığınız telefondan size dönüş yapacağız.</p>'
+              '<p style="margin:0 0 10px"><b>Bu arada işinize yarayabilecek araçlar:</b></p>'
+              + _arac_listesi()
+              + _dugme("Asistana sorun", "https://www.gesdanismani.com/asistan"))
+    return _eposta_kabuk("Talebiniz bize ulaştı", icerik,
+                         "Danışmanlık talebinizi aldık; en kısa sürede dönüş yapacağız.")
+
+
+def _talep_bildirim_html(kayit):
     ozet = kayit.get("ozet") or {}
     satirlar = "".join(
-        f"<tr><td style='padding:4px 10px 4px 0;color:#6B7B74'>{ad}</td><td style='padding:4px 0'>{deger}</td></tr>"
+        f"<tr><td style='padding:5px 12px 5px 0;color:#7C8B84;font-size:13px;"
+        f"vertical-align:top;white-space:nowrap'>{ad}</td>"
+        f"<td style='padding:5px 0;font-size:13.5px'>{deger}</td></tr>"
         for ad, deger in ozet.items() if isinstance(deger, str) and deger
     )
     son_mesajlar = "".join(
-        f"<p style='margin:6px 0'><b>{'Ziyaretçi' if m.get('role') == 'user' else 'Asistan'}:</b> "
+        f"<p style='margin:7px 0;padding:9px 13px;background:{'#F2F6F1' if m.get('role') == 'user' else '#FFFFFF'};"
+        f"border:1px solid #E4E9E2;border-radius:9px;font-size:13px'>"
+        f"<b style='color:#0A4A3C'>{'Ziyaretçi' if m.get('role') == 'user' else 'Asistan'}:</b> "
         f"{str(m.get('content', ''))[:400]}</p>"
         for m in kayit.get("sohbet", [])[-6:]
     )
-    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;color:#2A3B36;line-height:1.55">
-<h2 style="color:#0A4A3C">Yeni danışmanlık talebi</h2>
-<p><b>İletişim:</b> {kayit.get('iletisim') or '—'}<br><b>Zaman:</b> {kayit.get('zaman')}</p>
-<table style="font-size:14px">{satirlar}</table>
-<h3 style="color:#0A4A3C;margin-top:18px">Sohbetin son bölümü</h3>
-{son_mesajlar}
-<p style="font-size:13px;color:#6B7B74">Tam kayıt yönetim panelinde: https://www.gesdanismani.com/yonetim/talepler</p>
-</div>"""
+    icerik = (f"<p style='margin:0 0 6px;font-size:15px'><b>İletişim:</b> "
+              f"<span style='color:#0A6B5C'>{kayit.get('iletisim') or '—'}</span></p>"
+              f"<p style='margin:0 0 16px;font-size:13px;color:#7C8B84'>{kayit.get('zaman')}</p>"
+              f"<table cellpadding='0' cellspacing='0' border='0'>{satirlar}</table>"
+              f"<p style='margin:18px 0 6px'><b>Sohbetin son bölümü</b></p>{son_mesajlar}"
+              + _dugme("Paneli aç", "https://www.gesdanismani.com/yonetim/talepler"))
+    return _eposta_kabuk("Yeni danışmanlık talebi", icerik,
+                         f"İletişim: {kayit.get('iletisim') or 'bırakılmadı'}")
+
 
 _gunluk = {"gun": "", "sohbet": 0, "lead": 0}
 
@@ -1363,34 +1433,26 @@ def _sifre_ozeti(sifre: str, tuz: str = "") -> tuple[str, str]:
     return tuz, ozet
 
 
-def _uye_hosgeldin_html(ad: str) -> str:
-    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#2A3B36;line-height:1.6">
-<h2 style="color:#0A4A3C">Aramıza hoş geldiniz</h2>
-<p>Merhaba {ad},</p>
-<p>gesdanismani.com üyeliğiniz oluşturuldu. Artık taleplerinizi ve analizlerinizi
-tek yerden yürütebilirsiniz.</p>
-<p>İlk adım için önerilerimiz:</p>
-<ul>
-<li><a href="https://www.gesdanismani.com/simulasyon" style="color:#0A6B5C">Güneş sahası simülasyonu</a> — ilinize göre üretim ve geri ödeme</li>
-<li><a href="https://www.gesdanismani.com/fatura-analizi" style="color:#0A6B5C">Fatura analizi</a> — faturanızdan GES planınıza</li>
-<li><a href="https://www.gesdanismani.com/asistan" style="color:#0A6B5C">GES Asistanı</a> — güncel mevzuatla soru-cevap</li>
-</ul>
-<p style="margin-top:24px">Saygılarımızla,<br><b>GES Danışmanı</b><br>
-<span style="font-size:13px;color:#6B7B74">Bu ileti, gesdanismani.com'daki üyelik kaydınız üzerine gönderilmiştir.</span></p>
-</div>"""
+def _uye_hosgeldin_html(ad):
+    icerik = (f'<p style="margin:0 0 14px">Merhaba {ad},</p>'
+              '<p style="margin:0 0 14px">gesdanismani.com üyeliğiniz oluşturuldu. Artık '
+              'taleplerinizi ve analizlerinizi tek yerden yürütebilirsiniz.</p>'
+              '<p style="margin:0 0 10px"><b>İlk adım için önerilerimiz:</b></p>'
+              + _arac_listesi()
+              + _dugme("Hesabıma git", "https://www.gesdanismani.com/hesap"))
+    return _eposta_kabuk("Aramıza hoş geldiniz", icerik,
+                         f"{ad}, gesdanismani.com üyeliğiniz hazır.")
 
 
-def _sifirla_html(ad: str, baglanti: str) -> str:
-    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#2A3B36;line-height:1.6">
-<h2 style="color:#0A4A3C">Şifre sıfırlama</h2>
-<p>Merhaba {ad},</p>
-<p>gesdanismani.com hesabınız için şifre sıfırlama isteği aldık. Yeni şifrenizi
-belirlemek için aşağıdaki bağlantıya tıklayın; bağlantı 2 saat geçerlidir.</p>
-<p><a href="{baglanti}" style="display:inline-block;background:#0A6B5C;color:#fff;
-padding:10px 22px;border-radius:8px;text-decoration:none">Şifremi sıfırla</a></p>
-<p style="font-size:13px;color:#6B7B74">Bu isteği siz yapmadıysanız bu iletiyi yok sayabilirsiniz;
-şifreniz değişmez.</p>
-</div>"""
+def _sifirla_html(ad, baglanti):
+    icerik = (f'<p style="margin:0 0 14px">Merhaba {ad},</p>'
+              '<p style="margin:0 0 14px">gesdanismani.com hesabınız için şifre sıfırlama '
+              'isteği aldık. Yeni şifrenizi belirlemek için aşağıdaki düğmeye tıklayın; '
+              'bağlantı <b>2 saat</b> geçerlidir.</p>'
+              + _dugme("Şifremi sıfırla", baglanti)
+              + '<p style="margin:0;font-size:12.5px;color:#7C8B84">Bu isteği siz yapmadıysanız '
+                'bu iletiyi yok sayabilirsiniz; şifreniz değişmez.</p>')
+    return _eposta_kabuk("Şifre sıfırlama", icerik, "Şifrenizi yenilemek için bağlantınız hazır.")
 
 
 @app.post("/uye/kayit")
