@@ -8,6 +8,7 @@ const IZINLI = new Set([
   "/yonetim/ayarlar",
   "/yonetim/talep-durum",
   "/yonetim/taslak-okundu",
+  "/yonetim/eposta-tani",
 ]);
 
 export async function POST(istek: NextRequest) {

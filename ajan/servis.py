@@ -849,7 +849,7 @@ def _yetkisiz(istek):
     return not YONETIM_ANAHTAR or istek.headers.get("x-yonetim-anahtar") != YONETIM_ANAHTAR
 
 
-@app.get("/yonetim/eposta-tani")
+@app.post("/yonetim/eposta-tani")
 def eposta_tani(istek: Request):
     """Geçici tanı ucu: sunucudan SMTP bağlantısını dener, sonucu döndürür."""
     if _yetkisiz(istek):
