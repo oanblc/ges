@@ -102,46 +102,42 @@ def _smtp_ayar() -> dict:
     }
 
 
-def _eposta_gonder(kime: str, konu: str, html: str) -> None:
-    """E-posta yollar: önce Resend HTTP API (Railway SMTP'yi engelliyor), yoksa SMTP.
-    Ayar eksikse sessizce atlar. Ayrı iş parçacığında çağrılır."""
-    if not kime:
-        return
+KUYRUK_DIZIN = LEAD_DIZIN.parent / "eposta-kuyruk"
+KUYRUK_YEDEK_DK = int(os.environ.get("KUYRUK_YEDEK_DK", "20"))
+_KID = re.compile(r"^[0-9T]{8,20}-[0-9a-f]{8}$")
+
+
+def _kuyruga_yaz(kime: str, konu: str, html: str) -> None:
+    import secrets
+    KUYRUK_DIZIN.mkdir(parents=True, exist_ok=True)
+    kid = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + "-" + secrets.token_hex(4)
+    (KUYRUK_DIZIN / f"{kid}.json").write_text(json.dumps({
+        "id": kid, "kime": kime, "konu": konu, "html": html, "zaman": time.time(),
+    }, ensure_ascii=False), encoding="utf-8")
+
+
+def _kopru_gonder(kime: str, konu: str, html: str) -> bool:
+    """Apps Script köprüsü (gmail) — Railway'den çalışan yedek yol."""
     kopru = str(_ayar().get("eposta_kopru") or os.environ.get("EPOSTA_KOPRU", "")).strip()
-    if kopru.startswith("https://"):
-        import urllib.request
+    if not kopru.startswith("https://"):
+        return False
+    import urllib.request
+    try:
         istek = urllib.request.Request(
-            kopru,
-            data=json.dumps({"kime": kime, "konu": konu, "html": html}).encode(),
+            kopru, data=json.dumps({"kime": kime, "konu": konu, "html": html}).encode(),
             headers={"Content-Type": "application/json"}, method="POST")
-        try:
-            with urllib.request.urlopen(istek, timeout=30) as yanit:
-                govde = yanit.read().decode()[:200]
-            if '"ok"' not in govde and "ok" not in govde:
-                print(f"köprü beklenmedik yanıt ({kime}): {govde}")
-            return
-        except Exception as e:
-            print(f"köprü gönderemedi ({kime}): {type(e).__name__}: {e}")
-            return
-    if RESEND_ANAHTAR:
-        import urllib.request
-        istek = urllib.request.Request(
-            "https://api.resend.com/emails",
-            data=json.dumps({"from": GONDEREN, "to": [kime],
-                             "subject": konu, "html": html}).encode(),
-            headers={"Authorization": f"Bearer {RESEND_ANAHTAR}",
-                     "Content-Type": "application/json"},
-            method="POST")
-        try:
-            with urllib.request.urlopen(istek, timeout=25) as yanit:
-                yanit.read()
-            return
-        except Exception as e:
-            print(f"resend gönderemedi ({kime}): {type(e).__name__}: {e}")
-            return
+        with urllib.request.urlopen(istek, timeout=30) as y:
+            return "ok" in y.read().decode()[:200]
+    except Exception as e:
+        print(f"köprü gönderemedi ({kime}): {type(e).__name__}: {e}")
+        return False
+
+
+def _smtp_gonder(kime: str, konu: str, html: str) -> bool:
+    """Natro SMTP ile info@'dan gönderir — Railway'de engelli, relay/yerelde çalışır."""
     ayar = _smtp_ayar()
     if not (ayar["kullanici"] and ayar["sifre"]):
-        return
+        return False
     import smtplib
     from email.mime.text import MIMEText
     from email.utils import formataddr
@@ -149,28 +145,48 @@ def _eposta_gonder(kime: str, konu: str, html: str) -> None:
     mesaj["Subject"] = konu
     mesaj["From"] = formataddr(("GES Danışmanı", ayar["kullanici"]))
     mesaj["To"] = kime
-    kopru = str(_ayar().get("eposta_kopru") or os.environ.get("EPOSTA_KOPRU", "")).strip()
-    if kopru.startswith("https://"):
-        import urllib.request
-        try:
-            k_istek = urllib.request.Request(
-                kopru, data=json.dumps({"kuru": True}).encode(),
-                headers={"Content-Type": "application/json"}, method="POST")
-            with urllib.request.urlopen(k_istek, timeout=20) as yanit:
-                sonuc["kopru"] = yanit.read().decode()[:120]
-        except Exception as e:
-            sonuc["kopru"] = f"{type(e).__name__}: {e}"
     try:
         if ayar["port"] == 465:
-            baglanti = smtplib.SMTP_SSL(ayar["sunucu"], ayar["port"], timeout=25)
+            b = smtplib.SMTP_SSL(ayar["sunucu"], ayar["port"], timeout=25)
         else:
-            baglanti = smtplib.SMTP(ayar["sunucu"], ayar["port"], timeout=25)
-            baglanti.starttls()
-        with baglanti:
-            baglanti.login(ayar["kullanici"], ayar["sifre"])
-            baglanti.send_message(mesaj)
+            b = smtplib.SMTP(ayar["sunucu"], ayar["port"], timeout=25)
+            b.starttls()
+        with b:
+            b.login(ayar["kullanici"], ayar["sifre"])
+            b.send_message(mesaj)
+        return True
     except Exception as e:
-        print(f"e-posta gönderilemedi ({kime}): {type(e).__name__}: {e}")
+        print(f"smtp gönderemedi ({kime}): {type(e).__name__}: {e}")
+        return False
+
+
+def _eposta_gonder(kime: str, konu: str, html: str) -> None:
+    """Üretimde kuyruğa yazar; relay kuyruğu info@'dan gönderir (Railway SMTP engelli).
+    Kuyruk KUYRUK_YEDEK_DK dakikada boşalmazsa bekçi köprüden (gmail) gönderir."""
+    if not kime:
+        return
+    _kuyruga_yaz(kime, konu, html)
+
+
+def _kuyruk_bekci() -> None:
+    """Kuyrukta KUYRUK_YEDEK_DK dakikadan uzun bekleyen mailleri köprüden gönderir.
+    Relay info@'dan hızlıca boşalttığında bu devreye girmez; sadece güvenlik ağı."""
+    while True:
+        try:
+            simdi = time.time()
+            for f in sorted(KUYRUK_DIZIN.glob("*.json")) if KUYRUK_DIZIN.exists() else []:
+                try:
+                    oge = json.loads(f.read_text(encoding="utf-8"))
+                except Exception:
+                    continue
+                if simdi - float(oge.get("zaman", 0)) < KUYRUK_YEDEK_DK * 60:
+                    continue
+                if _kopru_gonder(oge["kime"], oge["konu"], oge["html"]):
+                    f.unlink(missing_ok=True)
+                    print(f"kuyruk yedek (köprü) gönderildi: {oge.get('id')}")
+        except Exception as e:
+            print(f"kuyruk bekçi hatası: {type(e).__name__}: {e}")
+        time.sleep(60)
 
 
 def _eposta_arkaplan(kime: str, konu: str, html: str) -> None:
@@ -1455,6 +1471,37 @@ def _sifirla_html(ad, baglanti):
     return _eposta_kabuk("Şifre sıfırlama", icerik, "Şifrenizi yenilemek için bağlantınız hazır.")
 
 
+@app.post("/yonetim/eposta-kuyruk")
+def eposta_kuyruk(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    ogeler = []
+    if KUYRUK_DIZIN.exists():
+        for f in sorted(KUYRUK_DIZIN.glob("*.json"))[:50]:
+            try:
+                ogeler.append(json.loads(f.read_text(encoding="utf-8")))
+            except Exception:
+                pass
+    return {"ogeler": ogeler}
+
+
+@app.post("/yonetim/eposta-kuyruk-sil")
+async def eposta_kuyruk_sil(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    kid = str(govde.get("id", ""))
+    if not _KID.match(kid):
+        return JSONResponse({"hata": "geçersiz id"}, status_code=400)
+    f = KUYRUK_DIZIN / f"{kid}.json"
+    if f.exists():
+        f.unlink()
+    return {"durum": "ok"}
+
+
 @app.post("/uye/kayit")
 async def uye_kayit(istek: Request):
     if _sinirli_mi(_gercek_ip(istek)):
@@ -1602,3 +1649,7 @@ async def lead_ucu(istek: Request):
     if _re.search(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$", iletisim):
         _eposta_arkaplan(iletisim, "Talebinizi aldık — GES Danışmanı", _hosgeldin_html())
     return {"durum": "kaydedildi"}
+
+
+_kuyruk_bekci_baslat = threading.Thread(target=_kuyruk_bekci, daemon=True)
+_kuyruk_bekci_baslat.start()

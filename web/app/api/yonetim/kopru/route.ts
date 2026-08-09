@@ -9,6 +9,8 @@ const IZINLI = new Set([
   "/yonetim/talep-durum",
   "/yonetim/taslak-okundu",
   "/yonetim/eposta-tani",
+  "/yonetim/eposta-kuyruk",
+  "/yonetim/eposta-kuyruk-sil",
 ]);
 
 export async function POST(istek: NextRequest) {
