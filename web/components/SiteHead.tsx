@@ -27,8 +27,8 @@ const MENU: Girdi[] = [
   {
     ad: "Rehberler",
     grup: [
-      ["surec", "/surec", "Süreç Rehberi"],
-      ["rehber", "/rehber", "Rehber"],
+      ["surec", "/surec", "Kurulum Süreci"],
+      ["rehber", "/rehber", "Bilgi Kütüphanesi"],
       ["kurulum", "/kurulum-sonrasi", "Kurulum Sonrası"],
       ["sss", "/sss", "Sık Sorulan Sorular"],
     ],
@@ -88,6 +88,12 @@ export default function SiteHead({ aktif }: { aktif: AktifSayfa }) {
           )
         )}
       </nav>
+      <Link className="ara-dugme" href="/arama" aria-label="Sitede ara" title="Sitede ara">
+        <svg className="i" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.8-3.8" />
+        </svg>
+      </Link>
       <Link className="gt-btn small baslik-cta" href="/asistan">
         Asistana Sorun <Ok className="i" />
       </Link>
@@ -119,6 +125,13 @@ export default function SiteHead({ aktif }: { aktif: AktifSayfa }) {
               </div>
             )
           )}
+          <Link className="mobil-ara" href="/arama" onClick={() => setAcik(false)}>
+            <svg className="i" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.8-3.8" />
+            </svg>
+            Sitede Ara
+          </Link>
           <Link className="gt-btn small" href="/asistan" onClick={() => setAcik(false)}>
             Asistana Sorun <Ok className="i" />
           </Link>

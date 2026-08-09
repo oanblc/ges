@@ -6,7 +6,7 @@ import { Ok, SunDolu } from "@/components/Icons";
 import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
-  title: "Süreç Rehberi — Başvurudan Üretime Yedi Aşama",
+  title: "Kurulum Süreci — Başvurudan Üretime Yedi Aşama",
   description:
     "Çatı GES sürecinin yedi aşaması: gerekli belgeler, gerçekçi süreler, en sık gecikme nedenleri ve her adımda dikkat edilecekler.",
   alternates: { canonical: "/surec" },
@@ -125,7 +125,7 @@ export default function Surec() {
       <div className="calc-ust">
         <span className="sub-title">
           <SunDolu />
-          Süreç Rehberi
+          Kurulum Süreci
         </span>
         <h1>
           Başvurudan üretime <span className="hl-g">yedi aşama</span>, tüm ayrıntısıyla

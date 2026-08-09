@@ -6,7 +6,7 @@ import { Ok, SunDolu } from "@/components/Icons";
 import { Aciklamali } from "@/components/Terim";
 
 export const metadata: Metadata = {
-  title: "Rehber — GES Bilgi Kütüphanesi ve Yaygın Yanlışlar",
+  title: "Bilgi Kütüphanesi — GES Rehberi ve Yaygın Yanlışlar",
   description:
     "Tarifeler, mahsuplaşma, özel durumlar, depolama ve finansman: GES bilgi kütüphanesi. Sahada dolaşan 7 yaygın yanlışın doğrusu.",
   alternates: { canonical: "/rehber" },
@@ -111,7 +111,7 @@ export default function Rehber() {
       <div className="calc-ust">
         <span className="sub-title">
           <SunDolu />
-          Rehber
+          Bilgi Kütüphanesi
         </span>
         <h1>
           GES'e dair <span className="hl-g">merak edilen</span> her konu
