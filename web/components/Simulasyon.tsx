@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { EKIPMAN, MALIYET_BANT, TARIFE } from "@/data/kb";
+import { EKIPMAN, LIMITLER, MALIYET_BANT, TARIFE } from "@/data/kb";
 import PVGIS from "@/data/pvgis.json";
 
 /**
@@ -67,8 +67,10 @@ export default function Simulasyon() {
         k.querySelectorAll(".cip").forEach((c) => c.classList.remove("on"));
         d.classList.add("on");
         (S as Record<string, unknown>)[k.dataset.ad!] = d.dataset.deger;
+        if (k.dataset.ad === "grup") gucUygulaRef();
         sahneKur(); sifirla();
       }));
+    let gucUygulaRef = () => {};
     const bagla = (id: string, cik: string, fmt: (v: number) => string, alan: string) => {
       const g = el(id) as HTMLInputElement, o = el(cik);
       g.oninput = () => {
@@ -79,8 +81,29 @@ export default function Simulasyon() {
       };
       o.textContent = fmt(+g.value);
     };
-    bagla("guc", "gucCikti", (v) => v + " kWp", "guc");
-    bagla("tuketim", "tukCikti", (v) => v.toLocaleString("tr-TR") + " kWh/ay", "tuketim");
+    const ciftBagla = (kayId: string, sayId: string, alan: "guc" | "tuketim",
+      enAz: number, enCok: number, sonra?: () => void) => {
+      const kay = el(kayId) as HTMLInputElement, say = el(sayId) as HTMLInputElement;
+      const uygula = (v: number) => {
+        v = Math.min(enCok, Math.max(enAz, Math.round(v)));
+        (S as Record<string, unknown>)[alan] = v;
+        say.value = String(v);
+        kay.value = String(Math.min(+kay.max, v)); // kaydırıcı kendi tavanında durur
+        sonra?.(); sahneKur(); sifirla();
+      };
+      kay.oninput = () => uygula(+kay.value);
+      say.onchange = () => uygula(+say.value || enAz);
+      return uygula;
+    };
+    const gucUygula = ciftBagla("guc", "gucSayi", "guc", 5, 5000, () => {
+      const meskenSinir = S.grup === "mesken" && S.guc > LIMITLER.meskenKw;
+      el("gucUyari").style.display = meskenSinir ? "block" : "none";
+      if (meskenSinir) { S.guc = LIMITLER.meskenKw;
+        (el("gucSayi") as HTMLInputElement).value = String(S.guc);
+        (el("guc") as HTMLInputElement).value = String(S.guc); }
+    });
+    gucUygulaRef = () => gucUygula(S.guc);
+    ciftBagla("tuketim", "tukSayi", "tuketim", 100, 2000000);
     bagla("batarya", "batCikti", (v) => (v ? v + " kWh" : "yok"), "batarya");
     el("gelismisAc").onclick = (e) => {
       const g = el("gelismis"), acik = g.classList.toggle("acik");
@@ -111,7 +134,8 @@ export default function Simulasyon() {
       el("binaEtiket").textContent =
         ({ mesken: "Konut", ticarethane: "Ticarethane", sanayi: "Sanayi Tesisi" } as Record<string, string>)[S.grup] +
         (S.gerilim === "OG" && S.grup !== "mesken" ? " · OG" : "");
-      const oran = Math.max(1, Math.round((S.guc / 250) * (cati ? 12 : 18)));
+      const olcek = S.grup === "mesken" ? 25 : S.grup === "ticarethane" ? 300 : 1250;
+      const oran = Math.max(1, Math.round((Math.min(S.guc, olcek) / olcek) * (cati ? 12 : 18)));
       if (cati) panelDoku(el("panelIzgara"), 3, 4, 352, 316, 32, -15, 26, 12, 26, 24, oran);
       else panelDoku(el("araziIzgara"), 3, 6, 300, 330, 42, -19, 20, 26, 34, 30, oran);
       panelBilgi();
@@ -318,14 +342,9 @@ export default function Simulasyon() {
       (e.currentTarget as HTMLElement).textContent = "Hız " + HIZLAR[hizIx] + "×";
     };
     el("tekrar").onclick = sifirla;
-    const gucDegistir = (fark: number) => {
-      S.guc = Math.min(250, Math.max(5, S.guc + fark));
-      const g = el("guc") as HTMLInputElement;
-      g.value = String(S.guc); el("gucCikti").textContent = S.guc + " kWp";
-      sahneKur(); sifirla();
-    };
-    el("panelArti").onclick = () => gucDegistir(5);
-    el("panelEksi").onclick = () => gucDegistir(-5);
+    const adimBoyu = () => (S.grup === "sanayi" ? 50 : S.grup === "ticarethane" ? 10 : 5);
+    el("panelArti").onclick = () => gucUygula(S.guc + adimBoyu());
+    el("panelEksi").onclick = () => gucUygula(S.guc - adimBoyu());
     sahneKur(); sifirla();
     return () => { oynuyor = false; cancelAnimationFrame(kare); };
   }, []);
@@ -348,9 +367,10 @@ export default function Simulasyon() {
           <div className="grup"><span>Santral Gücü
             <button className="terim" data-tip="kWp = panellerin tepe gücü; kaç panel taktığınızın ölçüsü. 10 kWp ≈ 17-18 panel, bir konut çatısını doldurur." aria-label="kWp nedir" type="button">?</button></span>
             <div className="kaydirici">
-              <input type="range" id="guc" min={5} max={250} step={5} defaultValue={50} />
-              <output id="gucCikti">50 kWp</output></div>
-            <small className="panel-sayi" id="panelSayi"></small></div>
+              <input type="range" id="guc" min={5} max={1000} step={5} defaultValue={50} />
+              <span className="sayi-kutu"><input type="number" id="gucSayi" min={5} max={5000} defaultValue={50} aria-label="Güç (kWp)" /><i>kWp</i></span></div>
+            <small className="panel-sayi" id="panelSayi"></small>
+            <small className="panel-sayi uyari" id="gucUyari" style={{ display: "none" }}>Konutta yasal üst sınır 25 kW — güç buna çekildi.</small></div>
           <div className="grup"><span>İl</span><select id="il" aria-label="İl"></select></div>
         </div>
 
@@ -372,8 +392,8 @@ export default function Simulasyon() {
               <button className="cip" data-deger="bulutlu" type="button">Bulutlu</button></div></div>
           <div className="grup"><span>Tüketim
             <button className="terim" data-tip="Aylık kWh tüketiminiz ve elektriği günün hangi saatlerinde kullandığınız. Üretim gündüz olduğu için gündüz tüketen kazançlı çıkar." aria-label="Tüketim nedir" type="button">?</button></span>
-            <div className="kaydirici"><input type="range" id="tuketim" min={500} max={60000} step={500} defaultValue={9000} />
-              <output id="tukCikti">9.000 kWh/ay</output></div>
+            <div className="kaydirici"><input type="range" id="tuketim" min={500} max={200000} step={500} defaultValue={9000} />
+              <span className="sayi-kutu"><input type="number" id="tukSayi" min={100} max={2000000} defaultValue={9000} aria-label="Aylık tüketim (kWh)" /><i>kWh/ay</i></span></div>
             <div className="cipler" data-ad="profil">
               <button className="cip on" data-deger="gunduz" type="button">Gündüz</button>
               <button className="cip" data-deger="aksam" type="button">Akşam</button>

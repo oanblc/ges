@@ -589,6 +589,13 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .simx .karne .sistem b{font-family:ui-monospace,monospace; white-space:nowrap}
 .simx .karne-cta{display:flex; gap:8px; margin-top:16px}
 .simx .karne-cta .gt-btn{flex:1; justify-content:center}
+.simx .sayi-kutu{display:inline-flex; align-items:center; gap:4px; border:1px solid var(--border);
+  border-radius:9px; background:#fff; padding:3px 8px 3px 4px}
+.simx .sayi-kutu input{border:none; background:none; font-family:ui-monospace,monospace;
+  font-size:12.5px; font-weight:600; width:74px; text-align:right; padding:3px 0}
+.simx .sayi-kutu input:focus{outline:none}
+.simx .sayi-kutu i{font-style:normal; font-size:10.5px; color:var(--text); white-space:nowrap}
+.simx .panel-sayi.uyari{color:#A5620D; font-weight:600}
 .simx .not{font-size:11.5px; color:var(--text); margin:4px 0 0; line-height:1.5}
 @media (prefers-reduced-motion:reduce){.simx .karne{animation:none}}
 
