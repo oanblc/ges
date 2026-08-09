@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${kok}/fatura-analizi`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${kok}/teklif-analizi`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${kok}/simulasyon`, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${kok}/police-analizi`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${kok}/destekler`, changeFrequency: "daily", priority: 0.8 },
     { url: `${kok}/mevzuat`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${kok}/surec`, changeFrequency: "monthly", priority: 0.8 },

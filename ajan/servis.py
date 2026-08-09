@@ -517,6 +517,127 @@ async def fatura_ayikla(istek: Request):
     return alanlar
 
 
+POLICE_ARACI = [{
+    "name": "police_alanlari",
+    "description": "Sigorta poliçesinden okunan alanları yapılandırılmış döndür.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "belge_police_mi": {"type": "boolean",
+                                "description": "Belge gerçekten bir sigorta poliçesi/teklifi mi"},
+            "police_turu": {"type": "string",
+                            "enum": ["konut", "isyeri", "ges-ozel", "car-ear", "diger", "belirsiz"]},
+            "sigortali_bedel_tl": {"type": "number", "minimum": 0,
+                                   "description": "Toplam sigorta bedeli; okunamadıysa 0"},
+            "ges_teminati_var_mi": {"type": "string", "enum": ["var", "yok", "belirsiz"],
+                                    "description": "GES/güneş paneli açıkça teminat kapsamında mı"},
+            "teminatlar": {"type": "array", "items": {"type": "string"},
+                           "description": "Okunan teminat başlıkları (yangın, dolu, hırsızlık vb.)"},
+            "muafiyetler": {"type": "array", "items": {"type": "string"},
+                            "description": "Muafiyet/istisna satırları"},
+            "baslangic_bitis": {"type": "string", "description": "Poliçe dönemi; okunamadıysa boş"},
+            "okunamayanlar": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["belge_police_mi", "police_turu", "ges_teminati_var_mi", "teminatlar"],
+    },
+}]
+
+
+@app.post("/police-degerlendir")
+async def police_degerlendir(istek: Request):
+    """Sigorta poliçesini okur, GES kapsamı açısından kb ile denetimli değerlendirir."""
+    ip = _gercek_ip(istek)
+    bakim = _bakimda()
+    if bakim:
+        return bakim
+    if _sinirli_mi(ip):
+        return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
+                            status_code=429)
+    ham = await istek.body()
+    if len(ham) > 13_000_000:
+        return JSONResponse({"hata": "Dosya çok büyük; en fazla 6 MB yükleyin."}, status_code=413)
+    if _gunluk_asildi_mi("sohbet", GUNLUK_SOHBET_TAVANI):
+        return JSONResponse({"hata": "Günlük kapasitemiz doldu; yarın yeniden deneyin."},
+                            status_code=503)
+    try:
+        govde = json.loads(ham)
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek gövdesi."}, status_code=400)
+    bloklar = _temiz_bloklar([govde.get("ek") or {}])
+    if not any(b["type"] in ("image", "document") for b in bloklar):
+        return JSONResponse({"hata": "Geçerli bir poliçe görseli (JPEG/PNG/WebP) veya PDF gönderin."},
+                            status_code=400)
+    notlar = str(govde.get("notlar", "")).strip()[:400]
+    try:
+        p = gemini.uret(
+            ("Türkiye sigorta poliçelerini okuyan bir ayıklayıcısın. Yalnız belgede yazanı "
+             "çıkar; emin olmadığını okunamayanlar listesine ekle, asla tahmin etme. "
+             "Sigorta şirketi adını alanlara YAZMA."),
+            [{"role": "user", "parts": gemini.parcalar(
+                bloklar + [{"type": "text", "text": "Bu sigorta poliçesindeki alanları oku ve "
+                                                    "police_alanlari aracıyla döndür."}])}],
+            araclar=POLICE_ARACI, zorunlu_arac="police_alanlari", max_cikti=2500,
+        )
+        alanlar = gemini.arac_cagrisi(p, "police_alanlari")
+        if alanlar is None:
+            raise ValueError("araç çağrısı yok")
+    except Exception as e:
+        return JSONResponse({"hata": f"Poliçe okunamadı ({type(e).__name__}); daha net bir "
+                                     "belgeyle deneyin."}, status_code=502)
+    if not alanlar.get("belge_police_mi"):
+        return JSONResponse({"hata": "Bu belge bir sigorta poliçesine benzemiyor; poliçe veya "
+                                     "teklif sayfasını yükleyin."}, status_code=400)
+
+    soru = ("Sigorta poliçemi GES açısından değerlendirir misin?\n"
+            f"Poliçe alanları: {json.dumps(alanlar, ensure_ascii=False)}\n"
+            + (f"Ek notlarım: {notlar}" if notlar else ""))
+    gorev = (
+        "POLİÇE DEĞERLENDİRME GÖREVİ. Yukarıdaki alanlar ziyaretçinin sigorta poliçesinden "
+        "okundu. Bilgi tabanındaki sigorta standartlarıyla (ticari GES poliçesi teminat seti, "
+        "konut poliçelerinin GES'i otomatik kapsamadığı kuralı, bireysel çatı ürünü koşulları) "
+        "TARAFSIZ bir değerlendirme yaz:\n"
+        "1) Bu poliçe GES'i kapsıyor mu; kapsamıyorsa hangi ek ürün/zeyil gerekir?\n"
+        "2) GES için kritik teminatlardan (yangın, dolu/fırtına, hırsızlık, makine kırılması, "
+        "elektronik cihaz, işletmede kâr kaybı; kurulum dönemi için CAR/EAR) hangileri VAR, "
+        "hangileri GÖRÜNMÜYOR — tablo hâlinde say.\n"
+        "3) Muafiyet/istisna satırlarında GES sahibini zorlayacak maddeler var mı?\n"
+        "4) 'Sigortacınıza sormanız gerekenler' başlığıyla 3-5 net soru ver.\n"
+        "Kurallar: sigorta şirketi adı anma; prim rakamı tahmin etme (prim teklife bağlıdır de); "
+        "belgeden okunmuş bilgiyi veri kabul et; kb'de olmayan kural üretme; iç dosya adlarını "
+        "anma. Markdown başlıklarıyla, sade Türkçe. Sonuna 'Bu değerlendirme bilgilendirme "
+        "amaçlıdır; poliçe şartları için sigortacınız bağlayıcıdır.' ekle."
+    )
+    try:
+        sistem = SISTEM + GEMINI_EK + _kb_yukle()
+        icerikler = [{"role": "user", "parts": [{"text": soru + "\n\n" + gorev}]}]
+        p2 = gemini.uret(sistem, icerikler, max_cikti=4096, sure=240)
+        analiz = "".join(x.get("text", "") for x in p2).strip()
+        karar = _denetle(soru, analiz, _al(), ekli=True)
+        denetim = "onay"
+        if karar.startswith("SORUN"):
+            duzeltme = icerikler + [
+                {"role": "model", "parts": [{"text": analiz}]},
+                {"role": "user", "parts": [{"text": (
+                    "<system-reminder>Denetçi kontrolü değerlendirmende hata buldu. "
+                    "Aşağıdaki düzeltmelerle yeniden yaz; süreçten bahsetme.\n"
+                    f"{karar}</system-reminder>")}]},
+            ]
+            p3 = gemini.uret(sistem, duzeltme, max_cikti=4096, sure=240)
+            yeni = "".join(x.get("text", "") for x in p3).strip()
+            if yeni and _denetle(soru, yeni, _al(), ekli=True).startswith("ONAY"):
+                analiz, denetim = yeni, "onay-revize"
+            else:
+                return JSONResponse({"hata": "Bu poliçe için doğrulanmış bir değerlendirme "
+                                             "üretemedik; asistana sorarak ilerleyebilirsiniz."},
+                                    status_code=502)
+        _sohbet_logla(soru[:300], analiz, f"police-{denetim}")
+        return {"alanlar": alanlar, "analiz": analiz, "denetim": denetim}
+    except Exception as e:
+        print(f"HATA police ({type(e).__name__}): {str(e)[:200]}", flush=True)
+        return JSONResponse({"hata": "Değerlendirme üretilemedi; lütfen yeniden deneyin."},
+                            status_code=502)
+
+
 TEKLIF_ARACI = [{
     "name": "teklif_alanlari",
     "description": "GES teklifinden okunan alanları yapılandırılmış döndür.",
