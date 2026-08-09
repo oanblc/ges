@@ -580,6 +580,15 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
   background:var(--theme); color:#fff; font-size:18px; font-weight:700; line-height:1;
   display:flex; align-items:center; justify-content:center}
 .simx .panel-arac button:hover{background:#0A6B5C}
+.simx select.uyar{border-color:#A5620D; box-shadow:0 0 0 2px rgba(165,98,13,.25)}
+.simx .karne .sistem{margin-top:14px; padding:12px 14px; background:#F3F5F0; border-radius:14px}
+.simx .karne .sistem h3{margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--text)}
+.simx .karne .sistem div{display:flex; justify-content:space-between; gap:12px; font-size:13px;
+  padding:3px 0}
+.simx .karne .sistem b{font-family:ui-monospace,monospace; white-space:nowrap}
+.simx .karne-cta{display:flex; gap:8px; margin-top:16px}
+.simx .karne-cta .gt-btn{flex:1; justify-content:center}
 .simx .not{font-size:11.5px; color:var(--text); margin:4px 0 0; line-height:1.5}
 @media (prefers-reduced-motion:reduce){.simx .karne{animation:none}}
 

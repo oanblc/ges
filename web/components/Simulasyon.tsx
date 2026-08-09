@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { EKIPMAN, TARIFE } from "@/data/kb";
+import { EKIPMAN, MALIYET_BANT, TARIFE } from "@/data/kb";
 import PVGIS from "@/data/pvgis.json";
 
 /**
@@ -50,13 +50,16 @@ export default function Simulasyon() {
 
   useEffect(() => {
     const el = (id: string) => document.getElementById(id)!;
-    const S = { tip: "cati", grup: "ticarethane", gerilim: "AG", il: "İzmir",
+    const S = { tip: "cati", grup: "ticarethane", gerilim: "AG", il: "",
       mevsim: "bahar" as "kis" | "bahar" | "yaz", hava: "acik" as "acik" | "parcali" | "bulutlu",
       guc: 50, tuketim: 9000, profil: "gunduz" as keyof typeof PROFIL, batarya: 0 };
 
     const ilSec = el("il") as HTMLSelectElement;
-    for (const ad of Object.keys(ILLER)) ilSec.add(new Option(ad, ad, ad === "İzmir", ad === "İzmir"));
-    ilSec.onchange = () => { S.il = ilSec.value; sifirla(); };
+    const bosSecenek = new Option("İl seçiniz…", "", true, true);
+    bosSecenek.disabled = true;
+    ilSec.add(bosSecenek);
+    for (const ad of Object.keys(ILLER)) ilSec.add(new Option(ad, ad));
+    ilSec.onchange = () => { S.il = ilSec.value; ilSec.classList.remove("uyar"); sifirla(); };
     kok.current!.querySelectorAll<HTMLElement>(".cipler").forEach((k) =>
       k.addEventListener("click", (e) => {
         const d = (e.target as HTMLElement).closest(".cip") as HTMLElement | null;
@@ -126,6 +129,8 @@ export default function Simulasyon() {
       return FIYAT[anahtar] ?? FIYAT.ticarethaneAG;
     }
     function gunHesabi(): Saat[] {
+      if (!S.il) return Array.from({ length: 24 }, (_, h) =>
+        ({ h, u: 0, t: 0, oz: 0, satis: 0, alis: 0, bat: 0, batAksi: 0 }));
       const profil = ILLER[S.il].profil[S.mevsim];
       const gunlukTuk = S.tuketim / 30, sekil = PROFIL[S.profil],
         toplamSekil = sekil.reduce((a, b) => a + b, 0);
@@ -151,6 +156,7 @@ export default function Simulasyon() {
     let saatler: Saat[] = [], kare = 0, zaman = 6, hizIx = 0, oynuyor = false;
     const HIZLAR = [1, 3, 8];
     const dogusBatis = () => {
+      if (!S.il) return [6, 19];
       const p = ILLER[S.il].profil[S.mevsim];
       let d = 6, b = 19;
       for (let h = 0; h < 24; h++) if (p[h] > 3) { d = h; break; }
@@ -264,6 +270,23 @@ export default function Simulasyon() {
         <tr class="kalem"><td>→ Bataryada kalan (yarına devreder)</td><td>${f(saatler[23].bat)} kWh</td></tr>` : ""}
         ${acilim}
         <tr class="buyuk"><td>Cebinde kalan (bugün)</td><td>+${f(t.kazanc)} ₺</td></tr>`;
+      // sistem özeti: yıllık üretim + kb bantlarından tahmini yatırım + kaba geri ödeme
+      const yillikUretim = S.guc * ILLER[S.il].verim;
+      const seg = S.grup === "mesken" ? "konut" : "ticari";
+      const bantlar = MALIYET_BANT[seg as keyof typeof MALIYET_BANT] as ReadonlyArray<readonly [number, number, number]>;
+      let alt = bantlar[bantlar.length - 1][1], ust = bantlar[bantlar.length - 1][2];
+      for (const [maks, a, u] of bantlar) if (S.guc <= maks) { alt = a; ust = u; break; }
+      const yatirimAlt = S.guc * alt, yatirimUst = S.guc * ust;
+      const ozOran = t.uretim ? ozKwh / t.uretim : 0.7;
+      const yillikDeger = yillikUretim * (ozOran * fi.alis + (1 - ozOran) * fi.satis);
+      const binf = (v: number) => v >= 1_000_000
+        ? (v / 1_000_000).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " M₺"
+        : Math.round(v / 1000).toLocaleString("tr-TR") + " bin ₺";
+      el("sistemOzet").innerHTML = `
+        <h3>Bu sistem gerçekte ne eder?</h3>
+        <div><span>Yıllık üretim tahmini</span><b>≈ ${f(yillikUretim)} kWh</b></div>
+        <div><span>Tahmini kurulum maliyeti</span><b>${binf(yatirimAlt)} – ${binf(yatirimUst)}</b></div>
+        <div><span>Kaba geri ödeme</span><b>≈ ${(yatirimAlt / yillikDeger).toFixed(1).replace(".", ",")} – ${(yatirimUst / yillikDeger).toFixed(1).replace(".", ",")} yıl</b></div>`;
       el("perde").classList.add("acik");
     }
     function dongu() {
@@ -285,6 +308,7 @@ export default function Simulasyon() {
     }
     el("baslat").onclick = () => {
       if (oynuyor) return;
+      if (!S.il) { ilSec.classList.add("uyar"); ilSec.focus(); return; }
       if (zaman >= 30) sifirla();
       oynuyor = true; (el("baslat") as HTMLButtonElement).disabled = true;
       kare = requestAnimationFrame(dongu);
@@ -424,9 +448,11 @@ export default function Simulasyon() {
               <h2>Gün Sonu Karnesi</h2>
               <div className="alt" id="karneAlt"></div>
               <table id="karneTablo"></table>
-              <button className="gt-btn small" id="tekrar" type="button" style={{ width: "100%", marginTop: 18, justifyContent: "center" }}>
-                Yeniden Oyna
-              </button>
+              <div className="sistem" id="sistemOzet"></div>
+              <div className="karne-cta">
+                <a className="gt-btn small line" href="/hesaplama">Detaylı Hesap</a>
+                <button className="gt-btn small" id="tekrar" type="button">Yeniden Oyna</button>
+              </div>
             </div>
           </div>
         </div>
