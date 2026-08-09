@@ -541,19 +541,19 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
     };
     el("raporBtn").onclick = raporIndir;
     // ---- uydudan çatı çizimi (Google Maps; anahtar yoksa düğme görünmez) ----
-    let harita: unknown = null, cizimYonetici: unknown = null, sonCokgen: unknown = null, sonAlan = 0;
+    let harita: unknown = null, sonCokgen: unknown = null, sonAlan = 0;
     const g = () => (window as unknown as { google: any }).google;
     function haritaYukle(): Promise<void> {
       return new Promise((coz, red) => {
         if ((window as unknown as { google?: unknown }).google) return coz();
         const s = document.createElement("script");
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_ANAHTAR}&libraries=drawing,places,geometry&language=tr&region=TR`;
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_ANAHTAR}&libraries=places,geometry&language=tr&region=TR`;
         s.onload = () => coz(); s.onerror = () => red(new Error("maps yüklenemedi"));
         document.head.appendChild(s);
       });
     }
     function alanOzeti() {
-      if (!sonAlan) { el("uyduBilgi").textContent = "Çatınızın köşelerini haritada tıklayarak işaretleyin."; return; }
+      if (!sonAlan) { el("uyduBilgi").textContent = "Çatınızın köşelerini haritada tıklayarak işaretleyin (en az 3 köşe); köşeleri sürükleyerek düzeltebilirsiniz."; return; }
       const kwp = S.tip === "cati"
         ? (sonAlan * 0.6 / EKIPMAN.panelM2) * (EKIPMAN.panelWp / 1000)
         : sonAlan / 15;
@@ -583,21 +583,30 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
             (harita as any).setZoom(19);
           }
         });
-        cizimYonetici = new G.maps.drawing.DrawingManager({
-          drawingMode: G.maps.drawing.OverlayType.POLYGON,
-          drawingControl: false,
-          polygonOptions: { fillColor: "#FFE175", fillOpacity: 0.45, strokeColor: "#E8C43C",
-            strokeWeight: 2.5, editable: true },
-        });
-        (cizimYonetici as any).setMap(harita);
-        G.maps.event.addListener(cizimYonetici, "polygoncomplete", (poli: any) => {
-          if (sonCokgen) (sonCokgen as any).setMap(null);
-          sonCokgen = poli;
-          const hesapla = () => { sonAlan = G.maps.geometry.spherical.computeArea(poli.getPath()); alanOzeti(); };
-          hesapla();
-          poli.getPath().addListener("set_at", hesapla);
-          poli.getPath().addListener("insert_at", hesapla);
-          (cizimYonetici as any).setDrawingMode(null);
+        // DrawingManager Maps JS 3.65'te kaldırıldı — çizim elle: her tıklama köşe ekler
+        (harita as any).addListener("click", (olay: any) => {
+          const G2 = g();
+          if (!sonCokgen) {
+            sonCokgen = new G2.maps.Polygon({
+              map: harita, paths: [olay.latLng], editable: true, geodesic: false,
+              fillColor: "#FFE175", fillOpacity: 0.45, strokeColor: "#E8C43C", strokeWeight: 2.5,
+            });
+            const hesapla = () => {
+              const yol2 = (sonCokgen as any).getPath();
+              sonAlan = yol2.getLength() >= 3 ? G2.maps.geometry.spherical.computeArea(yol2) : 0;
+              alanOzeti();
+            };
+            const yol2 = (sonCokgen as any).getPath();
+            yol2.addListener("set_at", hesapla);
+            yol2.addListener("insert_at", hesapla);
+            yol2.addListener("remove_at", hesapla);
+            (sonCokgen as any).addListener("click", hesapla);
+          } else {
+            (sonCokgen as any).getPath().push(olay.latLng);
+          }
+          const yol3 = (sonCokgen as any).getPath();
+          sonAlan = yol3.getLength() >= 3 ? g().maps.geometry.spherical.computeArea(yol3) : 0;
+          alanOzeti();
         });
       }
       alanOzeti();
@@ -609,7 +618,6 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
         if (sonCokgen) (sonCokgen as any).setMap(null);
         sonCokgen = null; sonAlan = 0;
         (el("uyduKullan") as HTMLButtonElement).disabled = true;
-        if (cizimYonetici) (cizimYonetici as any).setDrawingMode(g().maps.drawing.OverlayType.POLYGON);
         alanOzeti();
       };
       el("uyduKullan").onclick = (e) => {
