@@ -61,7 +61,12 @@ export default function Simulasyon() {
       }));
     const bagla = (id: string, cik: string, fmt: (v: number) => string, alan: string) => {
       const g = el(id) as HTMLInputElement, o = el(cik);
-      g.oninput = () => { (S as Record<string, unknown>)[alan] = +g.value; o.textContent = fmt(+g.value); sifirla(); };
+      g.oninput = () => {
+        (S as Record<string, unknown>)[alan] = +g.value;
+        o.textContent = fmt(+g.value);
+        sahneKur(); // panel sayısı/alan, doluluk ve batarya kutusu kaydırıcıyla senkron kalsın
+        sifirla();
+      };
       o.textContent = fmt(+g.value);
     };
     bagla("guc", "gucCikti", (v) => v + " kWp", "guc");
