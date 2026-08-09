@@ -15,7 +15,6 @@ import datetime
 import json
 import os
 import re
-import subprocess
 import threading
 import time
 from pathlib import Path
@@ -74,6 +73,81 @@ def _gercek_ip(istek):
 # Günlük global tavanlar — kötüye kullanımda API faturasını sınırlar (UTC gün bazlı)
 GUNLUK_SOHBET_TAVANI = int(os.environ.get("GUNLUK_SOHBET_TAVANI", "400"))
 GUNLUK_LEAD_TAVANI = int(os.environ.get("GUNLUK_LEAD_TAVANI", "100"))
+
+# --- e-posta (Natro kurumsal e-posta SMTP'si; ayarlar ortam değişkeninden) ---
+SMTP_SUNUCU = os.environ.get("SMTP_SUNUCU", "mail.kurumsaleposta.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "465"))
+SMTP_KULLANICI = os.environ.get("SMTP_KULLANICI", "")   # ör. info@gesdanismani.com
+SMTP_SIFRE = os.environ.get("SMTP_SIFRE", "")
+BILDIRIM_EPOSTA = os.environ.get("BILDIRIM_EPOSTA", "")  # talep bildirimlerinin düşeceği adres
+
+
+def _eposta_gonder(kime: str, konu: str, html: str) -> None:
+    """SMTP ile e-posta yollar; ayar eksikse sessizce atlar. Ayrı iş parçacığında çağrılır."""
+    if not (SMTP_KULLANICI and SMTP_SIFRE and kime):
+        return
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.utils import formataddr
+    mesaj = MIMEText(html, "html", "utf-8")
+    mesaj["Subject"] = konu
+    mesaj["From"] = formataddr(("GES Danışmanı", SMTP_KULLANICI))
+    mesaj["To"] = kime
+    try:
+        if SMTP_PORT == 465:
+            baglanti = smtplib.SMTP_SSL(SMTP_SUNUCU, SMTP_PORT, timeout=25)
+        else:
+            baglanti = smtplib.SMTP(SMTP_SUNUCU, SMTP_PORT, timeout=25)
+            baglanti.starttls()
+        with baglanti:
+            baglanti.login(SMTP_KULLANICI, SMTP_SIFRE)
+            baglanti.send_message(mesaj)
+    except Exception as e:
+        print(f"e-posta gönderilemedi ({kime}): {type(e).__name__}: {e}")
+
+
+def _eposta_arkaplan(kime: str, konu: str, html: str) -> None:
+    threading.Thread(target=_eposta_gonder, args=(kime, konu, html), daemon=True).start()
+
+
+def _hosgeldin_html() -> str:
+    return """<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#2A3B36;line-height:1.6">
+<h2 style="color:#0A4A3C">Talebiniz bize ulaştı</h2>
+<p>Merhaba,</p>
+<p>gesdanismani.com üzerinden bıraktığınız danışmanlık talebini aldık. Sohbet özetiniz ekibimize
+iletildi; en kısa sürede bu adresten ya da bıraktığınız telefondan size dönüş yapacağız.</p>
+<p>Bu arada işinize yarayabilecek araçlar:</p>
+<ul>
+<li><a href="https://www.gesdanismani.com/simulasyon" style="color:#0A6B5C">Güneş sahası simülasyonu</a> — kendi ilinize göre üretim ve geri ödeme</li>
+<li><a href="https://www.gesdanismani.com/fatura-analizi" style="color:#0A6B5C">Fatura analizi</a> — faturanızdan GES planınıza</li>
+<li><a href="https://www.gesdanismani.com/teklif-analizi" style="color:#0A6B5C">Teklif değerlendirme</a> — elinizdeki teklif piyasaya uygun mu</li>
+</ul>
+<p>Sorularınız için asistan her zaman açık: <a href="https://www.gesdanismani.com/asistan" style="color:#0A6B5C">gesdanismani.com/asistan</a></p>
+<p style="margin-top:24px">Saygılarımızla,<br><b>GES Danışmanı</b><br>
+<span style="font-size:13px;color:#6B7B74">Bu ileti, gesdanismani.com'da bıraktığınız danışmanlık talebi üzerine gönderilmiştir.</span></p>
+</div>"""
+
+
+def _talep_bildirim_html(kayit: dict) -> str:
+    ozet = kayit.get("ozet") or {}
+    satirlar = "".join(
+        f"<tr><td style='padding:4px 10px 4px 0;color:#6B7B74'>{ad}</td><td style='padding:4px 0'>{deger}</td></tr>"
+        for ad, deger in ozet.items() if isinstance(deger, str) and deger
+    )
+    son_mesajlar = "".join(
+        f"<p style='margin:6px 0'><b>{'Ziyaretçi' if m.get('role') == 'user' else 'Asistan'}:</b> "
+        f"{str(m.get('content', ''))[:400]}</p>"
+        for m in kayit.get("sohbet", [])[-6:]
+    )
+    return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;color:#2A3B36;line-height:1.55">
+<h2 style="color:#0A4A3C">Yeni danışmanlık talebi</h2>
+<p><b>İletişim:</b> {kayit.get('iletisim') or '—'}<br><b>Zaman:</b> {kayit.get('zaman')}</p>
+<table style="font-size:14px">{satirlar}</table>
+<h3 style="color:#0A4A3C;margin-top:18px">Sohbetin son bölümü</h3>
+{son_mesajlar}
+<p style="font-size:13px;color:#6B7B74">Tam kayıt yönetim panelinde: https://www.gesdanismani.com/yonetim/talepler</p>
+</div>"""
+
 _gunluk = {"gun": "", "sohbet": 0, "lead": 0}
 
 
@@ -1175,10 +1249,9 @@ async def lead_ucu(istek: Request):
     LEAD_DIZIN.mkdir(parents=True, exist_ok=True)
     dosya = LEAD_DIZIN / f"{kayit['zaman'].replace(':', '')}.json"
     dosya.write_text(json.dumps(kayit, ensure_ascii=False, indent=2), encoding="utf-8")
-    try:  # Ozan'a anında masaüstü bildirimi (e-posta kanalı yayında bağlanacak)
-        subprocess.run(["osascript", "-e",
-                        'display notification "Yeni danışmanlık talebi geldi — kb/lead/" '
-                        'with title "gesdanışmanı" sound name "Glass"'], timeout=10)
-    except Exception:
-        pass
+    # bildirim: talep özeti yöneticinin adresine, hoş geldin mesajı talep sahibine
+    _eposta_arkaplan(BILDIRIM_EPOSTA, f"Yeni danışmanlık talebi — {iletisim or 'iletişimsiz'}",
+                     _talep_bildirim_html(kayit))
+    if _re.search(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$", iletisim):
+        _eposta_arkaplan(iletisim, "Talebinizi aldık — GES Danışmanı", _hosgeldin_html())
     return {"durum": "kaydedildi"}
