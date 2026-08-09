@@ -653,10 +653,23 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
       };
       el("uyduKullan").onclick = (e) => {
         const kwp = Number((e.currentTarget as HTMLElement).dataset.kwp || 0);
+        const oncekiGuc = S.guc;
         if (kwp) { gucUygula(kwp); }
         el("uyduPerde").classList.remove("acik");
         el("panelSayi").insertAdjacentHTML("beforeend",
           ` · uydudan seçilen alan ${Math.round(sonAlan).toLocaleString("tr-TR")} m²`);
+        // ne değişti — görünür bildirim + güç grubunu kısa süreliğine vurgula
+        const adet = Math.ceil((S.guc * 1000) / EKIPMAN.panelWp);
+        el("uyduBannerMetin").innerHTML =
+          `🛰 Uydudan ayarlandı: <b>${Math.round(sonAlan).toLocaleString("tr-TR")} m²</b> alan → ` +
+          `güç <b>${oncekiGuc.toLocaleString("tr-TR")} → ${S.guc.toLocaleString("tr-TR")} kWp</b> · ` +
+          `<b>${adet.toLocaleString("tr-TR")} panel</b> · çatı doluluğu ve karne buna göre güncellendi. ` +
+          `Şimdi "Günü Başlat" ile sistemini oynat.`;
+        el("uyduBanner").hidden = false;
+        const gucGrup = (el("guc").closest(".grup") as HTMLElement);
+        gucGrup.classList.add("rehber-vurgu");
+        el("sahneKutu").scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => gucGrup.classList.remove("rehber-vurgu"), 3500);
       };
     }
     el("tekrar").onclick = () => {
@@ -667,6 +680,65 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
     const adimBoyu = () => (S.grup === "sanayi" || S.grup === "osb" ? 50 : S.grup === "ticarethane" ? 10 : 5);
     el("panelArti").onclick = () => gucUygula(S.guc + adimBoyu());
     el("panelEksi").onclick = () => gucUygula(S.guc - adimBoyu());
+    // ---- yardım çekmecesi ----
+    el("yardimAc").onclick = () => { el("yardimPanel").hidden = false; };
+    el("yardimKapat").onclick = () => { el("yardimPanel").hidden = true; };
+
+    // ---- ilk ziyaret rehberi: adım adım kurulum ----
+    const ADIMLAR: Array<[string, string]> = [
+      ["#girdiler .cipler[data-ad=tip]",
+       "1/6 · Önce kurulum yerini seç: paneller çatıya mı, araziye mi kurulacak?"],
+      ["#girdiler .cipler[data-ad=grup]",
+       "2/6 · Abone grubunu seç. Mesken = konut (aylık mahsup); Ticarethane/Sanayi/OSB = işletme (saatlik mahsup). Fiyatlar ve kurallar buna göre değişir."],
+      ["#il",
+       "3/6 · İlini seç — üretim, ilin gerçek güneşlenme verisine göre hesaplanır."],
+      ["#gelismisAc",
+       "4/6 · 'Gelişmiş ayarlar'ı açıp aylık tüketimini (faturandaki kWh) ve tüketim profilini gir; istersen batarya, cephe ve gölgelenmeyi de ayarla."],
+      ["#guc",
+       "5/6 · Santral gücünü belirle: kaydır, elle yaz, ⚡ ile ihtiyacına göre otomatik hesapla ya da 🛰 ile çatını uydudan çiz."],
+      ["#baslat",
+       "6/6 · Hazırsın! 'Günü Başlat'a bas: güneş doğsun, sayaç dönsün. Gün bitince karnen açılır. Detaylı bilgi her zaman 📖 Yardım'da."],
+    ];
+    let adimIx = 0;
+    let vurgulu: HTMLElement | null = null;
+    const vurguTemizle = () => { vurgulu?.classList.remove("rehber-vurgu"); vurgulu = null; };
+    function rehberGoster() {
+      vurguTemizle();
+      const [hedef, metin] = ADIMLAR[adimIx];
+      const e = kok.current!.querySelector(hedef) as HTMLElement | null;
+      if (e) {
+        vurgulu = e.closest(".grup") as HTMLElement || e;
+        vurgulu.classList.add("rehber-vurgu");
+        vurgulu.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      el("rehberMetin").textContent = metin;
+      el("rehberSayac").textContent = `${adimIx + 1} / ${ADIMLAR.length}`;
+      el("rehberIleri").textContent = adimIx === ADIMLAR.length - 1 ? "Bitir" : "İleri";
+    }
+    function rehberKapat() {
+      vurguTemizle();
+      el("rehberKutu").hidden = true;
+      try { localStorage.setItem("gd-sim-rehber", "1"); } catch { /* yoksay */ }
+    }
+    el("rehberAtla").onclick = rehberKapat;
+    el("rehberIleri").onclick = () => {
+      if (adimIx === 3) { // gelişmiş adımında çekmeceyi otomatik aç
+        const gp = el("gelismis");
+        if (!gp.classList.contains("acik")) { gp.classList.add("acik"); el("gelismisAc").setAttribute("aria-expanded", "true"); }
+      }
+      adimIx += 1;
+      if (adimIx >= ADIMLAR.length) { rehberKapat(); return; }
+      rehberGoster();
+    };
+    try {
+      if (!localStorage.getItem("gd-sim-rehber")) {
+        el("rehberKutu").hidden = false;
+        rehberGoster();
+      }
+    } catch { /* engelli depolama */ }
+
+    el("uyduBannerKapat").onclick = () => { el("uyduBanner").hidden = true; };
+
     sahneKur(); sifirla();
     return () => { oynuyor = false; cancelAnimationFrame(kare); };
   }, []);
@@ -872,6 +944,74 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           <div id="uyduHarita" className="uydu-harita"></div>
           <p className="dip" id="uyduBilgi">Çatınızın köşelerini haritada tıklayarak işaretleyin.</p>
         </div>
+      </div>
+
+      <aside className="yardim" id="yardimPanel" aria-label="Yardım" hidden>
+        <div className="yardim-baslik">
+          <b>Simülasyon Rehberi</b>
+          <button id="yardimKapat" type="button" aria-label="Kapat">✕</button>
+        </div>
+        <details open><summary>Kurulum: Çatı mı, arazi mi?</summary>
+          <p>Paneller binanın çatısına ya da boş bir araziye kurulabilir. Arazide gölgesiz
+          yerleşim ve iyi havalandırma sayesinde üretim ~%5 daha yüksek varsayılır; ama arazi
+          maliyeti ve izin yükü gerçekte daha fazladır (bkz. Arazi mi Çatı mı blog yazımız).</p></details>
+        <details><summary>Abone grubu neyi değiştirir?</summary>
+          <p>Mesken = konut: aylık mahsuplaşma uygulanır, güç sınırı 25 kW'tır.
+          Ticarethane/Sanayi/OSB = işletme: 1 Mayıs 2026'dan beri saatlik mahsuplaşma uygulanır
+          ve elektrik birim fiyatı gruba göre değişir. OSB'de dağıtım bedelini OSB yönetimi
+          belirlediği için temsilî sanayi tarifesi kullanılır.</p></details>
+        <details><summary>Santral gücü, panel ve alan</summary>
+          <p>kWp panellerin tepe gücüdür. 2026 standardı 580 Wp panelle 10 kWp ≈ 17-18 panel ≈
+          42 m² panel alanı eder. Gücü kaydırıcıyla, elle yazarak, ⚡ Faturamı tam karşıla ile
+          (ihtiyacına göre) ya da 🛰 uydu çizimiyle (çatına sığana göre) belirleyebilirsin.</p></details>
+        <details><summary>⚡ Faturamı tam karşıla ne yapar?</summary>
+          <p>Aylık tüketimini yıllığa çevirir ve seçili ilin gerçek PVGIS verimi (cephe ve
+          gölgelenme dahil) ile bölerek yıllık üretimi tüketimine denk gelecek gücü hesaplar.
+          Meskende faturayı sıfıra çok yaklaştırır; işletmede saatlik mahsup nedeniyle gece
+          tüketimi kadar fark kalır — karnede görürsün.</p></details>
+        <details><summary>🛰 Uydudan çatı çizimi</summary>
+          <p>Adresini yaz, haritada çatının köşelerini tıklayarak işaretle (en az 3 köşe;
+          köşeler sürüklenebilir). Alan ölçülür ve sığabilecek güç önerilir: çatıda alanın
+          ~%60'ı kullanılabilir sayılır, arazide sıra aralıklarıyla 15 m²/kWp. "Alanı Kullan"
+          gücü bu değere ayarlar.</p></details>
+        <details><summary>Tüketim miktarı ve profili</summary>
+          <p>Aylık kWh tüketimini faturandan öğrenebilirsin. Profil, elektriği günün hangi
+          saatlerinde kullandığındır: üretim gündüz olduğu için gündüz tüketen işletme saatlik
+          mahsupta çok daha kârlıdır; akşam yoğun profilde batarya değer kazanır.</p></details>
+        <details><summary>Cephe ve gölgelenme</summary>
+          <p>Güney cephe bazdır; doğu/batı ~%15, kuzey ~%40 üretim kaybı yaratır. Gölgelenme:
+          kısmi ~%10, yoğun ~%25 kayıp varsayılır — yoğun gölgede optimizer/mikroinverter
+          çözümleri değerlendirilmelidir. Çatı tipi üretimi değil montaj maliyetini etkiler
+          (kiremit en işçiliklisidir).</p></details>
+        <details><summary>Batarya ne zaman mantıklı?</summary>
+          <p>Gündüz fazlasını depolayıp gece kullanmanı sağlar ve kesintide (hibrit sistemde)
+          evi besler. Meskende aylık mahsup sürdüğü için ekonomik zorunluluk değildir;
+          işletmelerde saatlik mahsup bataryayı cazipleştirir. Maliyeti sistem bedelini
+          %40-60 artırabilir.</p></details>
+        <details><summary>Sonuçları nasıl okumalıyım?</summary>
+          <p>Karne üç sütundur: Bugün (oynattığın gün, seçtiğin hava ile), Aylık (mevsimin
+          tipik günü × 30) ve Yıllık (kış+geçiş+yaz gerçek profilleriyle mevsim ağırlıklı).
+          "Cebinde kalan" = önlenen fatura + satış geliri. GES'siz/GES'li fatura satırları
+          aylık faturanın nasıl değişeceğini gösterir. PDF raporda saatlik döküm de vardır.</p></details>
+        <details><summary>Bu rakamlar ne kadar gerçekçi?</summary>
+          <p>Üretim, il bazlı gerçek PVGIS güneşlenme profillerinden (2016-2020 ortalaması,
+          30° eğim, %14 sistem kaybı, inverter kırpma tavanlı); fiyatlar güncel EPDK
+          tarifelerinden gelir. Yine de bu bir eğitim simülasyonudur — kişisel yatırım kararı
+          için Hesaplama Araçları ve Fatura Analizi kullanılmalıdır.</p></details>
+      </aside>
+
+      <div className="rehber" id="rehberKutu" hidden>
+        <p id="rehberMetin"></p>
+        <div className="rehber-dugmeler">
+          <button className="gt-btn small line" id="rehberAtla" type="button">Atla</button>
+          <span id="rehberSayac"></span>
+          <button className="gt-btn small" id="rehberIleri" type="button">İleri</button>
+        </div>
+      </div>
+
+      <div className="uydu-banner" id="uyduBanner" hidden>
+        <span id="uyduBannerMetin"></span>
+        <button id="uyduBannerKapat" type="button" aria-label="Kapat">✕</button>
       </div>
 
       <div className="sonuclar" id="sonuclar" hidden>
