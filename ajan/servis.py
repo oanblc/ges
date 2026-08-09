@@ -517,6 +517,132 @@ async def fatura_ayikla(istek: Request):
     return alanlar
 
 
+TEKLIF_ARACI = [{
+    "name": "teklif_alanlari",
+    "description": "GES teklifinden okunan alanları yapılandırılmış döndür.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "belge_teklif_mi": {"type": "boolean",
+                                "description": "Belge gerçekten bir GES teklifi/proforma mı"},
+            "guc_kwp": {"type": "number", "minimum": 0, "description": "Teklif edilen kurulu güç"},
+            "panel_adet": {"type": "number", "minimum": 0},
+            "panel_wp": {"type": "number", "minimum": 0, "description": "Panel başına Wp"},
+            "panel_marka": {"type": "string"},
+            "inverter_kw": {"type": "number", "minimum": 0},
+            "inverter_marka": {"type": "string"},
+            "batarya_kwh": {"type": "number", "minimum": 0, "description": "Yoksa 0"},
+            "toplam_tutar": {"type": "number", "minimum": 0},
+            "para_birimi": {"type": "string", "enum": ["TL", "USD", "EUR", "belirsiz"]},
+            "kdv_dahil_mi": {"type": "string", "enum": ["dahil", "haric", "belirsiz"]},
+            "kalemler": {"type": "array", "items": {"type": "object", "properties": {
+                "ad": {"type": "string"}, "tutar": {"type": "number"}},
+                "required": ["ad"]}, "description": "Teklifteki satır kalemleri (okunabilenler)"},
+            "garanti_notlari": {"type": "string"},
+            "okunamayanlar": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["belge_teklif_mi", "guc_kwp", "toplam_tutar", "para_birimi"],
+    },
+}]
+
+
+@app.post("/teklif-degerlendir")
+async def teklif_degerlendir(istek: Request):
+    """Teklif görseli/PDF'ini okur, kb bantlarıyla tarafsız değerlendirme üretir."""
+    ip = _gercek_ip(istek)
+    bakim = _bakimda()
+    if bakim:
+        return bakim
+    if _sinirli_mi(ip):
+        return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
+                            status_code=429)
+    ham = await istek.body()
+    if len(ham) > 13_000_000:
+        return JSONResponse({"hata": "Dosya çok büyük; en fazla 6 MB yükleyin."}, status_code=413)
+    if _gunluk_asildi_mi("sohbet", GUNLUK_SOHBET_TAVANI):
+        return JSONResponse({"hata": "Günlük kapasitemiz doldu; yarın yeniden deneyin."},
+                            status_code=503)
+    try:
+        govde = json.loads(ham)
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek gövdesi."}, status_code=400)
+    bloklar = _temiz_bloklar([govde.get("ek") or {}])
+    if not any(b["type"] in ("image", "document") for b in bloklar):
+        return JSONResponse({"hata": "Geçerli bir teklif görseli (JPEG/PNG/WebP) veya PDF gönderin."},
+                            status_code=400)
+    notlar = str(govde.get("notlar", "")).strip()[:400]
+    try:
+        p = gemini.uret(
+            ("Türkiye'deki çatı GES tekliflerini okuyan bir ayıklayıcısın. Yalnız belgede "
+             "yazanı çıkar; emin olmadığını okunamayanlar listesine ekle, asla tahmin etme. "
+             "Firma adını hiçbir alana YAZMA (tarafsızlık ilkesi)."),
+            [{"role": "user", "parts": gemini.parcalar(
+                bloklar + [{"type": "text", "text": "Bu GES teklifindeki alanları oku ve "
+                                                    "teklif_alanlari aracıyla döndür."}])}],
+            araclar=TEKLIF_ARACI, zorunlu_arac="teklif_alanlari", max_cikti=2500,
+        )
+        alanlar = gemini.arac_cagrisi(p, "teklif_alanlari")
+        if alanlar is None:
+            raise ValueError("araç çağrısı yok")
+    except Exception as e:
+        return JSONResponse({"hata": f"Teklif okunamadı ({type(e).__name__}); daha net bir "
+                                     "belgeyle deneyin."}, status_code=502)
+    if not alanlar.get("belge_teklif_mi"):
+        return JSONResponse({"hata": "Bu belge bir GES teklifine benzemiyor; teklif/proforma "
+                                     "sayfasını yükleyin."}, status_code=400)
+
+    soru = ("Aldığım şu GES teklifini değerlendirir misin?\n"
+            f"Teklif alanları: {json.dumps(alanlar, ensure_ascii=False)}\n"
+            + (f"Ek notlarım: {notlar}" if notlar else ""))
+    gorev = (
+        "TEKLİF DEĞERLENDİRME GÖREVİ. Yukarıdaki alanlar ziyaretçinin yüklediği teklif "
+        "belgesinden okundu. Bilgi tabanındaki güncel maliyet bantları, ekipman fiyatları ve "
+        "garanti standartlarıyla TARAFSIZ bir değerlendirme yaz:\n"
+        "1) kW başına maliyeti hesapla, segmentine göre kb bandında nereye düştüğünü söyle "
+        "(bandın altı/içi/üstü).\n"
+        "2) Okunabilen kalemleri tek tek değerlendir (panel Wp sınıfı güncel mi, inverter "
+        "boyu güce uygun mu, batarya varsa TL/kWh makul mu).\n"
+        "3) Teklifte GÖRÜNMEYEN kritik kalemleri listele (proje-onay süreci, çift yönlü "
+        "sayaç, nakliye, KDV durumu, devreye alma).\n"
+        "4) Garanti sürelerini kb standartlarıyla karşılaştır.\n"
+        "5) 'Firmaya sormanız gerekenler' başlığıyla 3-5 net soru ver.\n"
+        "Kurallar: firma adı anma ve karalama yapma; kesin 'pahalı/ucuz' hükmü yerine bant "
+        "karşılaştırması ver; belgeden okunmuş rakamları veri kabul et; bilgi tabanında "
+        "olmayan fiyat iddiası üretme; iç dosya adlarını (ör. .md) raporda ANMA, 'güncel "
+        "piyasa verilerimize göre' de. Markdown başlıklarıyla, sade Türkçe yaz. Sonuna "
+        "'Bu değerlendirme bilgilendirme amaçlıdır; bağlayıcı görüş değildir.' ekle."
+    )
+    try:
+        sistem = SISTEM + GEMINI_EK + _kb_yukle()
+        icerikler = [{"role": "user", "parts": [{"text": soru + "\n\n" + gorev}]}]
+        p2 = gemini.uret(sistem, icerikler, max_cikti=4096, sure=240)
+        analiz = "".join(x.get("text", "") for x in p2).strip()
+        karar = _denetle(soru, analiz, _al(), ekli=True)
+        denetim = "onay"
+        if karar.startswith("SORUN"):
+            duzeltme = icerikler + [
+                {"role": "model", "parts": [{"text": analiz}]},
+                {"role": "user", "parts": [{"text": (
+                    "<system-reminder>Denetçi kontrolü değerlendirmende hata buldu. "
+                    "Aşağıdaki düzeltmelerle yeniden yaz; süreçten bahsetme.\n"
+                    f"{karar}</system-reminder>")}]},
+            ]
+            p3 = gemini.uret(sistem, duzeltme, max_cikti=4096, sure=240)
+            yeni = "".join(x.get("text", "") for x in p3).strip()
+            if yeni and _denetle(soru, yeni, _al(), ekli=True).startswith("ONAY"):
+                analiz, denetim = yeni, "onay-revize"
+            else:
+                return JSONResponse({"hata": "Bu teklif için doğrulanmış bir değerlendirme "
+                                             "üretemedik; asistana sorarak ilerleyebilirsiniz."},
+                                    status_code=502)
+        _sohbet_logla(soru[:300], analiz, f"teklif-{denetim}")
+        return {"alanlar": alanlar, "analiz": analiz, "denetim": denetim}
+    except Exception as e:
+        print(f"HATA teklif ({type(e).__name__}): {str(e)[:200]}", flush=True)
+        return JSONResponse({"hata": "Değerlendirme üretilemedi; lütfen yeniden deneyin."},
+                            status_code=502)
+
+
 # ---- Yönetim paneli uçları (web'deki /yonetim sayfaları bu API'yi kullanır) ----
 # Koruma: paylaşılan gizli anahtar başlığı; anahtar yalnız web sunucusunda ve burada.
 YONETIM_ANAHTAR = os.environ.get("YONETIM_ANAHTAR", "")

@@ -6,7 +6,7 @@ import { Sun, Ok } from "./Icons";
 
 export type AktifSayfa =
   | "anasayfa" | "asistan" | "surec" | "hesaplama" | "fatura"
-  | "destekler" | "mevzuat" | "rehber" | "kurulum" | "sss" | "blog" | "diger";
+  | "destekler" | "mevzuat" | "rehber" | "kurulum" | "sss" | "teklif" | "blog" | "diger";
 
 type Oge = [AktifSayfa, string, string];
 type Girdi = { ad: string; oge?: Oge; grup?: Oge[] };
@@ -18,6 +18,7 @@ const MENU: Girdi[] = [
     grup: [
       ["hesaplama", "/hesaplama", "Hesaplama"],
       ["fatura", "/fatura-analizi", "Fatura Analizi"],
+      ["teklif", "/teklif-analizi", "Teklif Değerlendirme"],
     ],
   },
   {

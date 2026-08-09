@@ -456,6 +456,34 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .yazi .fig svg{width:100%; height:auto; display:block}
 .yazi .fig figcaption{font-size:12.5px; color:var(--text); margin-top:12px; line-height:1.5}
 .yazi .dk-cta{margin-left:0; margin-right:0}
+/* ---------- teklif değerlendirme aracı ---------- */
+.teklif-arac{display:flex; flex-direction:column; gap:14px}
+.teklif-yukle{display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+  border:2px dashed var(--border); border-radius:16px; padding:30px 20px; cursor:pointer;
+  background:var(--surface)}
+.teklif-yukle:hover{border-color:var(--theme)}
+.teklif-yukle.pasif{opacity:.6; pointer-events:none}
+.teklif-yukle svg.i{width:26px; height:26px; color:var(--theme)}
+.teklif-yukle b{font-size:15px}
+.teklif-yukle span{font-size:12.5px; color:var(--text)}
+.teklif-not{display:flex; flex-direction:column; gap:6px}
+.teklif-not span{font-size:13px; color:var(--text)}
+.teklif-not input{border:1px solid var(--border); border-radius:11px; padding:11px 14px; font:inherit}
+.teklif-hata{color:#A5620D; font-size:13.5px; margin:0}
+.teklif-arac .gt-btn{align-self:flex-start}
+.teklif-ozet{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px}
+.teklif-ozet>div{background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:14px 16px; display:flex; flex-direction:column; gap:2px}
+.teklif-ozet b{font-size:17px; font-family:var(--font-epilogue), sans-serif; color:var(--title)}
+.teklif-ozet span{font-size:12px; color:var(--text)}
+.teklif-rapor{background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:22px 24px; font-size:14px; line-height:1.65}
+.teklif-rapor h1,.teklif-rapor h2,.teklif-rapor h3{font-size:16px; margin:18px 0 8px}
+.teklif-rapor h1:first-child,.teklif-rapor h2:first-child,.teklif-rapor h3:first-child{margin-top:0}
+.teklif-rapor ul,.teklif-rapor ol{padding-left:20px; margin:8px 0}
+.teklif-rapor table{border-collapse:collapse; margin:10px 0; font-size:13px}
+.teklif-rapor td,.teklif-rapor th{border:1px solid #E9ECE5; padding:7px 11px; text-align:left}
+
 .yeni-sohbet{position:absolute; top:10px; right:14px; z-index:6; border:1px solid var(--border);
   background:var(--surface); border-radius:999px; padding:6px 14px; font:inherit; font-size:12.5px;
   color:var(--text); cursor:pointer; box-shadow:0 2px 8px rgba(0,40,35,.06)}
