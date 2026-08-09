@@ -6,11 +6,28 @@ teyit edilemeyen iddialar bölüm notlarında açıkça belirtildi — asistan b
 
 ## Çağrı mektubu başvurusunda hangi belgeler istenir?
 
-- Başvuru dosyasındaki eksiklikler 15 takvim günü içinde tamamlanmazsa dosya iade edilir. (Kaynak: TEDAŞ Resmî Sayfası - Elektrik Tesisleri Kabul Süreçleri)
-- Lisanssız on-grid bağlantı başvurusunda gerekli belgeler: Bağlantı Başvuru Formu (EK-1), Faaliyet Yasağı Beyanı, Teknik Değerlendirme Formu. (Kaynak: Osmangazi Elektrik Dağıtım AŞ Resmî Sayfası - Lisanssız Başvuru İçin Gerekli Evraklar)
-- Kurulu gücü 1 MWe ve altı GES tesisleri için başvuru ilgili Bölge Müdürlüğüne yapılır. (Kaynak: TEDAŞ Resmî Sayfası - Lisanssız Elektrik Üretimi)
+Kaynak: TEDAŞ/EDAŞ resmî sayfaları + CW Enerji Lisanssız GES Başvuru Rehberi (sektör lideri
+üretici, 2026) — Ozan onayı 9 Ağustos 2026.
 
-Not: Tapu/kira sözleşmesi, tek hat şeması, panel-inverter teknik belgeleri gibi ek kalemler yalnızca yorum niteliğindeki blog kaynağından geldiği için buraya alınmadı; asistan bu maddeleri kesin belge listesi gibi sunmamalı, sadece TEDAŞ/EDAŞ'ın onayladığı üç belge + eksik tamamlama süresini net bilgi olarak versin.
+Yeni başvuru sürecinde istenen evraklar:
+- EK-1 Lisanssız Üretim Bağlantı Başvuru Formu
+- EK-2 Faaliyet Yasağına İlişkin Beyan
+- Nüfus cüzdanı fotokopisi
+- Tapu (noter onaylı "aslı gibidir") — kiralık yerde: kira kontratı (noter onaylı); yeni
+  uygulamada bu iki evraktan biri yeterlidir
+- Vekâletle başvuruda: vekâlet edenin ve vekilin kimlik sureti + yetki belgeli vekâletname
+- İmza beyannamesi
+- Apartman gibi çok kullanıcılı binalarda: karar defterindeki "üretim tesisi kurulabilir"
+  kararının noter onaylı sureti
+- Mevcut tüketim tesisleri için tekil kod (son aya ait elektrik faturasından)
+- İnşaat ruhsatı veya yerine geçen belge
+
+Başvuru onayından sonra gerekli: mimari proje, elektrik projesi, statik proje.
+
+Diğer kurallar: dosyadaki eksikler 15 takvim günü içinde tamamlanmazsa iade edilir;
+tüm evrakların ıslak imzalı aslı veya noter onaylı sureti istenir. Asistan bu listeyi
+verirken "dağıtım şirketine göre küçük farklar olabilir; başvuru öncesi şirketinizin
+güncel listesini teyit edin" notunu eklesin.
 
 ## Çağrı mektubu ne kadar geçerli?
 
