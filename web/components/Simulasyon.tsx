@@ -554,6 +554,12 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
     }
     function alanOzeti() {
       if (!sonAlan) { el("uyduBilgi").textContent = "Çatınızın köşelerini haritada tıklayarak işaretleyin (en az 3 köşe); köşeleri sürükleyerek düzeltebilirsiniz."; return; }
+      if (sonAlan > 200000) {
+        el("uyduBilgi").innerHTML = "Seçilen alan çok büyük görünüyor — haritayı adresinize " +
+          "yakınlaştırıp yalnız çatınızı/alanınızı çizin, sonra Temizle ile yeniden deneyin.";
+        (el("uyduKullan") as HTMLButtonElement).disabled = true;
+        return;
+      }
       const kwp = S.tip === "cati"
         ? (sonAlan * 0.6 / EKIPMAN.panelM2) * (EKIPMAN.panelWp / 1000)
         : sonAlan / 15;
