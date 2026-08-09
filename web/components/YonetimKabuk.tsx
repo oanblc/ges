@@ -36,8 +36,9 @@ export default function YonetimKabuk({
   aktif: string;
   children: React.ReactNode;
 }) {
-  const baslik = SEKMELER.find(([yol]) => aktif === yol || aktif.startsWith(yol + "/"))?.[1]
-    ?? SEKMELER.find(([yol]) => yol === aktif)?.[1] ?? "Yönetim";
+  const aktifMi = (yol: string) =>
+    aktif === yol || (yol !== "/yonetim" && aktif.startsWith(yol + "/"));
+  const baslik = SEKMELER.find(([yol]) => aktifMi(yol))?.[1] ?? "Yönetim";
   return (
     <div className="yp-kok">
       <aside className="yp-rail">
@@ -51,7 +52,7 @@ export default function YonetimKabuk({
         <nav className="yp-rail-nav" aria-label="Yönetim menüsü">
           {SEKMELER.map(([yol, ad, ikon]) => (
             <Link key={yol} href={yol}
-              className={`yp-ric ${aktif === yol || aktif.startsWith(yol + "/") ? "on" : ""}`}
+              className={`yp-ric ${aktifMi(yol) ? "on" : ""}`}
               title={ad} aria-label={ad}
               aria-current={aktif === yol ? "page" : undefined}>
               {IKONLAR[ikon]}
