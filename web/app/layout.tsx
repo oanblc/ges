@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Epilogue, Jost } from "next/font/google";
+import { Epilogue, JetBrains_Mono, Jost } from "next/font/google";
 import "./globals.css";
 import AsistanFab from "@/components/AsistanFab";
 
@@ -7,6 +7,12 @@ const epilogue = Epilogue({
   variable: "--font-epilogue",
   subsets: ["latin", "latin-ext"],
   weight: ["600", "700"],
+});
+
+const jbMono = JetBrains_Mono({
+  variable: "--font-jbmono",
+  subsets: ["latin", "latin-ext"],
+  weight: "500",
 });
 
 const jost = Jost({
@@ -58,7 +64,7 @@ const siteSemasi = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="tr" className={`${epilogue.variable} ${jost.variable}`}>
+    <html lang="tr" className={`${epilogue.variable} ${jost.variable} ${jbMono.variable}`}>
       <body>
         {children}
         <AsistanFab />

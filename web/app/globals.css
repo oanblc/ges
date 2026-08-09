@@ -46,6 +46,14 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .brand .sun{width:44px;height:44px;border-radius:999px;background:var(--theme);display:flex;align-items:center;justify-content:center; position:relative; flex:none}
 .brand .sun::after{content:""; position:absolute; inset:-4px; border-radius:999px; border:2px solid var(--theme2); opacity:.7}
 .brand .sun svg{stroke:var(--theme2); width:24px; height:24px; animation:gunes-don 16s linear infinite}
+/* marka yazısı: taslaktaki gibi mono, tek satır, harf aralıklı; .com amber */
+.brand .brand-yazi{flex-direction:row; font-family:var(--font-jbmono), ui-monospace, monospace;
+  font-weight:500; font-size:13px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--title); line-height:1; white-space:nowrap}
+.brand .brand-yazi i{font-size:13px; font-weight:500; letter-spacing:.22em; color:#C77F06}
+@media(max-width:480px){
+  .brand .brand-yazi, .brand .brand-yazi i{font-size:11px; letter-spacing:.16em}
+}
 /* marka kilidi: şarj animasyonlu panel (Ozan'ın logo taslağından; şarj rengi tema sarısı) */
 .marka-panel{position:relative; width:38px; height:32px; overflow:hidden; border-radius:5px;
   transform:perspective(66px) rotateX(22deg); flex:0 0 auto}
