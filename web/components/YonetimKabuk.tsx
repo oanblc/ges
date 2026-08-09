@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import CikisDugme from "./CikisDugme";
 
@@ -39,6 +42,7 @@ export default function YonetimKabuk({
   const aktifMi = (yol: string) =>
     aktif === yol || (yol !== "/yonetim" && aktif.startsWith(yol + "/"));
   const baslik = SEKMELER.find(([yol]) => aktifMi(yol))?.[1] ?? "Yönetim";
+  const [acik, setAcik] = useState(false);
   return (
     <div className="yp-kok">
       <aside className="yp-rail">
@@ -67,6 +71,11 @@ export default function YonetimKabuk({
       </aside>
       <div className="yp-govde">
         <header className="yp-tepe">
+          <button className="yp-burger" type="button" aria-label="Menüyü aç"
+            aria-expanded={acik} onClick={() => setAcik(true)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.8" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          </button>
           <h3>{baslik}</h3>
           <div className="yp-tepe-sag">
             <span className="yp-avatar" aria-hidden="true">G</span>
@@ -75,6 +84,31 @@ export default function YonetimKabuk({
         </header>
         <main className="yp-icerik">{children}</main>
       </div>
+
+      {acik && <div className="yp-karart" onClick={() => setAcik(false)} aria-hidden="true" />}
+      <aside className={`yp-cekmece ${acik ? "acik" : ""}`} aria-label="Yönetim menüsü (mobil)">
+        <div className="yp-cekmece-ust">
+          <span className="marka-panel kucuk" aria-hidden="true">
+            <span className="marka-grid">
+              {Array.from({ length: 9 }).map((_, i) => (<i key={i} />))}
+            </span>
+          </span>
+          <b>Yönetim</b>
+          <button type="button" aria-label="Kapat" onClick={() => setAcik(false)}>✕</button>
+        </div>
+        {SEKMELER.map(([yol, ad, ikon]) => (
+          <Link key={yol} href={yol} onClick={() => setAcik(false)}
+            className={`yp-cekmece-oge ${aktifMi(yol) ? "on" : ""}`}>
+            {IKONLAR[ikon]}{ad}
+          </Link>
+        ))}
+        <div className="yp-cekmece-alt">
+          <Link href="/" className="yp-cekmece-oge" onClick={() => setAcik(false)}>
+            {IKONLAR.site}Siteye dön
+          </Link>
+          <CikisDugme />
+        </div>
+      </aside>
     </div>
   );
 }
