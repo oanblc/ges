@@ -36,7 +36,7 @@ const ASAMALAR = [
     belgeler: [
       "Tapu (hisseli tapuda tüm hissedarların noter muvafakati)",
       "Abonelik bilgileri ve kimlik",
-      "Kiracıysanız mülk sahibinin noter muvafakati",
+      "Kiralık yerde noter onaylı kira kontratı (yeni uygulamada tapu veya kira kontratından biri yeterli)",
       "Apartmanda kat malikleri kurulu kararı",
     ],
     dikkat: [

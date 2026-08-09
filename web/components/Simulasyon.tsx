@@ -51,7 +51,7 @@ const PROFIL = {
 const ARAZI = 1.05;
 const MAPS_ANAHTAR = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || "";
 // Güney baz (PVGIS profilleri güney/30°); diğer cepheler yaklaşık üretim çarpanı
-const CEPHE = { guney: 1.0, dogubati: 0.85, kuzey: 0.6 } as const;
+const CEPHE = { guney: 1.0, dogubati: 0.79, kuzey: 0.6 } as const; // kb: tam D %78 / B %80
 const GOLGE = { yok: 1.0, kismi: 0.9, yogun: 0.75 } as const;
 
 export default function Simulasyon() {
@@ -785,7 +785,7 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
               <button className="cip on" data-deger="AG" type="button">AG</button>
               <button className="cip" data-deger="OG" type="button">OG</button></div></div>
           <div className="grup" id="catiAyarGrup"><span>Çatı Cephesi &amp; Tipi
-            <button className="terim" data-tip="Cephe: panellerin baktığı yön — güney en verimlisidir, doğu/batı ~%15, kuzey ~%40 kayıp yaratır. Çatı tipi montaj maliyetini etkiler (kiremit en işçiliklisi)." aria-label="Cephe ve çatı tipi" type="button">?</button></span>
+            <button className="terim" data-tip="Cephe: panellerin baktığı yön — güney en verimlisidir, tam doğu/batı ~%20, kuzey ~%40 kayıp yaratır. Çatı tipi montaj maliyetini etkiler (kiremit en işçiliklisi)." aria-label="Cephe ve çatı tipi" type="button">?</button></span>
             <div className="cipler" data-ad="cephe">
               <button className="cip on" data-deger="guney" type="button">Güney</button>
               <button className="cip" data-deger="dogubati" type="button">Doğu/Batı</button>
@@ -983,7 +983,7 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           saatlerinde kullandığındır: üretim gündüz olduğu için gündüz tüketen işletme saatlik
           mahsupta çok daha kârlıdır; akşam yoğun profilde batarya değer kazanır.</p></details>
         <details><summary>Cephe ve gölgelenme</summary>
-          <p>Güney cephe bazdır; doğu/batı ~%15, kuzey ~%40 üretim kaybı yaratır. Gölgelenme:
+          <p>Güney cephe bazdır; tam doğu/batı ~%20-22, kuzey ~%40 üretim kaybı yaratır (güneydoğu/güneybatıda kayıp yalnız %3-5'tir). Gölgelenme:
           kısmi ~%10, yoğun ~%25 kayıp varsayılır — yoğun gölgede optimizer/mikroinverter
           çözümleri değerlendirilmelidir. Çatı tipi üretimi değil montaj maliyetini etkiler
           (kiremit en işçiliklisidir).</p></details>

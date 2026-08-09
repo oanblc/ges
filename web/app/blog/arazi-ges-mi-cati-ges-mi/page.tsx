@@ -259,7 +259,8 @@ export default function AraziMiCatiMi() {
               arazinin "marjinal tarım arazisi" raporu (İl Tarım ve Orman Müdürlüğü), imar
               sorgusu ve gerekirse plan değişikliği, ölçeğe göre ÇED değerlendirmesi,
               bağlantı görüşü ve çağrı mektubu, ardından enerji nakil hattı projesinin
-              TEDAŞ onayı — çağrı mektubundan itibaren 150 günlük süre sınırıyla. Fiziksel
+              TEDAŞ onayı — çağrı mektubunun 180 günlük geçerliliği içinde (projenin ilk 90 günde
+              onaya sunulması gerekir). Fiziksel
               kurulum MW ölçeğinde 4-6 ay sürerken, izin aşamaları bunun üzerine eklenir;
               çatı projesi ise çoğu durumda birkaç ay içinde devrededir.
             </Aciklamali>

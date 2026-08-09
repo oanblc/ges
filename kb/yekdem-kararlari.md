@@ -114,3 +114,6 @@ Sandbox ortamımda internet erişimi olmadığı için HTTP durum kodu testi yap
 7. Bugün Kocaeli — 4 Temmuz 2026 Resmî Gazete özeti: https://www.bugunkocaeli.com.tr/4-temmuz-2026-tarihli-resmi-gazete-yayimlandi-iste-onemli-kararlar-ve-atamalar — *14718 sayılı kararın aynı sayıda yayımlandığının ikinci teyidi*
 
 *Tüm rakamlar ikincil kaynaklardan (ajans/sektör basını) alınmıştır. Sözleşme, fatura itirazı veya finansal modelleme amaçlı kullanım öncesinde Resmî Gazete 04.07.2026 sayısındaki karar metninden birebir teyit edilmelidir.*
+
+## Gerçekleşen YEKDEM verisi
+EPDK tabloları ÖNGÖRÜLEN birim maliyetlerdir; GERÇEKLEŞEN aylık YEKDEM birim maliyeti EPİAŞ Şeffaflık'tan günlük çekilir ve kb/veri/piyasa-canli.json'daki yekdem_gerceklesen_aylik alanında tutulur. Sitede 'son gerçekleşen YEKDEM' ifadeleri bu canlı veriye dayanır ve doğrudur.

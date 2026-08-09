@@ -11,7 +11,7 @@
     },
     {
      "soru": "Güneş paneli yatırımı gerçekten kazandırır mı, yoksa abartılı bir vaat mi?",
-     "cevap": "Doğru planlandığında Türkiye'nin kârlı yatırımlarından biridir ancak fatura tam sıfırlanacağı veya bedava panel dağıtıldığı gibi abartılı vaatlere dikkat edilmelidir. Meskenlerde geri dönüş süresi 4-8 yıl, işletmelerde 3-5 yıl arasındadır; sistem ömrü 25-30 yıl olduğundan geri kalan süre boyunca elektrik maliyetinden büyük ölçüde korunulur. On-grid sistemler için çağrı mektubu ve proje onay süreci ortalama 3-6 ay sürer, devletin meskenler için doğrudan bedava panel veya hibe desteği yoktur."
+     "cevap": "Doğru planlandığında Türkiye'nin kârlı yatırımlarından biridir ancak fatura tam sıfırlanacağı veya bedava panel dağıtıldığı gibi abartılı vaatlere dikkat edilmelidir. Meskenlerde geri dönüş süresi 4-8 yıl, işletmelerde 3-5 yıl arasındadır; sistem ömrü 25-30 yıl olduğundan geri kalan süre boyunca elektrik maliyetinden büyük ölçüde korunulur. On-grid sistemlerde başvurudan devreye almaya süreç uygulamada çoğunlukla 3-6 ay sürer (mevzuat toplam süreç için tek bir azami süre tanımlamaz), devletin meskenler için doğrudan bedava panel veya hibe desteği yoktur."
     },
     {
      "soru": "1 kW'lık bir sistem yılda ne kadar elektrik üretir?",
@@ -44,7 +44,7 @@
     },
     {
      "soru": "Bataryalı sistem ile sadece şebekeye bağlı sistem arasında fiyat farkı ne kadar?",
-     "cevap": "Hibrit (bataryalı) bir sistem, standart on-grid bir sisteme göre toplam kurulum maliyetini yaklaşık yüzde 40-60 oranında artırır. Farkın ana kalemleri: hibrit inverterin standart inverterden pahalı olması (10 kW'da 65.000-90.000 TL'ye karşı 35.000-55.000 TL), LiFePO4 batarya paketinin kendisi (10 kWh kapasite için yaklaşık 150.000-230.000 TL) ve akıllı metre/kritik yük panosu gibi ek donanımlardır. Buna karşılık bataryalı sistem kesintide evi beslemeye devam eder ve işletmelerde saatlik mahsuplaşmada ekonomik avantaj sağlar."
+     "cevap": "Hibrit (bataryalı) bir sistem, standart on-grid bir sisteme göre toplam kurulum maliyetini yaklaşık yüzde 40-60 oranında artırır. Farkın ana kalemleri: hibrit inverterin standart inverterden pahalı olması (10 kW'da 65.000-90.000 TL'ye karşı 35.000-55.000 TL), LiFePO4 batarya paketinin kendisi (10 kWh kapasite için yaklaşık 200.000-230.000 TL) ve akıllı metre/kritik yük panosu gibi ek donanımlardır. Buna karşılık bataryalı sistem kesintide evi beslemeye devam eder ve işletmelerde saatlik mahsuplaşmada ekonomik avantaj sağlar."
     },
     {
      "soru": "Ev çatısına güneş paneli kurmak 2026'da toplam kaç liraya mal olur?",
@@ -98,7 +98,7 @@
     },
     {
      "soru": "Kurulum kararından ruhsat alınmasına kadar toplam süreç kaç ay sürer?",
-     "cevap": "Fikirden devreye almaya kadar toplam süreç gerçekçi olarak 3-6 ay sürer; fiziksel kurulum evler için genellikle 1-3 gündür, sürenin çoğu evrak ve onay aşamalarında geçer. Sıra: çağrı mektubu başvurusu (1-2 ay), proje onayı ve bağlantı anlaşması (1 ay), fiziksel kurulum (1-3 gün), kabul ve çift yönlü sayaç takılması (1 ay). Çatı tipi GES'lerde, binanın taşıyıcı sistemini etkilemediği sürece belediyeden yapı ruhsatı alınması gerekmez, ancak statik uygunluk raporu TEDAŞ proje onayında zorunludur; arazi GES'te süreç 1 yılı aşabilir."
+     "cevap": "Mevzuat, toplam süreç için tek bir azami süre tanımlamaz; uygulamada fikirden devreye almaya çoğu proje 3-6 ayda tamamlanır. fiziksel kurulum evler için genellikle 1-3 gündür, sürenin çoğu evrak ve onay aşamalarında geçer. Tipik akış: çağrı mektubu başvurusu (uygulamada 1-2 ay), proje onayı ve bağlantı anlaşması (~1 ay), fiziksel kurulum (1-3 gün), kabul ve çift yönlü sayaç takılması (~1 ay; mevzuatta kesin olan yalnız kurulun 10 günde toplanması ve rapor tebliğinden sonra sayacın 10 iş gününde takılmasıdır). Çatı tipi GES'lerde, binanın taşıyıcı sistemini etkilemediği sürece belediyeden yapı ruhsatı alınması gerekmez, ancak statik uygunluk raporu TEDAŞ proje onayında zorunludur; arazi GES'te süreç 1 yılı aşabilir."
     },
     {
      "soru": "Kurulumdan sonra dağıtım şirketi sistemi kontrol için ziyaret ediyor mu?",
@@ -106,7 +106,7 @@
     },
     {
      "soru": "Elektrik dağıtım şirketine başvururken hangi belgeler istenir?",
-     "cevap": "Çağrı mektubu aşamasında başvuru formu, tapu kaydı veya kira sözleşmesi (kiracıysa mülk sahibinden noter onaylı muvafakatname), güncel elektrik faturası, imza beyannamesi/sirküleri ve apartmanlarda kat malikleri kurulu kararının noter onaylı sureti istenir. Proje onayı aşamasında EMO kayıtlı SMM belgeli mühendisin hazırladığı elektrik projesi (tek hat şeması), statik uygunluk raporu ve panel (IEC 61215/61730) ile inverter (TS EN 50549-1) sertifikaları gerekir. 2026 itibarıyla 50 kW altı çatı GES projelerinde proje onay ve kabul bedeli 0 TL'dir; süreç toplamda genellikle 3-6 ay sürer."
+     "cevap": "Çağrı mektubu aşamasında başvuru formu, tapu kaydı veya kira sözleşmesi (kiracıysa noter onaylı kira kontratı (tapu veya kira kontratından biri yeterli)), güncel elektrik faturası, imza beyannamesi/sirküleri ve apartmanlarda kat malikleri kurulu kararının noter onaylı sureti istenir. Proje onayı aşamasında EMO kayıtlı SMM belgeli mühendisin hazırladığı elektrik projesi (tek hat şeması), statik uygunluk raporu ve panel (IEC 61215/61730) ile inverter (TS EN 50549-1) sertifikaları gerekir. 2026 itibarıyla 50 kW altı çatı GES projelerinde proje onay ve kabul bedeli 0 TL'dir; süreç uygulamada çoğunlukla 3-6 ay sürer."
     },
     {
      "soru": "Çatı GES kurulumunda 25 kW sınırı ne anlama gelir?",
