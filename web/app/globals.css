@@ -380,6 +380,7 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .calc-ust h1{font-size:clamp(26px,3.4vw,34px); letter-spacing:-1px; margin:0 0 8px; color:var(--title)}
 .calc-ust p{margin:0; font-size:14.5px; max-width:64ch}
 .calc-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; padding:28px 32px 56px; align-items:start}
+.calc-grid>*{min-width:0}
 @media(max-width:880px){.calc-grid{grid-template-columns:1fr}}
 .tool{background:var(--surface); border:1px solid var(--border); border-radius:20px; box-shadow:var(--shadow);
   padding:22px; display:flex; flex-direction:column; gap:14px}
