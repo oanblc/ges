@@ -161,11 +161,15 @@ def _smtp_gonder(kime: str, konu: str, html: str) -> bool:
 
 
 def _eposta_gonder(kime: str, konu: str, html: str) -> None:
-    """Üretimde kuyruğa yazar; relay kuyruğu info@'dan gönderir (Railway SMTP engelli).
-    Kuyruk KUYRUK_YEDEK_DK dakikada boşalmazsa bekçi köprüden (gmail) gönderir."""
+    """Anlık gönderim: önce köprü (gmail, Railway'den çalışır), olmazsa SMTP (info@).
+    Ek olarak kuyruğa da yazılır; bir info@ relay'i çalışıyorsa onu info@'dan yeniden
+    göndermez — kuyruk yalnız relay aktifken tüketilir, aksi halde bekçi 20 dk sonra temizler.
+    Not: relay aktif değilken çift gönderim olmaması için burada kuyruğa YAZILMAZ."""
     if not kime:
         return
-    _kuyruga_yaz(kime, konu, html)
+    if _kopru_gonder(kime, konu, html):
+        return
+    _smtp_gonder(kime, konu, html)
 
 
 def _kuyruk_bekci() -> None:
