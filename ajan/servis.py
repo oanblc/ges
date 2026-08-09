@@ -849,6 +849,31 @@ def _yetkisiz(istek):
     return not YONETIM_ANAHTAR or istek.headers.get("x-yonetim-anahtar") != YONETIM_ANAHTAR
 
 
+@app.get("/yonetim/eposta-tani")
+def eposta_tani(istek: Request):
+    """Geçici tanı ucu: sunucudan SMTP bağlantısını dener, sonucu döndürür."""
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    import smtplib
+    import socket
+    sonuc = {"ayar": {"sunucu": SMTP_SUNUCU, "port": SMTP_PORT,
+                      "kullanici": bool(SMTP_KULLANICI), "sifre": bool(SMTP_SIFRE),
+                      "bildirim": bool(BILDIRIM_EPOSTA)}}
+    for port in (465, 587, 2525):
+        try:
+            socket.create_connection((SMTP_SUNUCU, port), timeout=8).close()
+            sonuc[f"tcp_{port}"] = "açık"
+        except Exception as e:
+            sonuc[f"tcp_{port}"] = f"{type(e).__name__}: {e}"
+    try:
+        with smtplib.SMTP_SSL(SMTP_SUNUCU, 465, timeout=15) as b:
+            b.login(SMTP_KULLANICI, SMTP_SIFRE)
+        sonuc["smtp_465"] = "giriş başarılı"
+    except Exception as e:
+        sonuc["smtp_465"] = f"{type(e).__name__}: {e}"
+    return sonuc
+
+
 def _lead_dosyalar():
     if not LEAD_DIZIN.exists():
         return []
