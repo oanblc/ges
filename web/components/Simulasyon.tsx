@@ -121,6 +121,20 @@ export default function Simulasyon() {
       }
       hedef.innerHTML = s;
     }
+    function araziDoku(hedef: HTMLElement, dolu: number) {
+      let s = "";
+      for (let i = 0; i < 12; i++) {
+        const r = Math.floor(i / 4), c = i % 4;
+        const x = 180 + c * 96 + r * 34, y = 300 + r * 44;
+        const bos = i >= dolu;
+        s += `<g stroke="${bos ? "#8FA69F" : "#0A3F3A"}" stroke-width="1.6" stroke-linejoin="round"${bos ? ' stroke-dasharray="3 3"' : ""}>
+          <path d="M${x + 10} ${y + 26} l0 14 M${x + 54} ${y + 6} l0 14"${bos ? "" : ' stroke-dasharray="0"'}/>
+          <path class="${bos ? "bosh" : "hucre"}" d="M${x} ${y + 20} l58 -27 l26 13 l-58 27 Z" fill="${bos ? "rgba(255,255,255,.25)" : "#0E4F49"}"/>
+          ${bos ? "" : `<path d="M${x + 19} ${y + 11} l26 13 M${x + 38} ${y + 2} l26 13" stroke="#F3F5F0" stroke-width="1.1"/>`}
+        </g>`;
+      }
+      hedef.innerHTML = s;
+    }
     function panelBilgi() {
       const adet = Math.ceil((S.guc * 1000) / EKIPMAN.panelWp);
       const alan = Math.round(adet * EKIPMAN.panelM2);
@@ -129,15 +143,17 @@ export default function Simulasyon() {
     }
     function sahneKur() {
       const cati = S.tip === "cati";
-      el("bina").style.opacity = cati ? "1" : ".25";
-      el("arazi").setAttribute("opacity", cati ? "0" : "1");
-      el("binaEtiket").textContent =
-        ({ mesken: "Konut", ticarethane: "Ticarethane", sanayi: "Sanayi Tesisi" } as Record<string, string>)[S.grup] +
+      el("sahneCati").setAttribute("opacity", cati ? "1" : "0");
+      el("sahneArazi").setAttribute("opacity", cati ? "0" : "1");
+      const etiket = ({ mesken: "Konut", ticarethane: "Ticarethane", sanayi: "Sanayi Tesisi" } as Record<string, string>)[S.grup] +
         (S.gerilim === "OG" && S.grup !== "mesken" ? " · OG" : "");
+      el("binaEtiket").textContent = etiket;
+      el("araziEtiket").textContent = etiket + " (öz tüketim)";
       const olcek = S.grup === "mesken" ? 25 : S.grup === "ticarethane" ? 300 : 1250;
-      const oran = Math.max(1, Math.round((Math.min(S.guc, olcek) / olcek) * (cati ? 12 : 18)));
+      const oran = Math.max(1, Math.round((Math.min(S.guc, olcek) / olcek) * 12));
       if (cati) panelDoku(el("panelIzgara"), 3, 4, 352, 316, 32, -15, 26, 12, 26, 24, oran);
-      else panelDoku(el("araziIzgara"), 3, 6, 300, 330, 42, -19, 20, 26, 34, 30, oran);
+      else araziDoku(el("araziIzgara"), oran);
+      el("batKutu").setAttribute("transform", cati ? "translate(212 342)" : "translate(120 400)");
       panelBilgi();
       el("batKutu").setAttribute("opacity", S.batarya ? "1" : "0");
       el("aBatSatir").style.display = S.batarya ? "flex" : "none";
@@ -193,6 +209,7 @@ export default function Simulasyon() {
       kutu.style.setProperty("--gok1", gunduz ? "#BFE3EE" : alaca ? "#F0C9A0" : "#1C2B33");
       kutu.style.setProperty("--gok2", gunduz ? "#EAF4EC" : alaca ? "#F6E7CF" : "#31434C");
       el("pencereler").setAttribute("opacity", gunduz ? "0" : ".9");
+      el("pencereler2").setAttribute("opacity", gunduz ? "0" : ".9");
     }
     function gunesKonum(h: number) {
       const [d, b] = dogusBatis(), g = el("gunes"), p = (h - d) / (b - d);
@@ -218,15 +235,33 @@ export default function Simulasyon() {
       };
       adim(t0);
     }
-    const NOKTA = { panel: [470, 300], bina: [470, 440], direk: [774, 300], bat: [246, 370] } as const;
+    type Nokta = readonly [number, number];
+    const noktalar = (): Record<"panel" | "bina" | "direk" | "bat", Nokta> => S.tip === "cati"
+      ? { panel: [470, 300], bina: [470, 440], direk: [774, 300], bat: [246, 372] }
+      : { panel: [370, 330], bina: [668, 400], direk: [774, 300], bat: [154, 430] };
     function akisParcaciklari(s: Saat) {
       if (!oynuyor) return;
+      const N = noktalar();
       const tepe = Math.max(...saatler.map((x) => x.u), 1);
-      if (s.oz > 0 && Math.random() < 0.8) parca(...NOKTA.panel, ...NOKTA.bina, "#E8C43C");
-      if (s.satis > tepe * 0.03 && Math.random() < 0.7) parca(...NOKTA.panel, ...NOKTA.direk, "#1F8A5D");
-      if (s.alis > tepe * 0.03 && Math.random() < 0.7) parca(...NOKTA.direk, ...NOKTA.bina, "#A5620D");
-      if (s.batAksi > 0 && Math.random() < 0.6) parca(...NOKTA.panel, ...NOKTA.bat, "#FFE175");
-      if (s.batAksi < 0 && Math.random() < 0.6) parca(...NOKTA.bat, ...NOKTA.bina, "#0A6B5C");
+      if (s.oz > 0 && Math.random() < 0.8) parca(...N.panel, ...N.bina, "#E8C43C");
+      if (s.satis > tepe * 0.03 && Math.random() < 0.7) parca(...N.panel, ...N.direk, "#1F8A5D");
+      if (s.alis > tepe * 0.03 && Math.random() < 0.7) parca(...N.direk, ...N.bina, "#A5620D");
+      if (s.batAksi > 0 && Math.random() < 0.6) parca(...N.panel, ...N.bat, "#FFE175");
+      if (s.batAksi < 0 && Math.random() < 0.6) parca(...N.bat, ...N.bina, "#0A6B5C");
+    }
+    let isinFaz = 0;
+    function isinDemeti(u: number, tepe: number) {
+      const g = el("gunes"), demet = el("isinDemeti");
+      if (u <= 0 || g.getAttribute("opacity") === "0") { demet.setAttribute("opacity", "0"); return; }
+      const N = noktalar();
+      const gx = +g.getAttribute("cx")!, gy = +g.getAttribute("cy")!;
+      isinFaz = (isinFaz + 1.2) % 16;
+      let s = "";
+      for (const kay of [-14, 0, 14]) {
+        s += `<line x1="${gx + kay}" y1="${gy + 30}" x2="${N.panel[0] + kay}" y2="${N.panel[1] - 8}" stroke-dasharray="7 9" stroke-dashoffset="${-isinFaz}"/>`;
+      }
+      demet.innerHTML = s;
+      demet.setAttribute("opacity", String(Math.min(0.8, 0.25 + (u / tepe) * 0.6)));
     }
 
     const cubukKutu = el("cubuklar");
@@ -264,6 +299,7 @@ export default function Simulasyon() {
       oynuyor = false; cancelAnimationFrame(kare); zaman = 6;
       saatler = gunHesabi(); cubuklariKur();
       gokyuzu(9); gunesKonum(9);
+      el("isinDemeti").setAttribute("opacity", "0");
       el("saatPul").textContent = "06:00";
       (el("baslat") as HTMLButtonElement).disabled = false;
       panelYaz({ u: 0, t: 0, satis: 0, alis: 0, bat: 0 },
@@ -302,13 +338,18 @@ export default function Simulasyon() {
         <div><span>Şebekeden alış</span><b>${f(bugun.alis)} kWh</b></div>
         <div class="vurgu"><span>Cebinde kalan</span><b>+${f(bugun.kazanc)} ₺</b></div>
         <p class="dip">Önlenen fatura ${f(bugunOz)} kWh × ${tlB(fi.alis)} ₺ + ${S.grup === "mesken" ? "mahsup emaneti" : "satış"} ${f(bugun.satis)} kWh × ${tlB(S.grup === "mesken" ? fi.alis * 0.85 : fi.satis)} ₺</p>`;
+      const gessizFatura = S.tuketim * fi.alis;
+      const satisDegeri = S.grup === "mesken" ? fi.alis * 0.85 : fi.satis;
+      const gesliFatura = Math.max(0, ay.alis * fi.alis - ay.satis * satisDegeri);
+      const dusus = gessizFatura ? Math.round((1 - gesliFatura / gessizFatura) * 100) : 0;
       el("sonucAy").innerHTML = `
         <h4>Aylık <small>(${({ kis: "kış", bahar: "bahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim]} ayı, ortalama hava)</small></h4>
         <div><span>Üretim</span><b>${f(ay.uretim)} kWh</b></div>
-        <div><span>Şebekeye ${S.grup === "mesken" ? "emanet" : "satış"}</span><b>${f(ay.satis)} kWh</b></div>
-        <div><span>Şebekeden alış</span><b>${f(ay.alis)} kWh</b></div>
-        <div class="vurgu"><span>Aylık kazanç</span><b>+${f(ay.kazanc)} ₺</b></div>
-        <p class="dip">Mevsimin tipik günü × 30 — hava seçimi yalnız oynatılan günü etkiler.</p>`;
+        <div><span>Tüketimin</span><b>${f(S.tuketim)} kWh</b></div>
+        <div><span>GES'siz fatura</span><b>≈ ${f(gessizFatura)} ₺</b></div>
+        <div><span>GES ile fatura</span><b>≈ ${f(gesliFatura)} ₺${gesliFatura === 0 ? " (alacaklısın)" : ""}</b></div>
+        <div class="vurgu"><span>Fatura düşüşü</span><b>%${Math.max(0, Math.min(100, dusus))}</b></div>
+        <p class="dip">Mevsimin tipik günü × 30; satış/mahsup geliri faturadan düşülmüş hâli. Hava seçimi yalnız oynatılan günü etkiler.</p>`;
       el("sonucYil").innerHTML = `
         <h4>Yıllık <small>(4 mevsim, gerçek PVGIS verimi)</small></h4>
         <div><span>Üretim</span><b>≈ ${f(yillikUretim)} kWh</b></div>
@@ -333,6 +374,7 @@ export default function Simulasyon() {
       el("t" + h).style.height = (s.t / tepe) * 80 + "px";
       kok.current!.querySelectorAll(".hucre").forEach((c) =>
         c.setAttribute("fill", s.u > tepe * 0.35 ? "#FFE175" : s.u > 0 ? "#7FB99B" : "#0E4F49"));
+      isinDemeti(s.u, tepe);
       if (Math.random() < 0.5) akisParcaciklari(s);
       panelYaz(s, toplamHesap(h + 1));
       kare = requestAnimationFrame(dongu);
@@ -443,26 +485,36 @@ export default function Simulasyon() {
               <path d="M-26 34 C-80 90 -150 120 -210 132" stroke="#9AA8A2" strokeWidth="2.5" fill="none" />
               <text x="14" y="185" textAnchor="middle" fontSize="13" fill="#5E6660" fontWeight="600">Şebeke</text>
             </g>
-            <g id="bina">
-              <path d="M300 330 L470 250 L640 330 L470 410 Z" fill="#EDEFE9" />
-              <path d="M300 330 L300 390 L470 470 L470 410 Z" fill="#D8DCD3" />
-              <path d="M640 330 L640 390 L470 470 L470 410 Z" fill="#C7CCC1" />
-              <path d="M330 316 L470 250 L610 316 L470 382 Z" fill="#00544E" />
+            {/* çatı sahnesi */}
+            <g id="sahneCati">
+              <path d="M300 330 L470 250 L640 330 L470 410 Z" fill="#F6F7F3" stroke="#004540" strokeWidth="2" strokeLinejoin="round"/>
+              <path d="M300 330 L300 390 L470 470 L470 410 Z" fill="#E3E7DE" stroke="#004540" strokeWidth="2" strokeLinejoin="round"/>
+              <path d="M640 330 L640 390 L470 470 L470 410 Z" fill="#D3D8CC" stroke="#004540" strokeWidth="2" strokeLinejoin="round"/>
+              <path d="M330 316 L470 250 L610 316 L470 382 Z" fill="#0B5A52" stroke="#004540" strokeWidth="2" strokeLinejoin="round"/>
               <g id="panelIzgara"></g>
-              <path d="M395 430 L395 462 L445 486 L445 452 Z" fill="#004540" />
-              <g id="pencereler" fill="#FFE175" opacity="0">
-                <path d="M330 358 L356 370 L356 392 L330 380 Z" /><path d="M560 380 L586 368 L586 392 L560 404 Z" />
+              <path d="M395 430 L395 462 L445 486 L445 452 Z" fill="none" stroke="#004540" strokeWidth="2" strokeLinejoin="round"/>
+              <path d="M405 440 L435 454" stroke="#004540" strokeWidth="1.4"/>
+              <g id="pencereler" fill="#FFE175" stroke="#004540" strokeWidth="1.4" opacity="0">
+                <path d="M330 358 L356 370 L356 392 L330 380 Z"/><path d="M560 380 L586 368 L586 392 L560 404 Z"/>
               </g>
               <text x="470" y="500" textAnchor="middle" fontSize="13" fill="#5E6660" fontWeight="600" id="binaEtiket">Ticarethane</text>
             </g>
-            <g id="arazi" opacity="0"><g id="araziIzgara"></g></g>
-            <g id="batKutu" transform="translate(212 342)" opacity="0">
-              <path d="M0 18 L34 2 L68 18 L34 34 Z" fill="#0A6B5C" />
-              <path d="M0 18 L0 52 L34 68 L34 34 Z" fill="#08574B" />
-              <path d="M68 18 L68 52 L34 68 L34 34 Z" fill="#063F37" />
-              <rect id="batSeviye" x="8" y="40" width="0" height="8" rx="3" transform="skewY(24)" fill="#FFE175" />
-              <text x="34" y="88" textAnchor="middle" fontSize="12" fill="#5E6660" fontWeight="600">Batarya</text>
+            {/* arazi sahnesi */}
+            <g id="sahneArazi" opacity="0">
+              <g id="araziIzgara"></g>
+              <g stroke="#004540" strokeWidth="2" strokeLinejoin="round">
+                <path d="M600 356 L668 324 L736 356 L668 388 Z" fill="#F6F7F3"/>
+                <path d="M600 356 L600 396 L668 428 L668 388 Z" fill="#E3E7DE"/>
+                <path d="M736 356 L736 396 L668 428 L668 388 Z" fill="#D3D8CC"/>
+                <path d="M636 396 L636 414 L658 424 L658 406 Z" fill="none"/>
+              </g>
+              <g id="pencereler2" fill="#FFE175" stroke="#004540" strokeWidth="1.2" opacity="0">
+                <path d="M690 380 L712 370 L712 388 L690 398 Z"/>
+              </g>
+              <text x="668" y="452" textAnchor="middle" fontSize="13" fill="#5E6660" fontWeight="600" id="araziEtiket">Tesis</text>
             </g>
+            {/* ışın demeti */}
+            <g id="isinDemeti" stroke="#E8C43C" strokeWidth="2.5" strokeLinecap="round" opacity="0" fill="none"></g>
             <g id="parcaciklar"></g>
           </svg>
           <div className="saat-pul" id="saatPul">06:00</div>
@@ -524,7 +576,7 @@ export default function Simulasyon() {
         <div className="karne-cta">
           <a className="gt-btn small line" href="/hesaplama">Detaylı Hesap</a>
           <a className="gt-btn small line" href="/fatura-analizi">Fatura Analizi</a>
-          <button className="gt-btn small" id="tekrar" type="button">Yeniden Oyna</button>
+          <button className="gt-btn small" id="tekrar" type="button">Tekrar Simüle Et</button>
         </div>
       </div>
     </div>
