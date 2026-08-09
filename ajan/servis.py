@@ -82,9 +82,32 @@ SMTP_SIFRE = os.environ.get("SMTP_SIFRE", "")
 BILDIRIM_EPOSTA = os.environ.get("BILDIRIM_EPOSTA", "")  # talep bildirimlerinin düşeceği adres
 
 
+RESEND_ANAHTAR = os.environ.get("RESEND_API_KEY", "")
+GONDEREN = os.environ.get("EPOSTA_GONDEREN", "GES Danışmanı <info@gesdanismani.com>")
+
+
 def _eposta_gonder(kime: str, konu: str, html: str) -> None:
-    """SMTP ile e-posta yollar; ayar eksikse sessizce atlar. Ayrı iş parçacığında çağrılır."""
-    if not (SMTP_KULLANICI and SMTP_SIFRE and kime):
+    """E-posta yollar: önce Resend HTTP API (Railway SMTP'yi engelliyor), yoksa SMTP.
+    Ayar eksikse sessizce atlar. Ayrı iş parçacığında çağrılır."""
+    if not kime:
+        return
+    if RESEND_ANAHTAR:
+        import urllib.request
+        istek = urllib.request.Request(
+            "https://api.resend.com/emails",
+            data=json.dumps({"from": GONDEREN, "to": [kime],
+                             "subject": konu, "html": html}).encode(),
+            headers={"Authorization": f"Bearer {RESEND_ANAHTAR}",
+                     "Content-Type": "application/json"},
+            method="POST")
+        try:
+            with urllib.request.urlopen(istek, timeout=25) as yanit:
+                yanit.read()
+            return
+        except Exception as e:
+            print(f"resend gönderemedi ({kime}): {type(e).__name__}: {e}")
+            return
+    if not (SMTP_KULLANICI and SMTP_SIFRE):
         return
     import smtplib
     from email.mime.text import MIMEText
