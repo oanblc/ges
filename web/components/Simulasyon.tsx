@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { TARIFE } from "@/data/kb";
+import { EKIPMAN, TARIFE } from "@/data/kb";
 import PVGIS from "@/data/pvgis.json";
 
 /**
@@ -73,13 +73,21 @@ export default function Simulasyon() {
     };
 
     function panelDoku(hedef: HTMLElement, satir: number, sutun: number, x0: number, y0: number,
-      dx1: number, dy1: number, dx2: number, dy2: number, w: number, h: number) {
-      let s = "";
+      dx1: number, dy1: number, dx2: number, dy2: number, w: number, h: number, dolu: number) {
+      let s = "", i = 0;
       for (let r = 0; r < satir; r++) for (let c = 0; c < sutun; c++) {
         const x = x0 + c * dx1 + r * dx2, y = y0 + c * dy1 + r * dy2;
-        s += `<path class="hucre" d="M${x} ${y} l${w} ${-w * 0.47} l${h * 0.9} ${h * 0.42} l${-w} ${w * 0.47} Z" fill="#0E4F49" stroke="#0A3F3A" stroke-width="1"/>`;
+        const bos = i >= dolu;
+        s += `<path class="${bos ? "bos" : "hucre"}" d="M${x} ${y} l${w} ${-w * 0.47} l${h * 0.9} ${h * 0.42} l${-w} ${w * 0.47} Z" fill="${bos ? "rgba(255,255,255,.25)" : "#0E4F49"}" stroke="${bos ? "#8FA69F" : "#0A3F3A"}" stroke-width="1" stroke-dasharray="${bos ? "3 3" : "0"}"/>`;
+        i++;
       }
       hedef.innerHTML = s;
+    }
+    function panelBilgi() {
+      const adet = Math.ceil((S.guc * 1000) / EKIPMAN.panelWp);
+      const alan = Math.round(adet * EKIPMAN.panelM2);
+      el("panelSayi").textContent = `≈ ${adet} panel · ${alan.toLocaleString("tr-TR")} m² panel alanı`;
+      return { adet, alan };
     }
     function sahneKur() {
       const cati = S.tip === "cati";
@@ -88,8 +96,10 @@ export default function Simulasyon() {
       el("binaEtiket").textContent =
         ({ mesken: "Konut", ticarethane: "Ticarethane", sanayi: "Sanayi Tesisi" } as Record<string, string>)[S.grup] +
         (S.gerilim === "OG" && S.grup !== "mesken" ? " · OG" : "");
-      if (cati) panelDoku(el("panelIzgara"), 3, 4, 352, 316, 32, -15, 26, 12, 26, 24);
-      else panelDoku(el("araziIzgara"), 3, 6, 300, 330, 42, -19, 20, 26, 34, 30);
+      const oran = Math.max(1, Math.round((S.guc / 250) * (cati ? 12 : 18)));
+      if (cati) panelDoku(el("panelIzgara"), 3, 4, 352, 316, 32, -15, 26, 12, 26, 24, oran);
+      else panelDoku(el("araziIzgara"), 3, 6, 300, 330, 42, -19, 20, 26, 34, 30, oran);
+      panelBilgi();
       el("batKutu").setAttribute("opacity", S.batarya ? "1" : "0");
       el("aBatSatir").style.display = S.batarya ? "flex" : "none";
       el("mahsupBaslik").textContent =
@@ -222,7 +232,9 @@ export default function Simulasyon() {
       el("karneAlt").textContent =
         `${S.guc} kWp · ${S.il} · ${({ kis: "kış", bahar: "ilkbahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim]} günü · ` +
         `${({ acik: "açık", parcali: "ortalama", bulutlu: "bulutlu" } as Record<string, string>)[S.hava]} hava`;
+      const pb = panelBilgi();
       el("karneTablo").innerHTML = `
+        <tr><td>Panel</td><td>${pb.adet} adet · ${pb.alan.toLocaleString("tr-TR")} m²</td></tr>
         <tr><td>Üretim</td><td>${f(t.uretim)} kWh</td></tr>
         <tr><td>Öz tüketim oranı</td><td>%${t.uretim ? Math.round(((t.oz + t.batVer) / t.uretim) * 100) : 0}</td></tr>
         <tr><td>Şebekeye ${S.grup === "mesken" ? "emanet" : "satış"}</td><td>${f(t.satis)} kWh</td></tr>
@@ -259,6 +271,14 @@ export default function Simulasyon() {
       (e.currentTarget as HTMLElement).textContent = "Hız " + HIZLAR[hizIx] + "×";
     };
     el("tekrar").onclick = sifirla;
+    const gucDegistir = (fark: number) => {
+      S.guc = Math.min(250, Math.max(5, S.guc + fark));
+      const g = el("guc") as HTMLInputElement;
+      g.value = String(S.guc); el("gucCikti").textContent = S.guc + " kWp";
+      sahneKur(); sifirla();
+    };
+    el("panelArti").onclick = () => gucDegistir(5);
+    el("panelEksi").onclick = () => gucDegistir(-5);
     sahneKur(); sifirla();
     return () => { oynuyor = false; cancelAnimationFrame(kare); };
   }, []);
@@ -282,7 +302,8 @@ export default function Simulasyon() {
             <button className="terim" data-tip="kWp = panellerin tepe gücü; kaç panel taktığınızın ölçüsü. 10 kWp ≈ 17-18 panel, bir konut çatısını doldurur." aria-label="kWp nedir" type="button">?</button></span>
             <div className="kaydirici">
               <input type="range" id="guc" min={5} max={250} step={5} defaultValue={50} />
-              <output id="gucCikti">50 kWp</output></div></div>
+              <output id="gucCikti">50 kWp</output></div>
+            <small className="panel-sayi" id="panelSayi"></small></div>
           <div className="grup"><span>İl</span><select id="il" aria-label="İl"></select></div>
         </div>
 
@@ -366,6 +387,11 @@ export default function Simulasyon() {
             <g id="parcaciklar"></g>
           </svg>
           <div className="saat-pul" id="saatPul">06:00</div>
+          <div className="panel-arac" role="group" aria-label="Panel ekle veya çıkar">
+            <button id="panelEksi" type="button" aria-label="Panel çıkar (5 kWp)">−</button>
+            <span>panel</span>
+            <button id="panelArti" type="button" aria-label="Panel ekle (5 kWp)">+</button>
+          </div>
           <div className="kontrol">
             <button className="gt-btn small" id="baslat" type="button">▶ Günü Başlat</button>
             <button className="gt-btn small line" id="hiz" type="button">Hız 1×</button>
