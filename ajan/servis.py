@@ -86,6 +86,22 @@ RESEND_ANAHTAR = os.environ.get("RESEND_API_KEY", "")
 GONDEREN = os.environ.get("EPOSTA_GONDEREN", "GES Danışmanı <info@gesdanismani.com>")
 
 
+def _smtp_ayar() -> dict:
+    """SMTP ayarları: panelden kaydedilen değer öncelikli, ortam değişkeni yedek."""
+    a = _ayar()
+    try:
+        port = int(a.get("smtp_port") or SMTP_PORT)
+    except (TypeError, ValueError):
+        port = SMTP_PORT
+    return {
+        "sunucu": str(a.get("smtp_sunucu") or SMTP_SUNUCU).strip(),
+        "port": port,
+        "kullanici": str(a.get("smtp_kullanici") or SMTP_KULLANICI).strip(),
+        "sifre": str(a.get("smtp_sifre") or SMTP_SIFRE),
+        "bildirim": str(a.get("bildirim_eposta") or BILDIRIM_EPOSTA).strip(),
+    }
+
+
 def _eposta_gonder(kime: str, konu: str, html: str) -> None:
     """E-posta yollar: önce Resend HTTP API (Railway SMTP'yi engelliyor), yoksa SMTP.
     Ayar eksikse sessizce atlar. Ayrı iş parçacığında çağrılır."""
@@ -107,23 +123,24 @@ def _eposta_gonder(kime: str, konu: str, html: str) -> None:
         except Exception as e:
             print(f"resend gönderemedi ({kime}): {type(e).__name__}: {e}")
             return
-    if not (SMTP_KULLANICI and SMTP_SIFRE):
+    ayar = _smtp_ayar()
+    if not (ayar["kullanici"] and ayar["sifre"]):
         return
     import smtplib
     from email.mime.text import MIMEText
     from email.utils import formataddr
     mesaj = MIMEText(html, "html", "utf-8")
     mesaj["Subject"] = konu
-    mesaj["From"] = formataddr(("GES Danışmanı", SMTP_KULLANICI))
+    mesaj["From"] = formataddr(("GES Danışmanı", ayar["kullanici"]))
     mesaj["To"] = kime
     try:
-        if SMTP_PORT == 465:
-            baglanti = smtplib.SMTP_SSL(SMTP_SUNUCU, SMTP_PORT, timeout=25)
+        if ayar["port"] == 465:
+            baglanti = smtplib.SMTP_SSL(ayar["sunucu"], ayar["port"], timeout=25)
         else:
-            baglanti = smtplib.SMTP(SMTP_SUNUCU, SMTP_PORT, timeout=25)
+            baglanti = smtplib.SMTP(ayar["sunucu"], ayar["port"], timeout=25)
             baglanti.starttls()
         with baglanti:
-            baglanti.login(SMTP_KULLANICI, SMTP_SIFRE)
+            baglanti.login(ayar["kullanici"], ayar["sifre"])
             baglanti.send_message(mesaj)
     except Exception as e:
         print(f"e-posta gönderilemedi ({kime}): {type(e).__name__}: {e}")
@@ -879,21 +896,27 @@ def eposta_tani(istek: Request):
         return JSONResponse({"hata": "yetkisiz"}, status_code=401)
     import smtplib
     import socket
-    sonuc = {"ayar": {"sunucu": SMTP_SUNUCU, "port": SMTP_PORT,
-                      "kullanici": bool(SMTP_KULLANICI), "sifre": bool(SMTP_SIFRE),
-                      "bildirim": bool(BILDIRIM_EPOSTA)}}
+    ayar = _smtp_ayar()
+    sonuc = {"ayar": {"sunucu": ayar["sunucu"], "port": ayar["port"],
+                      "kullanici": bool(ayar["kullanici"]), "sifre": bool(ayar["sifre"]),
+                      "bildirim": bool(ayar["bildirim"])}}
     for port in (465, 587, 2525):
         try:
-            socket.create_connection((SMTP_SUNUCU, port), timeout=8).close()
+            socket.create_connection((ayar["sunucu"], port), timeout=8).close()
             sonuc[f"tcp_{port}"] = "açık"
         except Exception as e:
             sonuc[f"tcp_{port}"] = f"{type(e).__name__}: {e}"
     try:
-        with smtplib.SMTP_SSL(SMTP_SUNUCU, 465, timeout=15) as b:
-            b.login(SMTP_KULLANICI, SMTP_SIFRE)
-        sonuc["smtp_465"] = "giriş başarılı"
+        if ayar["port"] == 465:
+            b = smtplib.SMTP_SSL(ayar["sunucu"], 465, timeout=15)
+        else:
+            b = smtplib.SMTP(ayar["sunucu"], ayar["port"], timeout=15)
+            b.starttls()
+        with b:
+            b.login(ayar["kullanici"], ayar["sifre"])
+        sonuc["smtp_giris"] = "giriş başarılı"
     except Exception as e:
-        sonuc["smtp_465"] = f"{type(e).__name__}: {e}"
+        sonuc["smtp_giris"] = f"{type(e).__name__}: {e}"
     return sonuc
 
 
@@ -1235,6 +1258,11 @@ async def yonetim_ayarlar(istek: Request):
         "gunluk_sohbet": _ayar_deger("gunluk_sohbet", GUNLUK_SOHBET_TAVANI),
         "gunluk_lead": _ayar_deger("gunluk_lead", GUNLUK_LEAD_TAVANI),
         "bakim": bool(a.get("bakim")),
+        "smtp_sunucu": str(a.get("smtp_sunucu") or SMTP_SUNUCU),
+        "smtp_port": int(a.get("smtp_port") or SMTP_PORT),
+        "smtp_kullanici": str(a.get("smtp_kullanici") or SMTP_KULLANICI),
+        "smtp_sifre_var": bool(a.get("smtp_sifre") or SMTP_SIFRE),
+        "bildirim_eposta": str(a.get("bildirim_eposta") or BILDIRIM_EPOSTA),
         "varsayilanlar": {"saat_limit": SAAT_LIMIT, "gunluk_sohbet": GUNLUK_SOHBET_TAVANI,
                           "gunluk_lead": GUNLUK_LEAD_TAVANI},
     }
@@ -1258,8 +1286,23 @@ async def yonetim_ayarlar_kaydet(istek: Request):
             return JSONResponse({"hata": f"{anahtar} 1-{ust} aralığında olmalı"}, status_code=400)
         yeni[anahtar] = deger
     yeni["bakim"] = bool(govde.get("bakim"))
+    # SMTP alanları: boş şifre "değiştirme" demek; diğerleri olduğu gibi yazılır
+    for alan in ("smtp_sunucu", "smtp_kullanici", "bildirim_eposta"):
+        if alan in govde:
+            yeni[alan] = str(govde.get(alan) or "").strip()[:200]
+    if "smtp_port" in govde:
+        try:
+            yeni["smtp_port"] = max(1, min(65535, int(govde.get("smtp_port") or 465)))
+        except (TypeError, ValueError):
+            yeni["smtp_port"] = 465
+    eldeki = _ayar()
+    if str(govde.get("smtp_sifre") or "").strip():
+        yeni["smtp_sifre"] = str(govde["smtp_sifre"]).strip()[:200]
+    elif eldeki.get("smtp_sifre"):
+        yeni["smtp_sifre"] = eldeki["smtp_sifre"]
     AYAR_DOSYA.parent.mkdir(parents=True, exist_ok=True)
     AYAR_DOSYA.write_text(json.dumps(yeni, ensure_ascii=False), encoding="utf-8")
+    yeni.pop("smtp_sifre", None)
     return {"durum": "kaydedildi", **yeni}
 
 
@@ -1298,7 +1341,8 @@ async def lead_ucu(istek: Request):
     dosya = LEAD_DIZIN / f"{kayit['zaman'].replace(':', '')}.json"
     dosya.write_text(json.dumps(kayit, ensure_ascii=False, indent=2), encoding="utf-8")
     # bildirim: talep özeti yöneticinin adresine, hoş geldin mesajı talep sahibine
-    _eposta_arkaplan(BILDIRIM_EPOSTA, f"Yeni danışmanlık talebi — {iletisim or 'iletişimsiz'}",
+    _eposta_arkaplan(_smtp_ayar()["bildirim"],
+                     f"Yeni danışmanlık talebi — {iletisim or 'iletişimsiz'}",
                      _talep_bildirim_html(kayit))
     if _re.search(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$", iletisim):
         _eposta_arkaplan(iletisim, "Talebinizi aldık — GES Danışmanı", _hosgeldin_html())

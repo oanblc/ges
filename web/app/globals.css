@@ -774,6 +774,10 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .arama-sonuc.tur-destek .arama-tur{color:#A5620D; background:#FBF1E2}
 .arama-sonuc.tur-blog .arama-tur{color:#5A4FA0; background:#EFEDF9}
 
+.yp-ayar-baslik{font-size:15px; color:var(--title); margin:26px 0 2px;
+  padding-top:18px; border-top:1px solid var(--border)}
+.gt-btn.ikincil{background:var(--surface); color:var(--title); border:1px solid var(--border)}
+
 .yeni-sohbet-satir{display:flex; justify-content:flex-end; padding:6px 16px 0}
 .yeni-sohbet{border:1px solid var(--border);
   background:var(--surface); border-radius:999px; padding:6px 14px; font:inherit; font-size:12.5px;

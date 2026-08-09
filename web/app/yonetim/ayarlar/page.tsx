@@ -15,6 +15,11 @@ type Ayarlar = {
   gunluk_sohbet: number;
   gunluk_lead: number;
   bakim: boolean;
+  smtp_sunucu: string;
+  smtp_port: number;
+  smtp_kullanici: string;
+  smtp_sifre_var: boolean;
+  bildirim_eposta: string;
   varsayilanlar: Record<string, number>;
 };
 
@@ -44,6 +49,11 @@ export default async function AyarlarSayfa() {
             gunluk_sohbet: ayarlar.gunluk_sohbet,
             gunluk_lead: ayarlar.gunluk_lead,
             bakim: ayarlar.bakim,
+            smtp_sunucu: ayarlar.smtp_sunucu ?? "mail.kurumsaleposta.com",
+            smtp_port: ayarlar.smtp_port ?? 465,
+            smtp_kullanici: ayarlar.smtp_kullanici ?? "",
+            smtp_sifre_var: !!ayarlar.smtp_sifre_var,
+            bildirim_eposta: ayarlar.bildirim_eposta ?? "",
           }}
         />
       )}
