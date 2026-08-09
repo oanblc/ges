@@ -74,3 +74,21 @@ Power Enerji, Piagrid, Renewasoft, Ember Türkiye Electricity Review 2026, Üça
 3. Veriş yönlü (üretici) dağıtım bedeli: tarife tablosunda LÜ-1 208,1065 / LÜ-2 65,6008 kr/kWh;
    ikincil kaynak (Kaan Gökay) ~28,3 kr/kWh diyor. Hangi bedelin hangi gerilim seviyesine ve
    veriş/çekiş yönüne uygulandığı EPDK metodolojisinden netleştirilecek (tablo dipnotu 5 kesik çıktı).
+
+## İhtiyaç fazlası enerji ödeme takvimi (aylık döngü — LÜY md. 26, EPİAŞ uzlaştırma)
+
+Onay: Ozan, 9 Ağustos 2026 · Kaynak: LÜY md. 26, EPİAŞ uzlaştırma duyuruları, Enerjisa lisanssız üretim SSS.
+
+| Gün | Ne olur |
+|---|---|
+| Ayın 1-6'sı | Dağıtım şirketi (EDAŞ) sayaçları okur; ihtiyaç fazlası miktarı ayın 6'sına kadar görevli tedarik şirketine (GTŞ) bildirir |
+| 1-10. gün | Veriler EPİAŞ Lisanssız Üretim Modülü'ne yüklenir |
+| 11. gün | Ön uzlaştırma sonuçları yayınlanır |
+| 12. gün 17:30 | Ön uzlaştırmaya itiraz için son saat |
+| 15. gün | Faturaya esas kesin uzlaştırma ilan edilir |
+| Tebliğ + 10 iş günü | Alacak, üreticinin faturasının/gider pusulasının GTŞ'ye tebliğini izleyen EN GEÇ 10 iş günü içinde IBAN'a ödenir (LÜY md. 26/11) |
+| Blokajlı süreçte | GTŞ, EPİAŞ'tan aldığı ödemeyi izleyen ayın 5. iş gününe kadar üreticiye geçirmek zorundadır |
+
+Pratik özet (kullanıcıya böyle anlat): kesin uzlaştırma ayın 15'inde netleşir; para
+tebliğden sonra en geç 10 iş günü içinde yatar — kabaca ayın ikinci yarısı/ay sonu.
+Ödemeyi EDAŞ değil GTŞ yapar; IBAN tanımı şarttır; meskende gider pusulası düzenlenir.
