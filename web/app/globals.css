@@ -758,8 +758,9 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 
 /* ---------- yönetim paneli ---------- */
 .yp-wrap{min-height:100vh; background:#F3F5F0}
-.yp-ust{display:flex; align-items:center; gap:16px; padding:14px 28px; background:var(--surface);
-  border-bottom:1px solid var(--border)}
+.yp-ust{display:flex; align-items:center; gap:16px; background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:14px max(24px, calc((100% - 1032px)/2))}
 .yp-rozet{background:var(--theme); color:#fff; font-size:11.5px; font-weight:700;
   letter-spacing:.05em; text-transform:uppercase; padding:4px 10px; border-radius:999px}
 .yp-sekmeler{display:flex; gap:18px; margin-left:16px; font-size:14px}
@@ -779,7 +780,7 @@ a.yp-kart:hover{border-color:var(--theme)}
   .yp-icerik{padding:22px 14px 48px}
   .yp-detay-ust{flex-direction:column}
 }
-.yp-icerik{max-width:1080px; margin:0 auto; padding:30px 24px 60px}
+.yp-icerik{padding:30px max(24px, calc((100% - 1032px)/2)) 60px}
 .yp-icerik h1{font-size:24px; margin:0 0 20px}
 .yp-icerik h2{font-size:16px; margin:28px 0 12px}
 .yp-kartlar{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px}
