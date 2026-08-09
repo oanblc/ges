@@ -283,11 +283,6 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
 
   return (
     <div className="as-main" onPaste={yapistir}>
-      {mesajlar.length > 0 && !durum && (
-        <button type="button" className="yeni-sohbet" onClick={sohbetiTemizle}>
-          Yeni sohbet
-        </button>
-      )}
       <div className="chat" ref={kayanRef} onScroll={kaydirmaIzle} aria-live="polite">
         {mesajlar.length === 0 && (
           <div className="as-bos">
@@ -383,6 +378,13 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
       )}
       {ekHata && <div className="ek-hata">{ekHata}</div>}
 
+      {mesajlar.length > 0 && !durum && (
+        <div className="yeni-sohbet-satir">
+          <button type="button" className="yeni-sohbet" onClick={sohbetiTemizle}>
+            + Yeni sohbet
+          </button>
+        </div>
+      )}
       <form
         className="inbar"
         onSubmit={(e) => {
