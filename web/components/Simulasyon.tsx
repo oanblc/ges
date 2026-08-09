@@ -44,6 +44,7 @@ const PROFIL = {
   vardiya: Array(24).fill(1),
 };
 const ARAZI = 1.05;
+const MAPS_ANAHTAR = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || "";
 // Güney baz (PVGIS profilleri güney/30°); diğer cepheler yaklaşık üretim çarpanı
 const CEPHE = { guney: 1.0, dogubati: 0.85, kuzey: 0.6 } as const;
 
@@ -539,6 +540,86 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
       (e.currentTarget as HTMLElement).textContent = "Hız " + HIZLAR[hizIx] + "×";
     };
     el("raporBtn").onclick = raporIndir;
+    // ---- uydudan çatı çizimi (Google Maps; anahtar yoksa düğme görünmez) ----
+    let harita: unknown = null, cizimYonetici: unknown = null, sonCokgen: unknown = null, sonAlan = 0;
+    const g = () => (window as unknown as { google: any }).google;
+    function haritaYukle(): Promise<void> {
+      return new Promise((coz, red) => {
+        if ((window as unknown as { google?: unknown }).google) return coz();
+        const s = document.createElement("script");
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_ANAHTAR}&libraries=drawing,places,geometry&language=tr&region=TR`;
+        s.onload = () => coz(); s.onerror = () => red(new Error("maps yüklenemedi"));
+        document.head.appendChild(s);
+      });
+    }
+    function alanOzeti() {
+      if (!sonAlan) { el("uyduBilgi").textContent = "Çatınızın köşelerini haritada tıklayarak işaretleyin."; return; }
+      const kwp = S.tip === "cati"
+        ? (sonAlan * 0.6 / EKIPMAN.panelM2) * (EKIPMAN.panelWp / 1000)
+        : sonAlan / 15;
+      const oneri = Math.max(5, Math.round(kwp / 5) * 5);
+      el("uyduBilgi").innerHTML =
+        `Seçilen alan: <b>${Math.round(sonAlan).toLocaleString("tr-TR")} m²</b> · ` +
+        `sığabilecek güç: <b>≈ ${oneri.toLocaleString("tr-TR")} kWp</b> ` +
+        `(${Math.ceil(oneri * 1000 / EKIPMAN.panelWp).toLocaleString("tr-TR")} panel)`;
+      (el("uyduKullan") as HTMLButtonElement).disabled = false;
+      (el("uyduKullan") as HTMLButtonElement).dataset.kwp = String(oneri);
+    }
+    async function uyduAc() {
+      el("uyduPerde").classList.add("acik");
+      try { await haritaYukle(); } catch { el("uyduBilgi").textContent = "Harita yüklenemedi; lütfen daha sonra deneyin."; return; }
+      if (!harita) {
+        const G = g();
+        harita = new G.maps.Map(el("uyduHarita"), {
+          center: { lat: 39.0, lng: 35.0 }, zoom: 6, mapTypeId: "satellite",
+          tilt: 0, streetViewControl: false, fullscreenControl: false, mapTypeControl: false,
+        });
+        const arama = new G.maps.places.Autocomplete(el("uyduAdres") as HTMLInputElement,
+          { componentRestrictions: { country: "tr" }, fields: ["geometry"] });
+        arama.addListener("place_changed", () => {
+          const yer = arama.getPlace();
+          if (yer.geometry?.location) {
+            (harita as any).setCenter(yer.geometry.location);
+            (harita as any).setZoom(19);
+          }
+        });
+        cizimYonetici = new G.maps.drawing.DrawingManager({
+          drawingMode: G.maps.drawing.OverlayType.POLYGON,
+          drawingControl: false,
+          polygonOptions: { fillColor: "#FFE175", fillOpacity: 0.45, strokeColor: "#E8C43C",
+            strokeWeight: 2.5, editable: true },
+        });
+        (cizimYonetici as any).setMap(harita);
+        G.maps.event.addListener(cizimYonetici, "polygoncomplete", (poli: any) => {
+          if (sonCokgen) (sonCokgen as any).setMap(null);
+          sonCokgen = poli;
+          const hesapla = () => { sonAlan = G.maps.geometry.spherical.computeArea(poli.getPath()); alanOzeti(); };
+          hesapla();
+          poli.getPath().addListener("set_at", hesapla);
+          poli.getPath().addListener("insert_at", hesapla);
+          (cizimYonetici as any).setDrawingMode(null);
+        });
+      }
+      alanOzeti();
+    }
+    if (MAPS_ANAHTAR) {
+      el("uyduAcBtn").onclick = () => void uyduAc();
+      el("uyduKapat").onclick = () => el("uyduPerde").classList.remove("acik");
+      el("uyduTemizle").onclick = () => {
+        if (sonCokgen) (sonCokgen as any).setMap(null);
+        sonCokgen = null; sonAlan = 0;
+        (el("uyduKullan") as HTMLButtonElement).disabled = true;
+        if (cizimYonetici) (cizimYonetici as any).setDrawingMode(g().maps.drawing.OverlayType.POLYGON);
+        alanOzeti();
+      };
+      el("uyduKullan").onclick = (e) => {
+        const kwp = Number((e.currentTarget as HTMLElement).dataset.kwp || 0);
+        if (kwp) { gucUygula(kwp); }
+        el("uyduPerde").classList.remove("acik");
+        el("panelSayi").insertAdjacentHTML("beforeend",
+          ` · uydudan seçilen alan ${Math.round(sonAlan).toLocaleString("tr-TR")} m²`);
+      };
+    }
     el("tekrar").onclick = () => {
       el("sonuclar").hidden = true;
       sifirla();
@@ -572,6 +653,9 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
               <input type="range" id="guc" min={5} max={1000} step={5} defaultValue={50} />
               <span className="sayi-kutu"><input type="number" id="gucSayi" min={5} max={5000} defaultValue={50} aria-label="Güç (kWp)" /><i>kWp</i></span></div>
             <button className="tam-karsila" id="tamKarsila" type="button">⚡ Faturamı tam karşıla</button>
+            {MAPS_ANAHTAR ? (
+              <button className="tam-karsila" id="uyduAcBtn" type="button">🛰 Uydudan çatını çiz</button>
+            ) : null}
             <small className="panel-sayi" id="panelSayi"></small>
             <small className="panel-sayi uyari" id="gucUyari" style={{ display: "none" }}>Konutta yasal üst sınır 25 kW — güç buna çekildi.</small></div>
           <div className="grup"><span>İl</span><select id="il" aria-label="İl"></select></div>
@@ -727,6 +811,19 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           <p className="not">Üretim eğrileri il bazlı gerçek PVGIS güneşlenme verisinden gelir; fiyatlar
             güncel EPDK tarifeleriyle hesaplanır. Rakamlar eğitim amaçlıdır — kişisel hesap için
             Hesaplama Araçları ve Fatura Analizi kullanın.</p>
+        </div>
+      </div>
+
+      <div className="uydu-perde" id="uyduPerde">
+        <div className="uydu-kutu">
+          <div className="uydu-ust">
+            <input id="uyduAdres" type="text" placeholder="Adresinizi yazın (mahalle, sokak…)" />
+            <button className="gt-btn small line" id="uyduTemizle" type="button">Temizle</button>
+            <button className="gt-btn small" id="uyduKullan" type="button" disabled>Alanı Kullan</button>
+            <button className="uydu-kapat" id="uyduKapat" type="button" aria-label="Kapat">✕</button>
+          </div>
+          <div id="uyduHarita" className="uydu-harita"></div>
+          <p className="dip" id="uyduBilgi">Çatınızın köşelerini haritada tıklayarak işaretleyin.</p>
         </div>
       </div>
 
