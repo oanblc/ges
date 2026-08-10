@@ -2,12 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { BATARYA_TL_KWH, CATI_CARPANI, EKIPMAN, MALIYET_BANT, MALIYET_KALEMLERI } from "@/data/kb";
+import {
+  CARPORT_PRIM, ISI_POMPASI, OFFGRID, SARJ_CIHAZ, SARJ_LISANS_NOTU, SISTEM_KAYNAK_NOT, SULAMA,
+  type SarjTipi,
+} from "@/data/sistem-turleri";
 import { Ok } from "./Icons";
 import { Aciklamali } from "./Terim";
 
 /**
  * "Ne kadar param gider?" — kurulum maliyeti tahmini.
- * Bantlar gerçek 2026 teklif/EPC verilerinden (kb/taslak/2026-08-08-maliyet-arastirmasi.md).
+ * On-grid bantlar gerçek 2026 teklif/EPC verilerinden (kb/taslak/2026-08-08-maliyet-arastirmasi.md);
+ * off-grid, sulama ve şarj türleri kb/sistem-turleri-fiyatlar.md'den (data/sistem-turleri.ts).
  */
 
 const tl = (n: number) => "₺" + Math.round(n).toLocaleString("tr-TR");
@@ -15,9 +20,12 @@ const binTl = (n: number) =>
   n >= 1_000_000
     ? (n / 1_000_000).toLocaleString("tr-TR", { maximumFractionDigits: 2 }) + " M₺"
     : Math.round(n / 1000).toLocaleString("tr-TR") + " bin ₺";
+const sayi = (n: number, hane = 1) =>
+  n.toLocaleString("tr-TR", { maximumFractionDigits: hane });
 
 type Segment = "konut" | "ticari";
 type Cati = keyof typeof CATI_CARPANI;
+type SistemTuru = "ongrid" | "offgrid" | "sulama" | "sarj";
 
 const SEG = {
   konut: { min: 2, max: 25, adim: 1, varsayilan: 6 },
@@ -30,18 +38,301 @@ const CATILAR: Array<[Cati, string]> = [
   ["teras", "Beton teras"],
 ];
 
+const TURLER: Array<[SistemTuru, string]> = [
+  ["ongrid", "Şebekeye bağlı"],
+  ["offgrid", "Off-grid (bataryalı)"],
+  ["sulama", "Tarımsal sulama"],
+  ["sarj", "Araç şarjı"],
+];
+
 function bant(segment: Segment, kw: number): [number, number] {
   for (const [maks, alt, ust] of MALIYET_BANT[segment]) if (kw <= maks) return [alt, ust];
   const son = MALIYET_BANT[segment][MALIYET_BANT[segment].length - 1];
   return [son[1], son[2]];
 }
 
+/* ---------- Off-grid paneli ---------- */
+function OffGridPanel() {
+  const [gunluk, setGunluk] = useState<number>(5);
+  const [otonomi, setOtonomi] = useState<number>(2);
+
+  const h = useMemo(() => {
+    const bataryaKwh = (gunluk * otonomi) / OFFGRID.dod;
+    const panelKwp = gunluk / (OFFGRID.kisPsh * OFFGRID.sistemVerim);
+    const inverterKw = Math.max(3, Math.ceil(panelKwp * 1.2));
+    const panelAdet = Math.max(2, Math.ceil((panelKwp * 1000) / EKIPMAN.panelWp));
+    const paket = OFFGRID.paketBant.find(([tavan]) => bataryaKwh <= tavan);
+    if (paket) return { bataryaKwh, panelKwp, inverterKw, panelAdet, alt: paket[1], ust: paket[2], moduler: false };
+    // 10 kWh üzeri hazır paket kb'de teyit bekliyor → modüler kalemlerle bant (panel+montaj teklifle netleşir)
+    const alt = bataryaKwh * OFFGRID.lfpTlKwh[0] + OFFGRID.hibritInverter10kwTl[0];
+    const ust = bataryaKwh * OFFGRID.lfpTlKwh[1] + OFFGRID.hibritInverter10kwTl[1];
+    return { bataryaKwh, panelKwp, inverterKw, panelAdet, alt, ust, moduler: true };
+  }, [gunluk, otonomi]);
+
+  const kalemler: Array<[string, string]> = [
+    ["Güneş panelleri", `≈ ${sayi(h.panelKwp)} kWp (${h.panelAdet} adet ${EKIPMAN.panelWp} Wp) — kış güneşine göre boyutlandırıldı`],
+    ["LFP batarya", `≈ ${sayi(h.bataryaKwh)} kWh LiFePO4 (%80 DoD ile ${otonomi} gün otonomi)`],
+    ["Hibrit inverter", `≈ ${h.inverterKw} kW tam sinüs — motorlu yük (pompa/buzdolabı) kalkışı için; tepe yükünüze göre teklifle kesinleşir`],
+    ["Regülatör, montaj, kablolama", h.moduler ? "Panel ve montaj bu banda dahil değil — fiyat teklifle netleşir" : "Hazır pakete dahil"],
+  ];
+
+  return (
+    <div className="roi-form" style={{ padding: 0 }}>
+      <div className="fs-form-izgara">
+        <div className="rf">
+          <label htmlFor="ogGunluk">Günlük tüketim — {sayi(gunluk)} kWh/gün</label>
+          <input id="ogGunluk" type="range" min={1} max={30} step={1} value={gunluk}
+            onChange={(e) => setGunluk(+e.target.value)} />
+        </div>
+        <div className="rf">
+          <label htmlFor="ogOtonomi">Otonomi (güneşsiz gün) — {otonomi} gün</label>
+          <input id="ogOtonomi" type="range" min={1} max={3} step={1} value={otonomi}
+            onChange={(e) => setOtonomi(+e.target.value)} />
+        </div>
+      </div>
+
+      <div className="roi-out">
+        <div className="ro">
+          <div className="rv">{binTl(h.alt)} – {binTl(h.ust)}</div>
+          <div className="rk">{h.moduler ? "Batarya + inverter bandı (modüler)" : "Hazır paket bandı"}</div>
+        </div>
+        <div className="ro">
+          <div className="rv">{binTl((h.alt + h.ust) / 2)}</div>
+          <div className="rk">Ortalama bütçe</div>
+        </div>
+        <div className="ro">
+          <div className="rv">{sayi(h.bataryaKwh)} kWh · {sayi(h.panelKwp)} kWp</div>
+          <div className="rk">Batarya ve panel boyutu</div>
+        </div>
+      </div>
+
+      <div className="bom">
+        <h3>Bu sistemde neler var?</h3>
+        <table>
+          <thead><tr><th>Kalem</th><th>İçerik</th></tr></thead>
+          <tbody>
+            {kalemler.map(([ad, icerik]) => (
+              <tr key={ad}><td>{ad}</td><td><Aciklamali>{icerik}</Aciklamali></td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <ul className="fs-notlar">
+        {OFFGRID.senaryolar.map((s) => <li key={s}>{s}</li>)}
+        <li>Şebekeye bağlanmayan sistemde izin/abonelik gerekmez.</li>
+        <li>İlanlarda KDV durumu belirsizdir — sipariş öncesi teyit edin.</li>
+        {h.moduler && <li>10 kWh üzeri hazır paket ilanı yaygın değil; toplam fiyat teklifle netleşir.</li>}
+      </ul>
+      <div className="tool-cta" style={{ marginTop: 12 }}>
+        <a className="gt-btn small"
+          href={`/asistan?soru=${encodeURIComponent(`Günlük ${gunluk} kWh tüketen, ${otonomi} gün otonomili off-grid sistem için ${sayi(h.bataryaKwh)} kWh batarya + ${sayi(h.panelKwp)} kWp panel makul mü?`)}`}>
+          Asistana Sorun <Ok className="i" />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Tarımsal sulama paneli ---------- */
+function SulamaPanel() {
+  const [hp, setHp] = useState<number>(7.5);
+  const [sebekeli, setSebekeli] = useState<boolean>(false);
+
+  const kwpAlt = hp * SULAMA.kwpCarpani[0];
+  const kwpUst = hp * SULAMA.kwpCarpani[1];
+  const alt = kwpAlt * SULAMA.tlKwp[0];
+  const ust = kwpUst * SULAMA.tlKwp[1];
+
+  const kalemler: Array<[string, string]> = [
+    ["Güneş panelleri", `≈ ${sayi(kwpAlt)}-${sayi(kwpUst)} kWp (HP × 1,3-1,5 kuralı)`],
+    ["Solar pompa sürücüsü (VFD)", "Pompa gücüne eşit veya bir üst kademe, MPPT'li; bulutta yavaşlar, durmaz; kuru çalışma koruması standart"],
+    ["Konstrüksiyon ve montaj", "Arazi konstrüksiyonu, DC kablolama, devreye alma — anahtar teslim banda dahil"],
+    ...(sebekeli
+      ? [["Proje ve bağlantı işlemleri", "Sulama aboneliği üzerinden lisanssız GES başvurusu, çift yönlü sayaç — teklifle netleşir"] as [string, string]]
+      : []),
+  ];
+
+  return (
+    <div className="roi-form" style={{ padding: 0 }}>
+      <div className="fs-form-izgara">
+        <div className="rf">
+          <label htmlFor="suHp">Pompa gücü</label>
+          <select id="suHp" value={hp} onChange={(e) => setHp(+e.target.value)}>
+            {SULAMA.hpSecenekleri.map((v) => (
+              <option key={v} value={v}>{sayi(v)} HP</option>
+            ))}
+          </select>
+        </div>
+        <div className="rf">
+          <label>Bağlantı</label>
+          <div className="rtoggle" aria-label="Şebeke bağlantısı">
+            <button type="button" className={!sebekeli ? "on" : ""} aria-pressed={!sebekeli} onClick={() => setSebekeli(false)}>Şebekesiz</button>
+            <button type="button" className={sebekeli ? "on" : ""} aria-pressed={sebekeli} onClick={() => setSebekeli(true)}>Şebekeli</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="roi-out">
+        <div className="ro">
+          <div className="rv">{binTl(alt)} – {binTl(ust)}</div>
+          <div className="rk">Anahtar teslim bant (≈ 17-20 bin ₺/kWp)</div>
+        </div>
+        <div className="ro">
+          <div className="rv">{binTl((alt + ust) / 2)}</div>
+          <div className="rk">Ortalama bütçe</div>
+        </div>
+        <div className="ro">
+          <div className="rv">{SULAMA.geriOdemeYil[0].toLocaleString("tr-TR")}–{SULAMA.geriOdemeYil[1]} yıl</div>
+          <div className="rk">Tipik geri ödeme (mazot/şebeke alternatifine göre)</div>
+        </div>
+      </div>
+
+      <div className="bom">
+        <h3>Bu sistemde neler var?</h3>
+        <table>
+          <thead><tr><th>Kalem</th><th>İçerik</th></tr></thead>
+          <tbody>
+            {kalemler.map(([ad, icerik]) => (
+              <tr key={ad}><td>{ad}</td><td><Aciklamali>{icerik}</Aciklamali></td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <ul className="fs-notlar">
+        <li>Batarya gerekmez — su deposu ve damla sulama depolama görevi görür.</li>
+        {sebekeli ? (
+          <li>Şebekeli kurulumda sulama aboneliği üzerinden mahsuplaşma yapılır; kurulu güç sınırı
+            sözleşme gücünün 2 katıdır, sulama elektriğinde KDV %10'dur.</li>
+        ) : (
+          <li>Şebekesiz kurulumda izin/abonelik gerekmez; sistem yalnız güneşliyken çalışır — gece
+            pompaj gerekiyorsa şebekeli/hibrit sürücü değerlendirilir.</li>
+        )}
+        {hp >= 30 && (
+          <li>30 HP üzeri büyük sistemlerde perakende fiyat ilan edilmiyor — fiyat proje bazlı
+            teklifle netleşir.</li>
+        )}
+        {SULAMA.hibeNotlari.map((n) => <li key={n}>{n}</li>)}
+        <li>Güncel hibe çağrıları için <a href="/destekler">Destekler sayfasına</a> bakın.</li>
+      </ul>
+      <div className="tool-cta" style={{ marginTop: 12 }}>
+        <a className="gt-btn small"
+          href={`/asistan?soru=${encodeURIComponent(`${sayi(hp)} HP ${sebekeli ? "şebekeli" : "şebekesiz"} sulama pompam için solar pompaj sistemi kurmak istiyorum; hibe seçenekleriyle birlikte yol haritası çıkarır mısın?`)}`}>
+          Asistana Sorun <Ok className="i" />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Araç şarj istasyonu paneli ---------- */
+function SarjPanel() {
+  const [tip, setTip] = useState<SarjTipi>("ac22");
+  const [adet, setAdet] = useState<number>(2);
+  const [carportKwp, setCarportKwp] = useState<number>(0);
+
+  const cihaz = SARJ_CIHAZ[tip];
+  const cihazAlt = cihaz.bant[0] * adet;
+  const cihazUst = cihaz.bant[1] * adet;
+  const [gesBirimAlt, gesBirimUst] = bant("ticari", Math.max(carportKwp, 10));
+  const gesAlt = carportKwp * gesBirimAlt * CARPORT_PRIM[0];
+  const gesUst = carportKwp * gesBirimUst * CARPORT_PRIM[1];
+  const alt = cihazAlt + gesAlt;
+  const ust = cihazUst + gesUst;
+
+  const kalemler: Array<[string, string]> = [
+    [`Şarj cihazı — ${cihaz.ad} × ${adet}`,
+      `${binTl(cihaz.bant[0])} – ${binTl(cihaz.bant[1])} / adet (KDV dahil perakende${tip.startsWith("dc") ? ", kurulum dahil bant" : ""})`],
+    ["Pano, hat ve montaj", "Cihaz bandına ek; güç artışı gerekebilir — fiyat teklifle netleşir"],
+    ...(carportKwp > 0
+      ? [["Carport GES", `${carportKwp} kWp panel + çelik carport konstrüksiyonu (çatı GES bandına %30-50 prim): ${binTl(gesAlt)} – ${binTl(gesUst)}`] as [string, string]]
+      : []),
+    ...(tip.startsWith("dc")
+      ? [["Trafo / elektrik altyapısı", "DC istasyonlarda en büyük ek kalem olabilir — fiyat teklifle netleşir"] as [string, string]]
+      : []),
+  ];
+
+  return (
+    <div className="roi-form" style={{ padding: 0 }}>
+      <div className="fs-form-izgara">
+        <div className="rf">
+          <label htmlFor="sjTip">İstasyon tipi</label>
+          <select id="sjTip" value={tip} onChange={(e) => setTip(e.target.value as SarjTipi)}>
+            {(Object.keys(SARJ_CIHAZ) as SarjTipi[]).map((k) => (
+              <option key={k} value={k}>{SARJ_CIHAZ[k].ad}</option>
+            ))}
+          </select>
+        </div>
+        <div className="rf">
+          <label htmlFor="sjAdet">İstasyon adedi — {adet}</label>
+          <input id="sjAdet" type="range" min={1} max={10} step={1} value={adet}
+            onChange={(e) => setAdet(+e.target.value)} />
+        </div>
+        <div className="rf">
+          <label htmlFor="sjGes">Carport GES — {carportKwp ? `${carportKwp} kWp` : "yok"}</label>
+          <input id="sjGes" type="range" min={0} max={100} step={5} value={carportKwp}
+            onChange={(e) => setCarportKwp(+e.target.value)} />
+        </div>
+      </div>
+
+      <div className="roi-out">
+        <div className="ro">
+          <div className="rv">{binTl(alt)} – {binTl(ust)}</div>
+          <div className="rk">Tahmini toplam (cihaz{carportKwp > 0 ? " + carport GES" : ""})</div>
+        </div>
+        <div className="ro">
+          <div className="rv">{binTl((alt + ust) / 2)}</div>
+          <div className="rk">Ortalama bütçe</div>
+        </div>
+        <div className="ro">
+          <div className="rv">{binTl(cihazAlt)} – {binTl(cihazUst)}</div>
+          <div className="rk">Cihaz kalemi ({cihaz.ad} × {adet})</div>
+        </div>
+      </div>
+
+      <div className="bom">
+        <h3>Bu sistemde neler var?</h3>
+        <table>
+          <thead><tr><th>Kalem</th><th>İçerik</th></tr></thead>
+          <tbody>
+            {kalemler.map(([ad, icerik]) => (
+              <tr key={ad}><td>{ad}</td><td><Aciklamali>{icerik}</Aciklamali></td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <ul className="fs-notlar">
+        <li>{SARJ_LISANS_NOTU}</li>
+        {cihaz.not && <li>{cihaz.not}</li>}
+        {carportKwp > 0 && (
+          <li>Carport konstrüksiyonunda ₺/m² perakende ilan edilmez; referans: 2 araçlık hazır solar
+            carport ≈ 572 bin ₺ (Ağu 2026). Öğlen üretimin mesai saati şarjıyla örtüşmesi en kârlı
+            senaryodur; yapı ruhsatı/statik gerekir.</li>
+        )}
+      </ul>
+      <div className="tool-cta" style={{ marginTop: 12 }}>
+        <a className="gt-btn small"
+          href={`/asistan?soru=${encodeURIComponent(`İşyerime ${adet} adet ${cihaz.ad} şarj istasyonu${carportKwp ? ` ve ${carportKwp} kWp carport GES` : ""} kurmak istiyorum; lisans gereklilikleri ve maliyetiyle yol haritası çıkarır mısın?`)}`}>
+          Asistana Sorun <Ok className="i" />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Ana bileşen ---------- */
 export default function Maliyet() {
+  const [tur, setTur] = useState<SistemTuru>("ongrid");
   const [segment, setSegment] = useState<Segment>("konut");
   const [kw, setKw] = useState<number>(SEG.konut.varsayilan);
   const [cati, setCati] = useState<Cati>("kiremit");
   const [bataryali, setBataryali] = useState(false);
   const [bataryaKwh, setBataryaKwh] = useState(10);
+  const [isiPompali, setIsiPompali] = useState<boolean>(false);
+  const [ipM2, setIpM2] = useState<number>(120);
+  const [ipBolge, setIpBolge] = useState<number>(2);
 
   const s = SEG[segment];
 
@@ -62,12 +353,28 @@ export default function Maliyet() {
     };
   }, [segment, kw, cati, bataryali, bataryaKwh]);
 
+  // ısı pompası eki — kaba tahmin (editör katsayıları, data/sistem-turleri.ts)
+  const ip = useMemo(() => {
+    if (!isiPompali) return null;
+    const [, kAlt, kUst] = ISI_POMPASI.bolgeler[ipBolge];
+    const kwhAlt = Math.round((ipM2 * kAlt) / ISI_POMPASI.scop);
+    const kwhUst = Math.round((ipM2 * kUst) / ISI_POMPASI.scop);
+    const ekKwp = Math.max(1, Math.round((kwhAlt + kwhUst) / 2 / ISI_POMPASI.kwpBasinaKwhYil));
+    return {
+      kwhAlt, kwhUst, ekKwp,
+      alt: ISI_POMPASI.cihazBant[0] + ISI_POMPASI.montajBant[0],
+      ust: ISI_POMPASI.cihazBant[1] + ISI_POMPASI.montajBant[1],
+    };
+  }, [isiPompali, ipM2, ipBolge]);
+
   const segDegistir = (yeni: Segment) => {
     setSegment(yeni);
     setKw(SEG[yeni].varsayilan);
   };
 
-  const ortalama = (sonuc.alt + sonuc.ust) / 2 + sonuc.batarya;
+  const ekAlt = sonuc.batarya + (ip?.alt ?? 0);
+  const ekUst = sonuc.batarya + (ip?.ust ?? 0);
+  const ortalama = (sonuc.alt + sonuc.ust) / 2 + (ekAlt + ekUst) / 2;
 
   const panelAdet = Math.ceil((kw * 1000) / EKIPMAN.panelWp);
   const catiAlani = Math.round(panelAdet * EKIPMAN.panelM2);
@@ -97,6 +404,21 @@ export default function Maliyet() {
   ];
 
   return (
+    <>
+    <div className="rtoggle" aria-label="Sistem türü" style={{ marginBottom: 16 }}>
+      {TURLER.map(([k, ad]) => (
+        <button key={k} type="button" className={tur === k ? "on" : ""} aria-pressed={tur === k}
+          onClick={() => setTur(k)}>
+          {ad}
+        </button>
+      ))}
+    </div>
+
+    {tur === "offgrid" && <OffGridPanel />}
+    {tur === "sulama" && <SulamaPanel />}
+    {tur === "sarj" && <SarjPanel />}
+
+    {tur === "ongrid" && (
     <>
     <div className="b-grid">
       <div className="roi-form" style={{ padding: 0 }}>
@@ -156,10 +478,32 @@ export default function Maliyet() {
           </div>
         )}
 
+        <label className="d-soru">
+          <input type="checkbox" checked={isiPompali} onChange={(e) => setIsiPompali(e.target.checked)} />
+          Isı pompası ekle (kaba tahmin)
+        </label>
+        {isiPompali && (
+          <>
+            <div className="rf">
+              <label htmlFor="mIpM2">Isıtılan alan — {ipM2} m²</label>
+              <input id="mIpM2" type="range" min={60} max={400} step={10} value={ipM2}
+                onChange={(e) => setIpM2(+e.target.value)} />
+            </div>
+            <div className="rf">
+              <label htmlFor="mIpBolge">İklim bölgesi</label>
+              <select id="mIpBolge" value={ipBolge} onChange={(e) => setIpBolge(+e.target.value)}>
+                {ISI_POMPASI.bolgeler.map(([ad], i) => (
+                  <option key={ad} value={i}>{ad}</option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
+
         <div className="roi-out">
           <div className="ro">
             <div className="rv">
-              {binTl(sonuc.alt + sonuc.batarya)} – {binTl(sonuc.ust + sonuc.batarya)}
+              {binTl(sonuc.alt + ekAlt)} – {binTl(sonuc.ust + ekUst)}
             </div>
             <div className="rk">
               Tahmini toplam {segment === "konut" ? "(KDV dahil piyasa bandı)" : "(KDV hariç EPC bandı)"}
@@ -177,11 +521,26 @@ export default function Maliyet() {
               {bataryali ? "Batarya (kurulum hariç liste)" : "Batarya seçilmedi"}
             </div>
           </div>
+          {ip && (
+            <div className="ro">
+              <div className="rv">{binTl(ip.alt)} – {binTl(ip.ust)}</div>
+              <div className="rk">Isı pompası cihaz + montaj (ayrı kalem)</div>
+            </div>
+          )}
         </div>
+
+        {ip && (
+          <p className="roi-note">
+            Isı pompası kaba tahmini: yıllık ilave tüketim ≈ {ip.kwhAlt.toLocaleString("tr-TR")}–
+            {ip.kwhUst.toLocaleString("tr-TR")} kWh; GES gücünü ≈ +{ip.ekKwp} kWp artırmayı düşünün
+            (mesken aylık mahsupta kış tüketimi yaz fazlasıyla netleşmez — denge yıllık ekonomide
+            kurulur). Premium markalarda cihaz 345 bin ₺'ye kadar çıkar; kesin boyut proje hesabı ister.
+          </p>
+        )}
 
         {sonuc.kdvli && (
           <p className="roi-note">
-            %20 KDV ile: {binTl(sonuc.kdvli[0] + sonuc.batarya)} – {binTl(sonuc.kdvli[1] + sonuc.batarya)}.
+            %20 KDV ile: {binTl(sonuc.kdvli[0] + ekAlt)} – {binTl(sonuc.kdvli[1] + ekUst)}.
             Yatırım Teşvik Belgesi KDV istisnası sağlayabilir — Destekler sayfasına bakın.
           </p>
         )}
@@ -271,6 +630,10 @@ export default function Maliyet() {
         eksik kalemi sorun.
       </p>
     </div>
+    </>
+    )}
+
+    <p className="roi-note" style={{ marginTop: 14 }}>{SISTEM_KAYNAK_NOT}</p>
     </>
   );
 }

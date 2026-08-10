@@ -47,7 +47,8 @@ Tüm dosyalar kb kökünde yayında (6 Ağustos 2026 onay turu: 21 taslak onayla
 | "Üretimimi nasıl izlerim / tüketim verim" | 17 | 3 |
 | "Kurulumcu güvenilir mi / teslim kontrolü" | 10, 20 | 9 |
 | "Teklif kontrolü (vaat/simülasyon/datasheet)" | 13, 15, 20 | 8 |
-| "Carport/balkon/bağ evi/sulama/ısı pompası" | 19 | 16, 12 |
+| "Carport/balkon/bağ evi/sulama/ısı pompası" | 19 | 24, 16, 12 |
+| "Sulama/off-grid/carport/ısı pompası KAÇ PARA" | 24 | 19, 8 |
 | "Dolandırıcılık şüphesi" | 10, 9 | — |
 
 ## Çapraz tutarlılık çıpaları (her cevapta doğru olması gerekenler)
@@ -67,6 +68,7 @@ Tüm dosyalar kb kökünde yayında (6 Ağustos 2026 onay turu: 21 taslak onayla
 | 21 | fatura-analiz-protokolu.md | 7 adımlı fatura analiz algoritması (v2, gerçek faturayla doğrulandı) |
 | 22 | fatura-kalem-sozlugu.md | Kalem eş anlamlıları, şirket farkları, anomali belirtileri |
 | 23 | ikili-anlasma-fiyatlama.md | 5 fiyatlama tipi, teşhis sırası, SKTT KBK, AOPTF, uzlaştırma düzeltmesi |
+| 24 | sistem-turleri-fiyatlar.md | Sulama GES, off-grid paket, carport/EV şarj, ısı pompası paketi, esnek panel — boyutlandırma+fiyat (Ağu 2026) |
 
 ## Teyit bekleyen maddeler (haftalık tarama kapatacak)
 Son tarife penceresi kontrolü: 1 Temmuz 2026'da YENİ TARİFE YAYIMLANMADI; 4 Nisan 2026 geçerli (7 Ağu 2026, dağıtım şirketi ulusal tarife sayfasından teyit). Sonraki kontrol: Ekim 2026 penceresi.
@@ -80,3 +82,7 @@ Son tarife penceresi kontrolü: 1 Temmuz 2026'da YENİ TARİFE YAYIMLANMADI; 4 N
 - Veriş yönlü dağıtım bedeli (208,1 / 65,6 / ~28,3 kr — üç farklı değer dolaşımda)
 - Serbest tüketici limiti 500 kWh/yıl (tek kaynak GENSED; güncel EPDK kararıyla teyit)
 - Tarımsal sulama BTV muafiyeti (kb.ts tarimsalAG için işaretli)
+- Şarj ağı asgari ünite eşiği 50→150 (2025 taslağı nihai metne girdi mi — RG 23.3.2026 tam metinden teyit)
+- 30-90 kW büyük sulama GES anahtar teslim fiyatı (perakende ilan yok)
+- 20 kWh sınıfı off-grid hazır paket fiyatı; 300-400 Wp esnek panel fiyatı
+- KKYDP hibe üst limiti ~3 M₺ (güncel çağrı metninden teyit)
