@@ -59,15 +59,15 @@ export default function YonetimKabuk({
           {SEKMELER.map(([yol, ad, ikon]) => (
             <Link key={yol} href={yol}
               className={`yp-ric ${aktifMi(yol) ? "on" : ""}`}
-              title={ad} aria-label={ad}
+              aria-label={ad}
               aria-current={aktif === yol ? "page" : undefined}>
-              {IKONLAR[ikon]}
+              {IKONLAR[ikon]}<span className="yp-ric-ad">{ad}</span>
             </Link>
           ))}
         </nav>
         <span className="yp-rail-bosluk" />
-        <Link href="/" className="yp-ric" title="Siteye dön" aria-label="Siteye dön">
-          {IKONLAR.site}
+        <Link href="/" className="yp-ric" aria-label="Siteye dön">
+          {IKONLAR.site}<span className="yp-ric-ad">Siteye dön</span>
         </Link>
         <CikisDugme />
       </aside>
