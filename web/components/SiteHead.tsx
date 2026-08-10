@@ -13,7 +13,6 @@ type Oge = [AktifSayfa, string, string];
 type Girdi = { ad: string; oge?: Oge; grup?: Oge[] };
 
 const MENU: Girdi[] = [
-  { ad: "Asistan", oge: ["asistan", "/asistan", "Asistan"] },
   {
     ad: "Araçlar",
     grup: [
