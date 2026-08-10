@@ -161,15 +161,13 @@ def _smtp_gonder(kime: str, konu: str, html: str) -> bool:
 
 
 def _eposta_gonder(kime: str, konu: str, html: str) -> None:
-    """Anlık gönderim: önce köprü (gmail, Railway'den çalışır), olmazsa SMTP (info@).
-    Ek olarak kuyruğa da yazılır; bir info@ relay'i çalışıyorsa onu info@'dan yeniden
-    göndermez — kuyruk yalnız relay aktifken tüketilir, aksi halde bekçi 20 dk sonra temizler.
-    Not: relay aktif değilken çift gönderim olmaması için burada kuyruğa YAZILMAZ."""
+    """Anlık gönderim: önce Natro SMTP (info@ adresinden — Railway Pro'da SMTP açık),
+    başarısızsa Apps Script köprüsü (gmail) yedek. Böylece mailler info@'dan gider."""
     if not kime:
         return
-    if _kopru_gonder(kime, konu, html):
+    if _smtp_gonder(kime, konu, html):
         return
-    _smtp_gonder(kime, konu, html)
+    _kopru_gonder(kime, konu, html)
 
 
 def _kuyruk_bekci() -> None:
