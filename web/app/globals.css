@@ -423,7 +423,9 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 
 /* ---------- destekler sayfası ---------- */
 .dk-bolum{padding:26px 32px 6px}
-.dk-secimler{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+.dk-secimler{display:flex; flex-wrap:wrap; gap:14px 18px; margin-top:14px}
+.dk-secim{display:flex; flex-direction:column; gap:6px}
+.dk-secim-ad{font-size:12px; color:var(--text); padding-left:6px}
 .dk-secimler .rtoggle{flex-wrap:wrap}
 .dk-bos{background:var(--soft); border:1px dashed var(--border); border-radius:16px; padding:22px; text-align:center; color:var(--text)}
 .dk-bolum:last-of-type{padding-bottom:26px}

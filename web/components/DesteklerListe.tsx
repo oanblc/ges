@@ -60,33 +60,41 @@ export default function DesteklerListe() {
             <Kalkan className="i" /> Size Uygun Destekler
           </h2>
           <p className="tanim">
-            Profilinizi seçin; yararlanabileceğiniz avantajları şartlarıyla görün, alttaki
-            liste de seçiminize göre süzülsün.
+            Seçim yaptıkça hem size özel özet hem de alttaki program listesi güncellenir.
           </p>
           <div className="dk-secimler">
-            <div className="rtoggle" aria-label="Profil">
-              <button className={profil === null ? "on" : ""} aria-pressed={profil === null} onClick={() => setProfil(null)}>Tümü</button>
-              {(Object.keys(KITLE) as Profil[]).map((k) => (
-                <button key={k} className={profil === k ? "on" : ""} aria-pressed={profil === k} onClick={() => setProfil(k)}>
-                  {(() => { const I = KITLE[k].Ikon; return <I className="i" />; })()} {KITLE[k].etiket}
-                </button>
-              ))}
+            <div className="dk-secim">
+              <span className="dk-secim-ad">Profilinizi seçin</span>
+              <div className="rtoggle" aria-label="Profil">
+                <button className={profil === null ? "on" : ""} aria-pressed={profil === null} onClick={() => setProfil(null)}>Tümü</button>
+                {(Object.keys(KITLE) as Profil[]).map((k) => (
+                  <button key={k} className={profil === k ? "on" : ""} aria-pressed={profil === k} onClick={() => setProfil(k)}>
+                    {(() => { const I = KITLE[k].Ikon; return <I className="i" />; })()} {KITLE[k].etiket}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="rtoggle" aria-label="Tür">
-              <button className={tur === "" ? "on" : ""} aria-pressed={tur === ""} onClick={() => setTur("")}>Tümü</button>
-              {Object.keys(TUR_BASLIK).map((t) => (
-                <button key={t} className={tur === t ? "on" : ""} aria-pressed={tur === t} onClick={() => setTur(t)}>
-                  {TUR_KISA[t]}
-                </button>
-              ))}
+            <div className="dk-secim">
+              <span className="dk-secim-ad">Desteği veren kaynağı seçin</span>
+              <div className="rtoggle" aria-label="Tür">
+                <button className={tur === "" ? "on" : ""} aria-pressed={tur === ""} onClick={() => setTur("")}>Tümü</button>
+                {Object.keys(TUR_BASLIK).map((t) => (
+                  <button key={t} className={tur === t ? "on" : ""} aria-pressed={tur === t} onClick={() => setTur(t)}>
+                    {TUR_KISA[t]}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="rtoggle" aria-label="Durum">
-              <button className={durum === "" ? "on" : ""} aria-pressed={durum === ""} onClick={() => setDurum("")}>Tümü</button>
-              {["aktif", "donemsel", "teyit-bekliyor"].map((s) => (
-                <button key={s} className={durum === s ? "on" : ""} aria-pressed={durum === s} onClick={() => setDurum(s)}>
-                  {DURUM[s].etiket}
-                </button>
-              ))}
+            <div className="dk-secim">
+              <span className="dk-secim-ad">Programın durumunu seçin</span>
+              <div className="rtoggle" aria-label="Durum">
+                <button className={durum === "" ? "on" : ""} aria-pressed={durum === ""} onClick={() => setDurum("")}>Tümü</button>
+                {["aktif", "donemsel", "teyit-bekliyor"].map((s) => (
+                  <button key={s} className={durum === s ? "on" : ""} aria-pressed={durum === s} onClick={() => setDurum(s)}>
+                    {DURUM[s].etiket}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <Destek disProfil={profil} />
