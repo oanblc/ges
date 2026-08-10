@@ -1601,6 +1601,21 @@ async def yonetim_uye_sil(istek: Request):
     return JSONResponse({"hata": "üye bulunamadı"}, status_code=404)
 
 
+@app.post("/yonetim/arastir-tani")
+def arastir_tani(istek: Request):
+    """GEÇİCİ: gemini.arastir (google arama grounding) canlıda çalışıyor mu?"""
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        metin = gemini.arastir(
+            "Kısa ve olgusal cevap ver.",
+            "2026 yılında Türkiye'de meskenler için lisanssız çatı GES üst sınırı kaç kW? Tek cümle.",
+            max_cikti=512, sure=60)
+        return {"ok": True, "cevap": (metin or "")[:400]}
+    except Exception as e:
+        return {"ok": False, "hata": f"{type(e).__name__}: {e}"}
+
+
 @app.post("/yonetim/eposta-kuyruk")
 def eposta_kuyruk(istek: Request):
     if _yetkisiz(istek):

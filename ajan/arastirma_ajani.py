@@ -19,7 +19,7 @@ import sys
 import datetime
 from pathlib import Path
 
-import anthropic
+import gemini
 
 ROOT = Path(__file__).resolve().parent.parent
 TASLAK = ROOT / "kb" / "taslak"
@@ -36,33 +36,11 @@ def _env_yukle() -> None:
 
 
 def _calistir(gorev: str) -> str:
-    client = anthropic.Anthropic()
-    messages = [{"role": "user", "content": gorev}]
-    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 8}]
-
-    while True:
-        response = client.beta.messages.create(
-            model="claude-sonnet-5",
-            max_tokens=16000,
-            system=(
-                "Türkiye enerji piyasası uzmanı bir araştırma ajanısın. "
-                "gesdanismani.com bilgi tabanı için çalışıyorsun. Kurallar: "
-                "(1) Her rakama kaynak linki ve geçerlilik tarihi ekle. "
-                "(2) Emin olmadığın bilgiyi 'DOĞRULANAMADI' diye işaretle, uydurma. "
-                "(3) Çıktıyı markdown yaz: başlık, güncelleme tarihi, yapılandırılmış "
-                "bölümler, en sonda Kaynaklar listesi. "
-                "(4) Rakamları hesap motoruna aktarılabilir netlikte ver "
-                "(birim, KDV dahil/hariç, geçerlilik dönemi)."
-            ),
-            tools=tools,
-            messages=messages,
-        )
-        if response.stop_reason == "refusal":
-            raise SystemExit("İstek güvenlik sınıflandırıcısı tarafından reddedildi.")
-        if response.stop_reason == "pause_turn":
-            messages = [messages[0], {"role": "assistant", "content": response.content}]
-            continue
-        return "".join(b.text for b in response.content if b.type == "text")
+    """Google arama destekli Gemini çağrısı (eskiden Anthropic web_search)."""
+    return gemini.arastir(
+        "Türkiye enerji piyasası uzmanı bir araştırma ajanısın. gesdanismani.com bilgi tabanı için çalışıyorsun. Kurallar: (1) Her rakama kaynak linki ve geçerlilik tarihi ekle. (2) Emin olmadığın bilgiyi 'DOĞRULANAMADI' diye işaretle, uydurma. (3) Çıktıyı markdown yaz: başlık, güncelleme tarihi, yapılandırılmış bölümler, en sonda Kaynaklar listesi. (4) Rakamları hesap motoruna aktarılabilir netlikte ver (birim, KDV dahil/hariç, geçerlilik dönemi).",
+        gorev,
+    )
 
 
 def _kaydet(ad: str, icerik: str) -> Path:

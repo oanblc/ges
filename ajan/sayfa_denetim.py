@@ -24,7 +24,7 @@ import re
 import urllib.request
 from pathlib import Path
 
-import anthropic
+import gemini
 
 ROOT = Path(__file__).resolve().parent.parent
 VERI = ROOT / "kb" / "veri" / "denetim.json"
@@ -72,33 +72,11 @@ def _kb_ozeti() -> str:
 
 
 def _calistir(gorev: str) -> str:
-    client = anthropic.Anthropic()
-    messages = [{"role": "user", "content": gorev}]
-    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 4}]
-
-    while True:
-        response = client.beta.messages.create(
-            model="claude-sonnet-5",
-            max_tokens=16000,
-            system=(
-                "gesdanismani.com için içerik denetçisisin. Görev: sayfalardaki görünür "
-                "bilgileri (rakam, tarih, mevzuat kuralı, süreç bilgisi) bilgi tabanıyla "
-                "karşılaştırmak. Kurallar: (1) Bilgi tabanı tek doğruluk kaynağıdır; sayfa "
-                "ondan sapıyorsa UYARI ver. (2) Zamana bağlı bilgilerde (tarife tarihi, "
-                "mevzuat) şüphe varsa web aramasıyla kontrol et. (3) Üslup/pazarlama metnine "
-                "karışma; yalnız OLGUSAL hataları raporla. (4) Emin olmadığında uyarı verme "
-                "— yanlış alarm denetimin değerini düşürür. (5) Çıktın YALNIZCA istenen "
-                "JSON olsun."
-            ),
-            tools=tools,
-            messages=messages,
-        )
-        if response.stop_reason == "refusal":
-            raise SystemExit("İstek reddedildi.")
-        if response.stop_reason == "pause_turn":
-            messages = [messages[0], {"role": "assistant", "content": response.content}]
-            continue
-        return "".join(b.text for b in response.content if b.type == "text")
+    """Google arama destekli Gemini çağrısı (eskiden Anthropic web_search)."""
+    return gemini.arastir(
+        'gesdanismani.com için içerik denetçisisin. Görev: sayfalardaki görünür bilgileri (rakam, tarih, mevzuat kuralı, süreç bilgisi) bilgi tabanıyla karşılaştırmak. Kurallar: (1) Bilgi tabanı tek doğruluk kaynağıdır; sayfa ondan sapıyorsa UYARI ver. (2) Zamana bağlı bilgilerde (tarife tarihi, mevzuat) şüphe varsa web aramasıyla kontrol et. (3) Üslup/pazarlama metnine karışma; yalnız OLGUSAL hataları raporla. (4) Emin olmadığında uyarı verme — yanlış alarm denetimin değerini düşürür. (5) Çıktın YALNIZCA istenen JSON olsun.',
+        gorev,
+    )
 
 
 def _json_ayikla(metin: str) -> dict:

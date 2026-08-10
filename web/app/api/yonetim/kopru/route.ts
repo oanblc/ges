@@ -9,6 +9,7 @@ const IZINLI = new Set([
   "/yonetim/talep-durum",
   "/yonetim/taslak-okundu",
   "/yonetim/eposta-tani",
+  "/yonetim/arastir-tani",
   "/yonetim/eposta-kuyruk",
   "/yonetim/eposta-kuyruk-sil",
   "/yonetim/uyeler",

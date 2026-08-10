@@ -2,7 +2,7 @@
 # Veri güncellenirse repoya commit edilir; push Railway'de otomatik deploy tetikler,
 # site böylece her sabah taze veriyle yayınlanır.
 #
-# Gerekli Actions secrets: ANTHROPIC_API_KEY, EPIAS_KULLANICI, EPIAS_SIFRE
+# Gerekli Actions secrets: GEMINI_API_KEY, EPIAS_KULLANICI, EPIAS_SIFRE
 
 name: gunluk-ajanlar
 
@@ -38,7 +38,7 @@ jobs:
       - name: Nöbetçi taraması (günlük)
         continue-on-error: true
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python ajan/arastirma_ajani.py tara gunluk
       - name: Değişiklikleri commit'le
         run: |
@@ -64,7 +64,7 @@ jobs:
       - run: pip install -r ajan/requirements.txt
       - name: Sayfa denetimi (canlı site)
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SITE_URL: https://ges-production-f173.up.railway.app
         run: python ajan/sayfa_denetim.py
       - name: Değişiklikleri commit'le
@@ -91,12 +91,12 @@ jobs:
       - run: pip install -r ajan/requirements.txt
       - name: Nöbetçi taraması (haftalık)
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python ajan/arastirma_ajani.py tara haftalik
       - name: Destek bekçisi (haftalık — maliyet için günlükten alındı)
         continue-on-error: true
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python ajan/destek_takip.py
       - name: Değişiklikleri commit'le
         run: |

@@ -20,7 +20,7 @@ import json
 import re
 from pathlib import Path
 
-import anthropic
+import gemini
 
 ROOT = Path(__file__).resolve().parent.parent
 VERI = ROOT / "kb" / "veri" / "destekler.json"
@@ -41,31 +41,11 @@ def _env_yukle() -> None:
 
 
 def _calistir(gorev: str) -> str:
-    client = anthropic.Anthropic()
-    messages = [{"role": "user", "content": gorev}]
-    tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 8}]
-
-    while True:
-        response = client.beta.messages.create(
-            model="claude-sonnet-5",
-            max_tokens=16000,
-            system=(
-                "Türkiye enerji finansmanı uzmanı bir doğrulama ajanısın. "
-                "gesdanismani.com destek listesi için çalışıyorsun. Kurallar: "
-                "(1) Yalnız web'de teyit edebildiğini yaz; emin olamadığında "
-                "durumu 'teyit-bekliyor' işaretle, ASLA uydurma. "
-                "(2) Faiz oranı rakamı yazma — bankalar ilan etmez, yapı bilgisi ver. "
-                "(3) Çıktın YALNIZCA istenen JSON olsun; başka metin ekleme."
-            ),
-            tools=tools,
-            messages=messages,
-        )
-        if response.stop_reason == "refusal":
-            raise SystemExit("İstek güvenlik sınıflandırıcısı tarafından reddedildi.")
-        if response.stop_reason == "pause_turn":
-            messages = [messages[0], {"role": "assistant", "content": response.content}]
-            continue
-        return "".join(b.text for b in response.content if b.type == "text")
+    """Google arama destekli Gemini çağrısı (eskiden Anthropic web_search)."""
+    return gemini.arastir(
+        "Türkiye enerji finansmanı uzmanı bir doğrulama ajanısın. gesdanismani.com destek listesi için çalışıyorsun. Kurallar: (1) Yalnız web'de teyit edebildiğini yaz; emin olamadığında durumu 'teyit-bekliyor' işaretle, ASLA uydurma. (2) Faiz oranı rakamı yazma — bankalar ilan etmez, yapı bilgisi ver. (3) Çıktın YALNIZCA istenen JSON olsun; başka metin ekleme.",
+        gorev,
+    )
 
 
 def _json_ayikla(metin: str) -> dict:

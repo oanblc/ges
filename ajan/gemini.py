@@ -87,6 +87,25 @@ def uret(sistem, icerikler, araclar=None, zorunlu_arac=None, max_cikti=2048, sur
     return (d.get("candidates") or [{}])[0].get("content", {}).get("parts", [])
 
 
+def arastir(sistem, gorev, max_cikti=8192, sure=180):
+    """Google arama destekli (grounding) tek çağrı — web'den doğrulayıp metin döndürür.
+    Web-aramalı cron ajanları (denetim, nöbetçi, destek bekçisi) bunu kullanır."""
+    govde = {
+        "contents": [{"role": "user", "parts": [{"text": gorev}]}],
+        "systemInstruction": {"parts": [{"text": sistem}]},
+        "generationConfig": {"maxOutputTokens": max_cikti},
+        "tools": [{"google_search": {}}],
+    }
+    with httpx.Client(timeout=sure) as istemci:
+        y = istemci.post(f"{_TABAN}/{MODEL}:generateContent",
+                         params={"key": _anahtar()}, json=govde)
+        if y.status_code != 200:
+            raise RuntimeError(f"Gemini {y.status_code}: {y.text[:300]}")
+        d = y.json()
+    parts = (d.get("candidates") or [{}])[0].get("content", {}).get("parts", [])
+    return "".join(p.get("text", "") for p in parts)
+
+
 def akis(sistem, icerikler, araclar=None, max_cikti=6144, sure=180):
     """Akışlı çağrı — gelen her chunk'ın parts listesini sırayla üretir."""
     with httpx.Client(timeout=sure) as istemci:
