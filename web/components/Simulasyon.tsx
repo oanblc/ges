@@ -175,6 +175,8 @@ export default function Simulasyon() {
       else araziDoku(el("araziIzgara"), oran);
       el("batKutu").setAttribute("transform", cati ? "translate(212 342)" : "translate(120 400)");
       el("catiAyarGrup").style.display = cati ? "" : "none";
+      const uyduBtn = document.getElementById("uyduAcBtn");
+      if (uyduBtn) uyduBtn.textContent = cati ? "🛰 Uydudan çatını çiz" : "🛰 Uydudan arazini çiz";
       panelBilgi();
       el("batKutu").setAttribute("opacity", S.batarya ? "1" : "0");
       el("aBatSatir").style.display = S.batarya ? "flex" : "none";
@@ -580,7 +582,7 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
       });
     }
     function alanOzeti() {
-      if (!sonAlan) { el("uyduBilgi").textContent = "Çatınızın köşelerini haritada tıklayarak işaretleyin (en az 3 köşe); köşeleri sürükleyerek düzeltebilirsiniz."; return; }
+      if (!sonAlan) { el("uyduBilgi").textContent = `${S.tip === "cati" ? "Çatınızın" : "Arazinizin"} köşelerini haritada tıklayarak işaretleyin (en az 3 köşe); köşeleri sürükleyerek düzeltebilirsiniz.`; return; }
       if (sonAlan > 200000) {
         el("uyduBilgi").innerHTML = "Seçilen alan çok büyük görünüyor — haritayı adresinize " +
           "yakınlaştırıp yalnız çatınızı/alanınızı çizin, sonra Temizle ile yeniden deneyin.";
@@ -695,9 +697,9 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
       ["#il",
        "3/6 · İlini seç — üretim, ilin gerçek güneşlenme verisine göre hesaplanır."],
       ["#gelismisAc",
-       "4/6 · 'Gelişmiş ayarlar'ı açıp aylık tüketimini (faturandaki kWh) ve tüketim profilini gir; istersen batarya, cephe ve gölgelenmeyi de ayarla."],
+       "4/6 · 'Gelişmiş ayarlar'ı açıp aylık tüketimini (faturandaki kWh) ve tüketim profilini gir. Kısayollar da burada: 🧾 faturandan otomatik doldur, ⚡ gücü ihtiyacına göre hesaplat, 🛰 çatını/arazini uydudan çiz."],
       ["#guc",
-       "5/6 · Santral gücünü belirle: kaydır, elle yaz, ⚡ ile ihtiyacına göre otomatik hesapla ya da 🛰 ile çatını uydudan çiz."],
+       "5/6 · Santral gücünü belirle: kaydırıcıyı sürükle ya da elle yaz — kısayolları kullandıysan burası zaten ayarlandı."],
       ["#baslat",
        "6/6 · Hazırsın! 'Günü Başlat'a bas: güneş doğsun, sayaç dönsün. Gün bitince karnen açılır. Detaylı bilgi her zaman 📖 Yardım'da."],
     ];
@@ -924,11 +926,6 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
             <div className="kaydirici">
               <input type="range" id="guc" min={5} max={1000} step={5} defaultValue={50} />
               <span className="sayi-kutu"><input type="number" id="gucSayi" min={5} max={5000} defaultValue={50} aria-label="Güç (kWp)" /><i>kWp</i></span></div>
-            <button className="tam-karsila" id="tamKarsila" type="button">⚡ Faturamı tam karşıla</button>
-            <button className="tam-karsila" id="faturaDoldurBtn" type="button">🧾 Faturamdan doldur</button>
-            {MAPS_ANAHTAR ? (
-              <button className="tam-karsila" id="uyduAcBtn" type="button">🛰 Uydudan çatını çiz</button>
-            ) : null}
             <small className="panel-sayi" id="panelSayi"></small>
             <small className="panel-sayi uyari" id="gucUyari" style={{ display: "none" }}>Konutta yasal üst sınır 25 kW — güç buna çekildi.</small></div>
           <div className="grup"><span>İl</span><select id="il" aria-label="İl"></select></div>
@@ -936,6 +933,14 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
 
         <button className="gelismis-ac" id="gelismisAc" aria-expanded="false" type="button">Gelişmiş ayarlar</button>
         <div className="gelismis" id="gelismis">
+          <div className="grup"><span>Hızlı doldurma
+            <button className="terim" data-tip="Faturanızdan ya da uydu görüntüsünden simülasyonu otomatik doldurmanın kısayolları." aria-label="Hızlı doldurma nedir" type="button">?</button></span>
+            <button className="tam-karsila" id="tamKarsila" type="button">⚡ Faturamı tam karşıla</button>
+            <button className="tam-karsila" id="faturaDoldurBtn" type="button">🧾 Faturamdan doldur</button>
+            {MAPS_ANAHTAR ? (
+              <button className="tam-karsila" id="uyduAcBtn" type="button">🛰 Uydudan çatını çiz</button>
+            ) : null}
+          </div>
           <div className="grup"><span>Bağlantı
             <button className="terim" data-tip="AG (alçak gerilim): evler ve küçük işletmelerin standart bağlantısı. OG (orta gerilim): trafolu büyük tesisler — birim fiyatı biraz daha düşüktür." aria-label="AG OG nedir" type="button">?</button></span>
             <div className="cipler" data-ad="gerilim">
@@ -1144,11 +1149,11 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           42 m² panel alanı eder. Gücü kaydırıcıyla, elle yazarak, ⚡ Faturamı tam karşıla ile
           (ihtiyacına göre) ya da 🛰 uydu çizimiyle (çatına sığana göre) belirleyebilirsin.</p></details>
         <details><summary>⚡ Faturamı tam karşıla ne yapar?</summary>
-          <p>Aylık tüketimini yıllığa çevirir ve seçili ilin gerçek PVGIS verimi (cephe ve
+          <p>Gelişmiş ayarlar içindeki bu kısayol, aylık tüketimini yıllığa çevirir ve seçili ilin gerçek PVGIS verimi (cephe ve
           gölgelenme dahil) ile bölerek yıllık üretimi tüketimine denk gelecek gücü hesaplar.
           Meskende faturayı sıfıra çok yaklaştırır; işletmede saatlik mahsup nedeniyle gece
           tüketimi kadar fark kalır — karnede görürsün.</p></details>
-        <details><summary>🛰 Uydudan çatı çizimi</summary>
+        <details><summary>🛰 Uydudan çatı/arazi çizimi</summary>
           <p>Adresini yaz, haritada çatının köşelerini tıklayarak işaretle (en az 3 köşe;
           köşeler sürüklenebilir). Alan ölçülür ve sığabilecek güç önerilir: çatıda alanın
           ~%60'ı kullanılabilir sayılır, arazide sıra aralıklarıyla 15 m²/kWp. "Alanı Kullan"
