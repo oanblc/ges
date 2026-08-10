@@ -1311,12 +1311,34 @@ async def saatlik_analiz(istek: Request):
     # Fazla üretim: saatlik mahsupta abone grubu ÇIPLAK aktif enerji bedeli (muhafazakâr)
     satis_birim = min(aktif, EPDK_ENERJI["sanayi_og"])
 
-    # --- senaryolar: gündüz ortalama yükün %50/%75/%100/%125'i ---
+    # --- senaryolar: kwpListe verildiyse TAM o değerler; yoksa gündüz ort. yükün
+    #     %50/%75/%100/%125'i ---
+    kwp_liste = govde.get("kwpListe")
+    adaylar, kwp_ozel = [], False
+    if isinstance(kwp_liste, list) and kwp_liste:
+        kwp_ozel = True
+        for v in kwp_liste:
+            try:
+                f = float(v)
+            except (TypeError, ValueError):
+                continue
+            if f > 0:
+                adaylar.append(f)
+            if len(adaylar) >= 8:
+                break
+        if not adaylar:
+            return JSONResponse({"hata": "kwpListe geçerli (0'dan büyük) bir kWp değeri "
+                                         "içermiyor."}, status_code=400)
+    else:
+        adaylar = [round(gunduz_ort_kw * oran, 1) for oran in (0.5, 0.75, 1.0, 1.25)]
+
     senaryolar = []
-    for oran in (0.5, 0.75, 1.0, 1.25):
-        kwp = round(gunduz_ort_kw * oran, 1)
-        if kwp < 0.5:
-            continue
+    for kwp in adaylar:
+        if not kwp_ozel:
+            if kwp < 0.5:
+                continue
+        else:
+            kwp = round(kwp, 2)
         uret_top, oz_top = 0.0, 0.0
         for (gun, saat), kwh in seri.items():
             u = kwp * verim * _PROFIL.get((gun.month, saat), 0.0)
@@ -1353,8 +1375,10 @@ async def saatlik_analiz(istek: Request):
         "yaklaşıktır.",
         "Öz tüketim oranı yüklenen dönemin saatlik çakıştırmasından bulunup yıla genellendi; "
         "mevsimsel tüketim farkları sapma yaratabilir.",
-        "Kurulu güç adayları gündüz (07-19) ortalama yükün %50/%75/%100/%125'i; kW ≈ kWp "
-        "kabul edildi (DC/AC ≈ 1).",
+        ("Kurulu güç adayları istekte verilen kWp listesinden alındı."
+         if kwp_ozel else
+         "Kurulu güç adayları gündüz (07-19) ortalama yükün %50/%75/%100/%125'i; kW ≈ kWp "
+         "kabul edildi (DC/AC ≈ 1)."),
         "Fazla üretim, 1 Mayıs 2026 saatlik mahsuplaşma kuralına uygun muhafazakâr birimle "
         f"(abone grubu çıplak aktif enerji bedeli, {round(satis_birim, 4)} TL/kWh) "
         "değerlendi; PTF/YEKDEM üst senaryoları dahil edilmedi.",

@@ -676,6 +676,15 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .simx .uydu-harita{width:100%; height:min(58vh,480px); border-radius:14px; background:#DDE3DC}
 .simx .uydu-kutu .dip{margin:0; font-size:12px; color:var(--text)}
 .simx .uydu-kutu .dip b{color:var(--theme)}
+.simx .fatura-kutu{width:min(96vw,560px)}
+.simx .fatura-kutu .fatura-baslik{flex:1; font-size:15px; color:var(--title)}
+.simx .fatura-kutu .fatura-hata{color:#9a3b3b}
+.simx .saatlik-kart{margin-top:16px; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 18px}
+.simx .saatlik-kart h3{margin:0 0 6px; font-size:14.5px; color:var(--title)}
+.simx .saatlik-kart .dip{margin:0 0 10px; font-size:11.5px; color:var(--text); line-height:1.5}
+.simx .saatlik-sec{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.simx .saatlik-sec .dip{margin:0}
+.simx .senaryo-kiyas[hidden]{display:none}
 .simx .senaryo-kiyas{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:10px; margin-top:12px}
 .simx .senaryo-kiyas>div{background:var(--surface); border:1px solid var(--border);

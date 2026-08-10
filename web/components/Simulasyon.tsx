@@ -106,12 +106,14 @@ export default function Simulasyon() {
       say.onchange = () => uygula(+say.value || enAz);
       return uygula;
     };
+    let saatlikTetikleRef = () => {}; // güç değişince saatlik veri sonucunu tazele (aşağıda bağlanır)
     const gucUygula = ciftBagla("guc", "gucSayi", "guc", 5, 5000, () => {
       const meskenSinir = S.grup === "mesken" && S.guc > LIMITLER.meskenKw;
       el("gucUyari").style.display = meskenSinir ? "block" : "none";
       if (meskenSinir) { S.guc = LIMITLER.meskenKw;
         (el("gucSayi") as HTMLInputElement).value = String(S.guc);
         (el("guc") as HTMLInputElement).value = String(S.guc); }
+      saatlikTetikleRef();
     });
     gucUygulaRef = () => gucUygula(S.guc);
     el("tamKarsila").onclick = () => {
@@ -121,7 +123,7 @@ export default function Simulasyon() {
       const hedef = Math.max(5, Math.round((S.tuketim * 12) / verim / 5) * 5);
       gucUygula(hedef);
     };
-    ciftBagla("tuketim", "tukSayi", "tuketim", 100, 2000000);
+    const tuketimUygula = ciftBagla("tuketim", "tukSayi", "tuketim", 100, 2000000);
     bagla("batarya", "batCikti", (v) => (v ? v + " kWh" : "yok"), "batarya");
     el("gelismisAc").onclick = (e) => {
       const g = el("gelismis"), acik = g.classList.toggle("acik");
@@ -739,6 +741,160 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
 
     el("uyduBannerKapat").onclick = () => { el("uyduBanner").hidden = true; };
 
+    // ---- ortak: dosyayı base64'e çevir ----
+    const b64Oku = (dosya: File) => new Promise<string>((coz, red) => {
+      const r = new FileReader();
+      r.onload = () => coz((r.result as string).split(",")[1] ?? "");
+      r.onerror = () => red(new Error());
+      r.readAsDataURL(dosya);
+    });
+
+    // ---- fatura popup: faturadan doldur ----
+    const IZINLI_FATURA = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    const faturaPerde = el("faturaPerde");
+    const faturaSifirla = () => {
+      el("faturaSecKutu").classList.remove("pasif");
+      el("faturaSecBaslik").textContent = "Faturanızı buraya yükleyin";
+      el("faturaSecAlt").textContent = "Fotoğraf (JPEG/PNG/WebP) veya PDF · en fazla 6 MB";
+    };
+    const faturaHataGoster = (m: string) => { const h = el("faturaHata"); h.hidden = !m; h.textContent = m; };
+    el("faturaDoldurBtn").onclick = () => { faturaHataGoster(""); faturaSifirla(); faturaPerde.classList.add("acik"); };
+    el("faturaKapat").onclick = () => faturaPerde.classList.remove("acik");
+    faturaPerde.onclick = (e) => { if (e.target === faturaPerde) faturaPerde.classList.remove("acik"); };
+    async function faturaIsle(dosya: File | undefined) {
+      faturaHataGoster("");
+      if (!dosya) return;
+      if (!IZINLI_FATURA.includes(dosya.type)) return faturaHataGoster("JPEG, PNG, WebP veya PDF yükleyin.");
+      if (dosya.size > 6 * 1024 * 1024) return faturaHataGoster("Dosya 6 MB'ı aşmamalı.");
+      el("faturaSecKutu").classList.add("pasif");
+      el("faturaSecBaslik").textContent = dosya.name;
+      el("faturaSecAlt").textContent = "Fatura okunuyor… birkaç saniye sürebilir.";
+      try {
+        const veri = await b64Oku(dosya);
+        const res = await fetch("/api/fatura", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ek: {
+              type: dosya.type === "application/pdf" ? "document" : "image",
+              source: { type: "base64", media_type: dosya.type, data: veri },
+            },
+          }),
+        });
+        const a: { hata?: string; belge_fatura_mi?: boolean; abone_grubu?: string;
+          tuketim_kwh?: number; il?: string; okunamayanlar?: string[] } = await res.json();
+        if (!res.ok || a.hata) throw new Error(a.hata ?? "Fatura okunamadı; daha net bir fotoğrafla deneyin.");
+        if (!a.belge_fatura_mi)
+          throw new Error("Bu belge bir elektrik faturasına benzemiyor — lütfen faturanızı yükleyin.");
+        // abone grubu → çip (mevcut çip mantığını yeniden kullan)
+        const grup = a.abone_grubu === "mesken" ? "mesken" : a.abone_grubu === "sanayi" ? "sanayi" : "ticarethane";
+        (kok.current!.querySelector(`.cipler[data-ad=grup] .cip[data-deger=${grup}]`) as HTMLButtonElement | null)?.click();
+        // il
+        if (a.il) {
+          const ad = Object.keys(ILLER).find((x) => x.toLocaleLowerCase("tr") === a.il!.toLocaleLowerCase("tr"));
+          if (ad) { ilSec.value = ad; S.il = ad; ilSec.classList.remove("uyar"); }
+        }
+        // aylık tüketim
+        const tuketimVar = !!a.tuketim_kwh && a.tuketim_kwh > 0;
+        if (tuketimVar) tuketimUygula(Math.round(a.tuketim_kwh!));
+        faturaPerde.classList.remove("acik");
+        // güç hedefi: tüketimi karşılayacak şekilde ayarla (mevcut ⚡ mantığı)
+        if (S.il && tuketimVar) (el("tamKarsila") as HTMLButtonElement).click();
+        // eksikler + görünür bildirim
+        const eksikler = [...(a.okunamayanlar ?? [])];
+        if (!tuketimVar && !eksikler.some((x) => x.toLocaleLowerCase("tr").includes("tüketim"))) eksikler.push("aylık tüketim (kWh)");
+        if (!S.il) eksikler.push("il");
+        el("uyduBannerMetin").innerHTML =
+          `🧾 Faturadan dolduruldu: <b>${({ mesken: "Mesken", ticarethane: "Ticarethane", sanayi: "Sanayi" } as Record<string, string>)[grup]}</b>` +
+          (tuketimVar ? ` · aylık tüketim <b>${S.tuketim.toLocaleString("tr-TR")} kWh</b>` : "") +
+          (S.il ? ` · <b>${S.il}</b>` : "") +
+          (S.il && tuketimVar
+            ? ` · güç tüketimini karşılayacak şekilde <b>${S.guc.toLocaleString("tr-TR")} kWp</b>'ye ayarlandı. Şimdi "Günü Başlat" ile sistemini oynat.`
+            : ".") +
+          (eksikler.length
+            ? ` Faturadan okunamayanlar: <b>${eksikler.join(", ")}</b> — lütfen soldaki alanlardan elle girin.`
+            : "");
+        el("uyduBanner").hidden = false;
+        el("sahneKutu").scrollIntoView({ behavior: "smooth", block: "center" });
+      } catch (e) {
+        faturaHataGoster(e instanceof Error && e.message
+          ? e.message
+          : "Fatura okunamadı; daha net bir fotoğrafla deneyin.");
+      } finally {
+        faturaSifirla();
+      }
+    }
+    (el("faturaDosya") as HTMLInputElement).onchange = (e) => {
+      const g2 = e.currentTarget as HTMLInputElement;
+      void faturaIsle(g2.files?.[0]);
+      g2.value = "";
+    };
+
+    // ---- saatlik tüketim verisiyle gerçek öz tüketim ----
+    let saatlikDosyaVeri: { ad: string; tip: "csv" | "xlsx"; b64: string } | null = null;
+    let saatlikZamanlayici = 0;
+    let saatlikIstekNo = 0;
+    const saatlikDurum = (m: string) => { el("saatlikDurum").textContent = m; };
+    async function saatlikHesapla() {
+      if (!saatlikDosyaVeri) return;
+      if (!S.il) { saatlikDurum("Önce il seçin; dosyanız seçili il ile hesaplanır."); return; }
+      const no = ++saatlikIstekNo;
+      saatlikDurum(`${saatlikDosyaVeri.ad} · ${S.guc.toLocaleString("tr-TR")} kWp için hesaplanıyor…`);
+      try {
+        const res = await fetch("/api/saatlik", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ il: S.il, dosya: saatlikDosyaVeri, kwpListe: [S.guc] }),
+        });
+        const d: { hata?: string; senaryolar?: Array<{ kwp: number; ozTuketimOrani: number;
+          ozTuketimKwh: number; yillikTasarrufTl: number; yillikSatisTl: number }> } = await res.json();
+        if (no !== saatlikIstekNo) return; // arada güç değişti — yeni istek yolda
+        if (!res.ok || d.hata || !d.senaryolar?.length) {
+          if (res.status === 503) throw new Error(d.hata ?? "Analiz servisi şu an çalışmıyor; lütfen daha sonra deneyin.");
+          throw new Error(d.hata ?? "Dosya çözümlenemedi; saatlik dökümün orijinal halini yüklemeyi deneyin.");
+        }
+        const sn = d.senaryolar[0];
+        const f2 = (v: number) => Math.round(v).toLocaleString("tr-TR");
+        const stdOran = sonRapor && sonRapor.yil.uretim ? Math.round((sonRapor.yil.oz / sonRapor.yil.uretim) * 100) : null;
+        const stdKazanc = sonRapor ? Math.round(sonRapor.yil.kazanc) : null;
+        el("saatlikKiyas").innerHTML = `
+          <div><span>Öz tüketim<small>standart profil</small></span><b>${stdOran !== null ? "%" + stdOran : "—"}</b></div>
+          <div class="aktif"><span>Öz tüketim<small>saatlik verinize göre</small></span><b>%${Math.round(sn.ozTuketimOrani * 100)} · ${f2(sn.ozTuketimKwh)} kWh</b></div>
+          <div><span>Yıllık kazanç<small>standart profil</small></span><b>${stdKazanc !== null ? f2(stdKazanc) + " ₺" : "—"}</b></div>
+          <div class="aktif"><span>Yıllık tasarruf + satış<small>saatlik verinize göre</small></span><b>${f2(sn.yillikTasarrufTl + sn.yillikSatisTl)} ₺</b></div>`;
+        el("saatlikKiyas").hidden = false;
+        saatlikDurum(`${saatlikDosyaVeri.ad} · ${sn.kwp.toLocaleString("tr-TR")} kWp için hesaplandı. Gücü değiştirirseniz otomatik yenilenir.`);
+      } catch (e) {
+        if (no !== saatlikIstekNo) return;
+        el("saatlikKiyas").hidden = true;
+        saatlikDurum(e instanceof Error && e.message
+          ? e.message
+          : "Analiz şu an tamamlanamadı; lütfen daha sonra yeniden deneyin.");
+      }
+    }
+    saatlikTetikleRef = () => {
+      if (!saatlikDosyaVeri) return;
+      window.clearTimeout(saatlikZamanlayici);
+      saatlikZamanlayici = window.setTimeout(() => void saatlikHesapla(), 800);
+    };
+    (el("saatlikDosya") as HTMLInputElement).onchange = async (e) => {
+      const g3 = e.currentTarget as HTMLInputElement;
+      const dosya = g3.files?.[0];
+      g3.value = "";
+      if (!dosya) return;
+      const kucuk = dosya.name.toLocaleLowerCase("tr");
+      const tip = kucuk.endsWith(".csv") ? "csv" as const : kucuk.endsWith(".xlsx") ? "xlsx" as const : null;
+      if (!tip) return saatlikDurum("CSV veya XLSX dosyası yükleyin — dağıtım şirketinizden ya da EPİAŞ'tan aldığınız saatlik döküm.");
+      if (dosya.size > 5 * 1024 * 1024) return saatlikDurum("Dosya 5 MB'ı aşmamalı.");
+      try {
+        const b64 = await b64Oku(dosya);
+        saatlikDosyaVeri = { ad: dosya.name, tip, b64 };
+        void saatlikHesapla();
+      } catch {
+        saatlikDurum("Dosya okunamadı; lütfen yeniden deneyin.");
+      }
+    };
+
     sahneKur(); sifirla();
     return () => { oynuyor = false; cancelAnimationFrame(kare); };
   }, []);
@@ -769,6 +925,7 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
               <input type="range" id="guc" min={5} max={1000} step={5} defaultValue={50} />
               <span className="sayi-kutu"><input type="number" id="gucSayi" min={5} max={5000} defaultValue={50} aria-label="Güç (kWp)" /><i>kWp</i></span></div>
             <button className="tam-karsila" id="tamKarsila" type="button">⚡ Faturamı tam karşıla</button>
+            <button className="tam-karsila" id="faturaDoldurBtn" type="button">🧾 Faturamdan doldur</button>
             {MAPS_ANAHTAR ? (
               <button className="tam-karsila" id="uyduAcBtn" type="button">🛰 Uydudan çatını çiz</button>
             ) : null}
@@ -937,6 +1094,24 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
         </div>
       </div>
 
+      <div className="uydu-perde" id="faturaPerde">
+        <div className="uydu-kutu fatura-kutu">
+          <div className="uydu-ust">
+            <b className="fatura-baslik">Faturamdan doldur</b>
+            <button className="uydu-kapat" id="faturaKapat" type="button" aria-label="Kapat">✕</button>
+          </div>
+          <label className="fs-kutu" id="faturaSecKutu">
+            <input type="file" id="faturaDosya" accept="image/jpeg,image/png,image/webp,application/pdf" hidden />
+            <b id="faturaSecBaslik">Faturanızı buraya yükleyin</b>
+            <span id="faturaSecAlt">Fotoğraf (JPEG/PNG/WebP) veya PDF · en fazla 6 MB</span>
+          </label>
+          <p className="dip">Fatura yalnız bu simülasyon için okunur: abone grubu, aylık tüketim ve il
+            otomatik doldurulur, güç tüketiminizi karşılayacak şekilde ayarlanır. Fiyatlar abone
+            grubunuzun güncel EPDK tarifesinden gelir.</p>
+          <p className="dip fatura-hata" id="faturaHata" hidden></p>
+        </div>
+      </div>
+
       <div className="uydu-perde" id="uyduPerde">
         <div className="uydu-kutu">
           <div className="uydu-ust">
@@ -1034,6 +1209,21 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           <p className="dip" id="grafik25Not"></p>
         </div>
         <div className="cevre" id="cevre"></div>
+        <div className="saatlik-kart" id="saatlikKart">
+          <h3>Saatlik tüketim veriniz var mı? Gerçek öz tüketiminizi hesaplayalım</h3>
+          <p className="dip">Dağıtım şirketinizden ya da EPİAŞ&apos;tan aldığınız saatlik tüketim dökümünü
+            (CSV/XLSX, en fazla 5 MB) yükleyin; öz tüketim ve yıllık fayda, standart profil yerine
+            gerçek verinizle hesaplanır ve karşılaştırmalı görünür.</p>
+          <div className="saatlik-sec">
+            <label className="gt-btn small line">
+              Saatlik Dosya Seç
+              <input type="file" id="saatlikDosya" hidden
+                accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            </label>
+            <span className="dip" id="saatlikDurum"></span>
+          </div>
+          <div className="senaryo-kiyas" id="saatlikKiyas" hidden></div>
+        </div>
         <div className="karne-cta">
           <button className="gt-btn small" id="raporBtn" type="button">PDF Raporu İndir</button>
           <a className="gt-btn small line" href="/hesaplama">Detaylı Hesap</a>
