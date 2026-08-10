@@ -1,37 +1,17 @@
 import type { Metadata } from "next";
 import Destek from "@/components/Destek";
+import DesteklerListe from "@/components/DesteklerListe";
 import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
 import destekVeri from "@/data/destekler.json";
-import { Ev, Fabrika, Filiz, Kalkan, Ok, SunDolu } from "@/components/Icons";
-import { Aciklamali } from "@/components/Terim";
+import { Kalkan, Ok, SunDolu } from "@/components/Icons";
 
 export const metadata: Metadata = {
   title: "Destekler — Devlet ve Banka GES Destekleri",
   description:
     "KOSGEB, IPARD/TKDK, YTB ve banka GES kredileri bir arada. Programların yürürlük durumu her gün kontrol edilir ve güncellenir.",
   alternates: { canonical: "/destekler" },
-};
-
-const TUR_BASLIK: Record<string, string> = {
-  devlet: "Devlet Destekleri",
-  banka: "Banka Kredileri",
-  leasing: "Leasing",
-  esco: "ESCO / Yatırımsız Modeller",
-};
-
-const DURUM: Record<string, { etiket: string; sinif: string }> = {
-  aktif: { etiket: "Aktif", sinif: "aktif" },
-  donemsel: { etiket: "Çağrı dönemine bağlı", sinif: "donemsel" },
-  "teyit-bekliyor": { etiket: "Teyit bekliyor", sinif: "teyit" },
-  pasif: { etiket: "Yürürlükte değil", sinif: "pasif" },
-};
-
-const KITLE: Record<string, { etiket: string; Ikon: typeof Ev }> = {
-  konut: { etiket: "Konut", Ikon: Ev },
-  isletme: { etiket: "İşletme", Ikon: Fabrika },
-  tarimsal: { etiket: "Tarımsal", Ikon: Filiz },
 };
 
 const tarihTr = (iso: string) =>
@@ -42,14 +22,6 @@ const tarihTr = (iso: string) =>
   });
 
 export default function Destekler() {
-  const gruplar = Object.keys(TUR_BASLIK)
-    .map((tur) => ({
-      tur,
-      baslik: TUR_BASLIK[tur],
-      kayitlar: destekVeri.destekler.filter((d) => d.tur === tur),
-    }))
-    .filter((g) => g.kayitlar.length > 0);
-
   return (
     <div className="wrap">
       <SiteHead aktif="destekler" />
@@ -84,42 +56,7 @@ export default function Destekler() {
         </div>
       </section>
 
-      {gruplar.map((g) => (
-        <section key={g.tur} className="dk-bolum" aria-label={g.baslik}>
-          <h2>{g.baslik}</h2>
-          <div className="dk-grid">
-            {g.kayitlar.map((d) => {
-              const durum = DURUM[d.durum] ?? DURUM["teyit-bekliyor"];
-              return (
-                <article key={d.id} className={`dk-kart ${d.durum === "pasif" ? "soluk" : ""}`}>
-                  <div className="dk-ust">
-                    <span className="dk-kurum">{d.kurum}</span>
-                    <span className={`dk-durum ${durum.sinif}`}>{durum.etiket}</span>
-                  </div>
-                  <b>{d.ad}</b>
-                  <p><Aciklamali>{d.ozet}</Aciklamali></p>
-                  {"not" in d && d.not && <p className="dk-not"><Aciklamali>{d.not}</Aciklamali></p>}
-                  <div className="dk-alt">
-                    <span className="dk-kitle">
-                      {d.kitle.map((k) => {
-                        const kit = KITLE[k];
-                        return kit ? (
-                          <span key={k}>
-                            <kit.Ikon className="i" /> {kit.etiket}
-                          </span>
-                        ) : null;
-                      })}
-                    </span>
-                    <a href={d.kaynakUrl} target="_blank" rel="noopener noreferrer">
-                      Kaynak <Ok className="i" />
-                    </a>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+      <DesteklerListe />
 
       <section className="dk-cta">
         <Kalkan className="i" />
