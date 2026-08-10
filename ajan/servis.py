@@ -23,7 +23,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 import gemini
-from asistan import (ARACLAR, GUVENLI_YANIT, SISTEM, _denetle, _istemci, _kb_yukle,
+from asistan import (ARACLAR, EPDK_DAGITIM, EPDK_ENERJI, GUVENLI_YANIT, ILLER, SISTEM,
+                     _denetle, _istemci, _kb_yukle, _maliyet_kw,
                      fatura_analizi, fizibilite, lead_ozeti)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -1009,6 +1010,378 @@ async def teklif_degerlendir(istek: Request):
                             status_code=502)
 
 
+# ---- Saatlik tüketim analizi (POST /saatlik-analiz) — tamamen deterministik, AI yok ----
+# Saatlik tüketim dökümünden (EPİAŞ/dağıtım şirketi CSV/XLSX) öz tüketim ve GES boyutlandırma.
+
+B64_SINIR = 7_000_000  # base64 karakter (≈ 5 MB dosya)
+SATIR_SINIRI = 400_000
+AY_GUN = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+_TARIH_ANAHTAR = ("tarih", "date")
+_SAAT_ANAHTAR = ("saat", "hour", "zaman", "time")
+_KWH_ANAHTAR = ("tüketim", "tuketim", "kwh", "aktif", "çekiş", "cekis", "consumption", "enerji")
+_TARIH_SAAT_BICIM = ["%d.%m.%Y %H:%M", "%d.%m.%Y %H:%M:%S", "%Y-%m-%d %H:%M",
+                     "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S",
+                     "%d/%m/%Y %H:%M", "%d-%m-%Y %H:%M"]
+_GUN_BICIM = ["%d.%m.%Y", "%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"]
+
+
+def _gun_uzunlugu(ay: int) -> float:
+    """Ay ortası gün uzunluğu (saat), 38,5°K (Türkiye orta enlemi) için basit geometri."""
+    import math
+    gun_no = sum(AY_GUN[:ay - 1]) + AY_GUN[ay - 1] // 2
+    dekl = math.radians(23.45) * math.sin(math.radians(360.0 * (284 + gun_no) / 365.0))
+    cos_h = -math.tan(math.radians(38.5)) * math.tan(dekl)
+    return 2.0 * math.degrees(math.acos(max(-1.0, min(1.0, cos_h)))) / 15.0
+
+
+def _uretim_profili() -> dict:
+    """(ay, saat) → yıllık üretimin o ay-saatteki GÜNLÜK payı.
+    Aylık enerji ağırlığı gün uzunluğunun karesiyle, gün içi dağılım öğle (13:00,
+    UTC+3) tepe noktalı sinüsle orantılı. Amaç öz tüketim oranını makul yaklaşıklıkla
+    bulmak; saha simülasyonu değildir."""
+    import math
+    ay_agirlik = [AY_GUN[m - 1] * _gun_uzunlugu(m) ** 2 for m in range(1, 13)]
+    toplam = sum(ay_agirlik)
+    profil = {}
+    for m in range(1, 13):
+        gunluk_pay = ay_agirlik[m - 1] / toplam / AY_GUN[m - 1]
+        d = _gun_uzunlugu(m)
+        dogus, batis = 13.0 - d / 2.0, 13.0 + d / 2.0
+        hw = {}
+        for h in range(24):
+            t = h + 0.5
+            if dogus < t < batis:
+                hw[h] = math.sin(math.pi * (t - dogus) / d)
+        norm = sum(hw.values())
+        for h, w in hw.items():
+            profil[(m, h)] = gunluk_pay * w / norm
+    return profil
+
+
+_PROFIL = _uretim_profili()
+
+
+def _hucre_sayi(v):
+    """Hücreden sayı: ondalık virgül ve binlik nokta toleranslı."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    s = str(v or "").strip().replace("\xa0", "").replace(" ", "")
+    if not s:
+        return None
+    if "," in s:
+        s = s.replace(".", "").replace(",", ".")
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+def _gun_coz(v):
+    if isinstance(v, datetime.datetime):
+        return v.date()
+    if isinstance(v, datetime.date):
+        return v
+    s = str(v or "").strip()
+    for b in _GUN_BICIM:
+        try:
+            return datetime.datetime.strptime(s, b).date()
+        except ValueError:
+            pass
+    return None
+
+
+def _saat_coz(v):
+    """Saat hücresi: 13, 13.0, '13', '13:00', '13:00 - 14:00', time/datetime nesnesi."""
+    if isinstance(v, datetime.datetime) or isinstance(v, datetime.time):
+        return v.hour
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return int(v) if float(v) == int(v) and 0 <= v <= 23 else None
+    m = re.match(r"^(\d{1,2})(?::\d{2})?", str(v or "").strip())
+    if m:
+        h = int(m.group(1))
+        return h if 0 <= h <= 23 else None
+    return None
+
+
+def _tarih_saat_coz(v):
+    """Birleşik 'tarih saat' hücresi → (gün, saat) ya da None."""
+    if isinstance(v, datetime.datetime):
+        return v.date(), v.hour
+    s = str(v or "").strip()
+    for b in _TARIH_SAAT_BICIM:
+        try:
+            dt = datetime.datetime.strptime(s, b)
+            return dt.date(), dt.hour
+        except ValueError:
+            pass
+    return None
+
+
+def _satirlar_oku(veri: bytes, tip: str):
+    """Dosya baytlarını hücre satırlarına çevirir (xlsx: openpyxl, csv: ayraç algılamalı)."""
+    if tip == "xlsx":
+        from io import BytesIO
+        import openpyxl
+        wb = openpyxl.load_workbook(BytesIO(veri), read_only=True, data_only=True)
+        satirlar = []
+        for row in wb.worksheets[0].iter_rows(values_only=True):
+            satirlar.append(list(row))
+            if len(satirlar) >= SATIR_SINIRI:
+                break
+        wb.close()
+        return satirlar
+    metin = None
+    for kodek in ("utf-8-sig", "cp1254", "latin-1"):
+        try:
+            metin = veri.decode(kodek)
+            break
+        except UnicodeDecodeError:
+            continue
+    if metin is None:
+        raise ValueError("Dosya metin olarak okunamadı; CSV veya XLSX yükleyin.")
+    import csv
+    ham = [s for s in metin.splitlines() if s.strip()][:SATIR_SINIRI]
+    ornek = "\n".join(ham[:5])
+    ayrac = max((";", ",", "\t"), key=ornek.count)
+    return [satir for satir in csv.reader(ham, delimiter=ayrac)]
+
+
+def _kolonlari_bul(satirlar):
+    """Başlık satırından (tarih, saat, kWh) kolon indekslerini bulur.
+    Dönüş: (veri_baslangic, tarih_i, saat_i, kwh_i); saat_i None ise tarih birleşik."""
+    for i, satir in enumerate(satirlar[:10]):
+        alt = [str(h or "").strip().lower() for h in satir]
+        tarih_i = saat_i = kwh_i = None
+        birlesik = False
+        for j, h in enumerate(alt):
+            if not h:
+                continue
+            if tarih_i is None and any(a in h for a in _TARIH_ANAHTAR):
+                tarih_i = j
+                birlesik = any(a in h for a in _SAAT_ANAHTAR)
+            elif saat_i is None and any(a in h for a in _SAAT_ANAHTAR):
+                saat_i = j
+            elif kwh_i is None and any(a in h for a in _KWH_ANAHTAR):
+                kwh_i = j
+        if tarih_i is not None and kwh_i is not None:
+            return i + 1, tarih_i, (None if birlesik else saat_i), kwh_i
+    # Başlık yok: ilk çözülebilen veri satırından çıkar (serbest format)
+    for i, satir in enumerate(satirlar[:10]):
+        if len(satir) < 2:
+            continue
+        ayrik = (len(satir) >= 3 and _gun_coz(satir[0]) is not None
+                 and _saat_coz(satir[1]) is not None
+                 and not isinstance(satir[0], datetime.datetime))
+        birlesik = _tarih_saat_coz(satir[0]) is not None
+        if not (ayrik or birlesik):
+            continue
+        ilk_veri = 2 if ayrik else 1
+        for j in range(ilk_veri, len(satir)):
+            if _hucre_sayi(satir[j]) is not None:
+                return i, 0, (1 if ayrik else None), j
+    raise ValueError("Dosyada tarih-saat ve kWh kolonu bulunamadı; saatlik tüketim "
+                     "dökümünü (tarih, saat, tüketim kWh kolonlarıyla) yükleyin.")
+
+
+def _seri_cikar(satirlar):
+    """Satırlardan {(gün, saat): kWh} serisi; çeyrek saatlik veriler saate toplanır."""
+    veri_bas, tarih_i, saat_i, kwh_i = _kolonlari_bul(satirlar)
+    seri = {}
+    for satir in satirlar[veri_bas:]:
+        if len(satir) <= max(tarih_i, kwh_i, saat_i or 0):
+            continue
+        if saat_i is None:
+            zaman = _tarih_saat_coz(satir[tarih_i])
+            if zaman is None:
+                continue
+            gun, saat = zaman
+        else:
+            gun, saat = _gun_coz(satir[tarih_i]), _saat_coz(satir[saat_i])
+            if gun is None or saat is None:
+                continue
+        kwh = _hucre_sayi(satir[kwh_i])
+        if kwh is None or kwh < 0:
+            continue
+        seri[(gun, saat)] = seri.get((gun, saat), 0.0) + kwh
+    if not seri:
+        raise ValueError("Dosyada tarih-saat ve kWh kolonu bulunamadı; saatlik tüketim "
+                         "dökümünü (tarih, saat, tüketim kWh kolonlarıyla) yükleyin.")
+    return seri
+
+
+def _il_anahtar(il: str) -> str:
+    return (str(il or "").replace("İ", "i").replace("I", "i").lower()
+            .replace("ı", "i").replace("ş", "s").replace("ğ", "g")
+            .replace("ü", "u").replace("ö", "o").replace("ç", "c").replace("̇", "").strip())
+
+
+@app.post("/saatlik-analiz")
+async def saatlik_analiz(istek: Request):
+    """Saatlik tüketim dökümünden öz tüketim çakıştırmalı GES boyutlandırma analizi."""
+    _uye_aktivite_kaydet(istek, "saatlik")
+    ip = _gercek_ip(istek)
+    bakim = _bakimda()
+    if bakim:
+        return bakim
+    if _sinirli_mi(ip):
+        return JSONResponse({"hata": "Saatlik sınır aşıldı; lütfen daha sonra deneyin."},
+                            status_code=429)
+    ham = await istek.body()
+    if len(ham) > 13_000_000:
+        return JSONResponse({"hata": "Dosya çok büyük; en fazla 5 MB'lık bir döküm yükleyin."},
+                            status_code=413)
+    try:
+        govde = json.loads(ham)
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek gövdesi."}, status_code=400)
+
+    dosya = govde.get("dosya") or {}
+    b64 = dosya.get("b64")
+    if not isinstance(b64, str) or not b64.strip():
+        return JSONResponse({"hata": "Dosya içeriği (b64) eksik; CSV veya XLSX yükleyin."},
+                            status_code=400)
+    if len(b64) > B64_SINIR:
+        return JSONResponse({"hata": "Dosya çok büyük; en fazla 5 MB'lık bir döküm yükleyin."},
+                            status_code=400)
+    ad = str(dosya.get("ad", "")).lower()
+    tip = str(dosya.get("tip", "")).lower() or ("xlsx" if ad.endswith(".xlsx") else "csv")
+    if tip not in ("xlsx", "csv"):
+        return JSONResponse({"hata": "Desteklenmeyen dosya tipi; CSV veya XLSX yükleyin."},
+                            status_code=400)
+    import base64
+    try:
+        veri = base64.b64decode(b64, validate=False)
+        satirlar = _satirlar_oku(veri, tip)
+        seri = _seri_cikar(satirlar)
+    except ValueError as e:
+        mesaj = str(e)
+        if "kolonu bulunamadı" not in mesaj and "okunamadı" not in mesaj:
+            mesaj = "Dosya çözümlenemedi; geçerli bir CSV veya XLSX yükleyin."
+        return JSONResponse({"hata": mesaj}, status_code=400)
+    except Exception as e:
+        print(f"HATA saatlik-analiz okuma ({type(e).__name__}): {str(e)[:200]}", flush=True)
+        return JSONResponse({"hata": "Dosya çözümlenemedi; geçerli bir CSV veya XLSX yükleyin."},
+                            status_code=400)
+
+    gunler = {g for g, _ in seri}
+    if len(gunler) < 7:
+        return JSONResponse({"hata": f"En az 7 günlük saatlik veri gerekli; dosyada "
+                                     f"{len(gunler)} gün bulundu."}, status_code=400)
+
+    # --- özet ---
+    toplam = sum(seri.values())
+    gun_sayisi = len(gunler)
+    tepe_kw = max(seri.values())
+    gunduz = [kwh for (g, s), kwh in seri.items() if 7 <= s < 19]
+    gunduz_toplam = sum(gunduz)
+    gunduz_orani = gunduz_toplam / toplam if toplam else 0.0
+    gunduz_ort_kw = gunduz_toplam / len(gunduz) if gunduz else 0.0
+    if gunduz_ort_kw <= 0:
+        return JSONResponse({"hata": "Gündüz (07-19) tüketimi çözümlenemedi; dosyadaki kWh "
+                                     "kolonunu kontrol edin."}, status_code=400)
+
+    # --- il verimi ---
+    il = str(govde.get("il", ""))
+    verim = ILLER.get(_il_anahtar(il))
+    il_notu = None
+    if verim is None:
+        verim = 1450
+        il_notu = (f"'{il or 'il belirtilmedi'}' il listesinde bulunamadı; Türkiye ortalaması "
+                   "1450 kWh/kWp/yıl kullanıldı.")
+
+    # --- birim fiyatlar (verilmediyse EPDK sanayi OG varsayılanı) ---
+    def _pozitif(anahtar):
+        try:
+            f = float(govde.get(anahtar))
+            return f if 0 < f < 50 else None
+        except (TypeError, ValueError):
+            return None
+    aktif = _pozitif("aktif_tl_kwh")
+    dagitim = _pozitif("dagitim_tl_kwh")
+    fiyat_varsayilan = aktif is None or dagitim is None
+    if aktif is None:
+        aktif = EPDK_ENERJI["sanayi_og"]
+    if dagitim is None:
+        dagitim = EPDK_DAGITIM["sanayi_og_tek"]
+    # Fazla üretim: saatlik mahsupta abone grubu ÇIPLAK aktif enerji bedeli (muhafazakâr)
+    satis_birim = min(aktif, EPDK_ENERJI["sanayi_og"])
+
+    # --- senaryolar: gündüz ortalama yükün %50/%75/%100/%125'i ---
+    senaryolar = []
+    for oran in (0.5, 0.75, 1.0, 1.25):
+        kwp = round(gunduz_ort_kw * oran, 1)
+        if kwp < 0.5:
+            continue
+        uret_top, oz_top = 0.0, 0.0
+        for (gun, saat), kwh in seri.items():
+            u = kwp * verim * _PROFIL.get((gun.month, saat), 0.0)
+            uret_top += u
+            oz_top += min(u, kwh)
+        oz_oran = oz_top / uret_top if uret_top else 0.0
+        yillik_uretim = kwp * verim
+        oz_kwh = yillik_uretim * oz_oran
+        fazla_kwh = yillik_uretim - oz_kwh
+        tasarruf = oz_kwh * (aktif + dagitim)
+        satis = fazla_kwh * satis_birim
+        yatirim = kwp * _maliyet_kw(kwp)
+        fayda = tasarruf + satis
+        senaryolar.append({
+            "kwp": kwp,
+            "yillikUretimKwh": round(yillik_uretim),
+            "ozTuketimOrani": round(oz_oran, 3),
+            "ozTuketimKwh": round(oz_kwh),
+            "fazlaKwh": round(fazla_kwh),
+            "yillikTasarrufTl": round(tasarruf),
+            "yillikSatisTl": round(satis),
+            "yatirimTl": round(yatirim),
+            "geriOdemeYil": round(yatirim / fayda, 1) if fayda > 0 else None,
+        })
+
+    ilk, son = min(gunler), max(gunler)
+    notlar = [
+        f"Hesap tarihi {datetime.date.today().isoformat()}; veri aralığı "
+        f"{ilk.isoformat()} – {son.isoformat()} ({gun_sayisi} gün).",
+        f"İl verimi: {verim} kWh/kWp/yıl" + (f" ({il})." if not il_notu else "."),
+        "Üretim eğrisi basit güneş geometrisiyle kuruldu: 38,5°K enlemi için ay ortası gün "
+        "uzunluğu, öğle (13:00) tepe noktalı sinüs profili; aylık enerji ağırlığı gün "
+        "uzunluğunun karesiyle orantılı. Saha simülasyonu değildir, öz tüketim oranı "
+        "yaklaşıktır.",
+        "Öz tüketim oranı yüklenen dönemin saatlik çakıştırmasından bulunup yıla genellendi; "
+        "mevsimsel tüketim farkları sapma yaratabilir.",
+        "Kurulu güç adayları gündüz (07-19) ortalama yükün %50/%75/%100/%125'i; kW ≈ kWp "
+        "kabul edildi (DC/AC ≈ 1).",
+        "Fazla üretim, 1 Mayıs 2026 saatlik mahsuplaşma kuralına uygun muhafazakâr birimle "
+        f"(abone grubu çıplak aktif enerji bedeli, {round(satis_birim, 4)} TL/kWh) "
+        "değerlendi; PTF/YEKDEM üst senaryoları dahil edilmedi.",
+        "Yatırım maliyeti güncel anahtar teslim ₺/kW bandından (Ağu 2026, OG ölçeği); "
+        "kesin tutar için teklif alın. Tüm tutarlar vergiler hariçtir.",
+    ]
+    if fiyat_varsayilan:
+        notlar.append("Birim fiyat verilmediği için EPDK 4 Nisan 2026 sanayi OG tarifesi "
+                      f"varsayıldı (aktif {round(EPDK_ENERJI['sanayi_og'], 4)} + dağıtım "
+                      f"{round(EPDK_DAGITIM['sanayi_og_tek'], 4)} TL/kWh, vergiler hariç); "
+                      "faturanızdaki birim fiyatlarla sonuç değişir.")
+    if il_notu:
+        notlar.append(il_notu)
+
+    return {
+        "ozet": {
+            "toplamKwh": round(toplam),
+            "gunSayisi": gun_sayisi,
+            "aylikOrtKwh": round(toplam / gun_sayisi * 30.44),
+            "tepeKw": round(tepe_kw, 1),
+            "gunduzOrani": round(gunduz_orani, 3),
+        },
+        "senaryolar": senaryolar,
+        "notlar": notlar,
+    }
+
+
 # ---- Yönetim paneli uçları (web'deki /yonetim sayfaları bu API'yi kullanır) ----
 # Koruma: paylaşılan gizli anahtar başlığı; anahtar yalnız web sunucusunda ve burada.
 YONETIM_ANAHTAR = os.environ.get("YONETIM_ANAHTAR", "")
@@ -1466,6 +1839,7 @@ AKTIVITE_ADI = {
     "teklif": "Teklif değerlendirdi",
     "police": "Poliçe analizi yaptı",
     "mevzuat": "Mevzuat araması yaptı",
+    "saatlik": "Saatlik tüketim analizi yaptı",
     "lead": "Danışmanlık talebi bıraktı",
     "giris": "Giriş yaptı",
     "kayit": "Hesap oluşturdu",

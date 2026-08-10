@@ -12,15 +12,15 @@ import asistan
 
 def test_iller_senkron():
     assert len(asistan.ILLER) == 81
-    assert asistan.ILLER["rize"] == 1100
-    assert asistan.ILLER["sanliurfa"] == 1650
-    assert asistan.ILLER["istanbul"] == 1300
+    assert asistan.ILLER["rize"] == 1033
+    assert asistan.ILLER["sanliurfa"] == 1583
+    assert asistan.ILLER["istanbul"] == 1375
 
 
 def test_il_normalizasyon():
-    assert asistan.fizibilite("konut", 2000, "İSTANBUL")["il_verimi_kwh_kw"] == 1300
-    assert asistan.fizibilite("konut", 2000, "Şanlıurfa")["il_verimi_kwh_kw"] == 1650
-    assert asistan.fizibilite("konut", 2000, "Rize")["il_verimi_kwh_kw"] == 1100
+    assert asistan.fizibilite("konut", 2000, "İSTANBUL")["il_verimi_kwh_kw"] == 1375
+    assert asistan.fizibilite("konut", 2000, "Şanlıurfa")["il_verimi_kwh_kw"] == 1583
+    assert asistan.fizibilite("konut", 2000, "Rize")["il_verimi_kwh_kw"] == 1033
 
 
 def test_bilinmeyen_il_acik_uyari():

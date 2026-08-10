@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import UyeCikis from "./UyeCikis";
 import {
   ArtiYalin, Bilgi, Cop, Dosya, DosyaOnay, Gonder, Grafik, Hedef, Kalkan,
-  Kilit, Kullanici, Ok, Pano, Simsek, Sohbet, Sun, Takvim, Zil,
+  Kilit, Kullanici, Ok, Pano, Saat, Simsek, Sohbet, Sun, Takvim, Zil,
 } from "./Icons";
 
 /** /hesap üye paneli: 4 bölüm — genel bakış, konuşmalar, talepler, hesap bilgileri. */
@@ -42,6 +42,7 @@ const DURUM_ETIKET: Record<Talep["durum"], [string, string]> = {
 const ARACLAR: Array<[string, string, string, React.ReactNode]> = [
   ["/simulasyon", "Güneş Sahası Simülasyonu", "İlinize göre üretim, mahsup ve geri ödeme", <Sun key="s" className="i" />],
   ["/fatura-analizi", "Fatura Analizi", "Faturanızdan GES planınıza", <Dosya key="f" className="i" />],
+  ["/saatlik-analiz", "Saatlik Tüketim Analizi", "Saatlik dökümünüzle hassas GES simülasyonu", <Saat key="sa" className="i" />],
   ["/teklif-analizi", "Teklif Değerlendirme", "Elinizdeki teklif piyasaya uygun mu", <DosyaOnay key="t" className="i" />],
   ["/police-analizi", "Poliçe Analizi", "GES sigortanız yeterli mi", <Kalkan key="p" className="i" />],
   ["/asistan", "GES Asistanı", "Güncel mevzuatla soru-cevap", <Sohbet key="a" className="i" />],

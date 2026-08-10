@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import FaturaSihirbazi from "@/components/FaturaSihirbazi";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
@@ -41,6 +42,11 @@ export default async function FaturaAnalizi() {
           <FaturaSihirbazi />
         </section>
       </div>
+
+      <p className="fs-not" style={{ margin: "14px 0 0" }}>
+        Saatlik tüketim dökümünüz varsa daha hassas analiz için{" "}
+        <Link href="/saatlik-analiz">Saatlik Tüketim Analizi</Link>&apos;ni kullanın.
+      </p>
 
       </main>
       <SiteFoot yol="/fatura-analizi" notu="Sonuçlar ön fizibilite niteliğindedir; bağlayıcı görüş değildir." />
