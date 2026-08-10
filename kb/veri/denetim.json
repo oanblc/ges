@@ -1,61 +1,59 @@
 {
-  "guncelleme": "2026-08-08",
+  "guncelleme": "2026-08-10",
   "kaynak": "ajan/sayfa_denetim.py — sayfa içeriği bilgi tabanıyla günlük karşılaştırılır",
   "sayfalar": [
     {
       "yol": "/",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/asistan",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-08",
-      "bulgular": [
-        "Canlı piyasa kutusunda birim hatası: 'YEKDEM (2026-06) 1.084 ₺/kWh' ESKİ/YANLIŞ → DOĞRU: 1.084 ₺/MWh (= 1,084 ₺/kWh). Bilgi tabanında YEKDEM birim maliyetleri ₺/MWh cinsindendir (2026 tahmini ~434 ₺/MWh; aylık bant 163–1.038 ₺/MWh) ve aynı rakam /blog/saatlik-mahsuplasma-rehberi sayfasında doğru şekilde '1.084 ₺/MWh (Haziran 2026)' olarak verilmiştir; sayfalar arası tutarsızlık mevcut."
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-10",
+      "bulgular": []
     },
     {
       "yol": "/surec",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/hesaplama",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/destekler",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/rehber",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/kurulum-sonrasi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/blog",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     },
     {
       "yol": "/blog/saatlik-mahsuplasma-rehberi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-08",
+      "sonKontrol": "2026-08-10",
       "bulgular": []
     }
   ]
