@@ -13,6 +13,7 @@ const IKONLAR: Record<string, React.ReactNode> = {
   bakis: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><rect x="3" y="3" width="8" height="8" rx="2" /><rect x="13" y="3" width="8" height="8" rx="2" /><rect x="3" y="13" width="8" height="8" rx="2" /><rect x="13" y="13" width="8" height="8" rx="2" /></svg>),
   talep: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 8.5 17.5 13 15 10.5" /></svg>),
   sohbet: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><path d="M20 12.5a7.5 7.5 0 0 1-11 6.6L4 20.5l1.4-4.9A7.5 7.5 0 1 1 20 12.5z" /></svg>),
+  uyeler: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><circle cx="9" cy="8" r="3.2" /><path d="M3.5 20a5.5 5.5 0 0 1 11 0" /><path d="M16 5.2a3.2 3.2 0 0 1 0 5.8M17 20a5.5 5.5 0 0 0-3-4.9" /></svg>),
   onay: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.5 5 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6L18.5 5a2 2 0 0 0-1.8-1H7.3a2 2 0 0 0-1.8 1Z" /></svg>),
   destek: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><circle cx="12" cy="10" r="4" /><path d="M12 2v2M4.9 5.6l1.4 1.4M2 12h2M20 12h2M17.7 7l1.4-1.4M8 21h8M12 16v5" /></svg>),
   sss: (<svg width="18" height="18" viewBox="0 0 24 24" {...cizgi}><circle cx="12" cy="12" r="9" /><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4M12 17.5v.5" /></svg>),
@@ -23,6 +24,7 @@ const IKONLAR: Record<string, React.ReactNode> = {
 
 const SEKMELER: Array<[string, string, string]> = [
   ["/yonetim", "Genel Bakış", "bakis"],
+  ["/yonetim/uyeler", "Üyeler", "uyeler"],
   ["/yonetim/talepler", "Talepler", "talep"],
   ["/yonetim/sohbetler", "Sohbetler", "sohbet"],
   ["/yonetim/onay", "Onay Kutusu", "onay"],

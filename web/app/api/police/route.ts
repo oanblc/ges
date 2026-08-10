@@ -5,7 +5,8 @@ const SERVIS = process.env.ASISTAN_SERVIS_URL ?? "http://127.0.0.1:8756";
 /** Poliçe değerlendirme ucu — asistan servisine düz JSON proxy'si. */
 export async function POST(req: Request) {
   const uyeDepo = await cookies();
-  if (!uyeCoz(uyeDepo.get("gd_uye")?.value)) {
+  const uyeBilgi = uyeCoz(uyeDepo.get("gd_uye")?.value);
+  if (!uyeBilgi) {
     return Response.json({ hata: "Bu araç üyelere özeldir; lütfen giriş yapın." }, { status: 401 });
   }
   const ip =
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
   try {
     res = await fetch(`${SERVIS}/police-degerlendir`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip },
+      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip, "x-uye": uyeBilgi.eposta ?? "" },
       body: await req.text(),
     });
   } catch {

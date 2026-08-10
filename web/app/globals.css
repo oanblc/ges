@@ -746,6 +746,39 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .teklif-rapor table{border-collapse:collapse; margin:10px 0; font-size:13px}
 .teklif-rapor td,.teklif-rapor th{border:1px solid #E9ECE5; padding:7px 11px; text-align:left}
 
+/* ---------- yönetim: üyeler ---------- */
+.uyeler-ozet{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px}
+.uyeler-kart{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:3px}
+.uyeler-kart b{font-size:24px; font-family:var(--font-epilogue),sans-serif; color:var(--title)}
+.uyeler-kart span{font-size:12px; color:var(--text)}
+.uyeler-kart.vurgu{background:linear-gradient(150deg,#0A6B5C,var(--theme)); border:none}
+.uyeler-kart.vurgu b{color:#FFE175}
+.uyeler-kart.vurgu span{color:#E6F4EF}
+.uyeler-govde{display:grid; grid-template-columns:1fr 320px; gap:16px; align-items:start}
+.uyeler-arac{display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
+.uyeler-ara{flex:1; min-width:180px; border:1px solid var(--border); border-radius:11px; padding:9px 13px; font:inherit; font-size:14px; background:var(--surface); color:var(--title)}
+.uyeler-ara:focus{outline:none; border-color:var(--theme)}
+.uyeler-temizle{border:1px solid var(--border); background:var(--surface); border-radius:999px; padding:6px 12px; font:inherit; font-size:12px; color:var(--text); cursor:pointer}
+.uyeler-tablo{width:100%; border-collapse:collapse; font-size:13.5px}
+.uyeler-tablo th{text-align:left; text-transform:uppercase; font-size:11px; letter-spacing:.05em; color:var(--text); border-bottom:1px solid var(--border); padding:8px 12px}
+.uyeler-tablo td{padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:middle}
+.uyeler-tablo tbody tr{cursor:pointer}
+.uyeler-tablo tbody tr:hover{background:#F3F5F0}
+.uyeler-tablo tbody tr.secili{background:#EAF3EC}
+.uyeler-tablo td b{color:var(--title); display:block}
+.uyeler-eposta{font-size:12px; color:var(--text)}
+.uyeler-sonakt{display:block; font-size:11px; color:var(--theme)}
+.uyeler-sil{border:1px solid var(--border); background:var(--surface); color:#A03535; border-radius:8px; padding:5px 11px; font:inherit; font-size:12px; cursor:pointer}
+.uyeler-sil:hover{border-color:#A03535}
+.uyeler-akis-blok{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 18px; position:sticky; top:16px}
+.uyeler-akis-blok h2{font-size:14px; margin:0 0 12px; color:var(--title)}
+.uyeler-akis{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto}
+.uyeler-akis li{display:flex; flex-direction:column; gap:2px; padding-bottom:9px; border-bottom:1px solid var(--border); font-size:13px}
+.akis-tur{color:var(--title); font-weight:600}
+.akis-uye{font-size:11.5px; color:var(--text)}
+.akis-zaman{font-size:11px; color:var(--text)}
+@media(max-width:860px){.uyeler-govde{grid-template-columns:1fr}.uyeler-akis-blok{position:static}}
+
 /* ---------- üyelik ---------- */
 .uye-kilit{max-width:520px; margin:26px auto; background:var(--surface); border:1px solid var(--border);
   border-radius:18px; padding:38px 34px; text-align:center; display:flex; flex-direction:column;

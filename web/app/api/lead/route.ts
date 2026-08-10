@@ -1,12 +1,15 @@
+import { cookies } from "next/headers";
+import { uyeCoz } from "@/lib/uye";
 const SERVIS = process.env.ASISTAN_SERVIS_URL ?? "http://127.0.0.1:8756";
 
 export async function POST(req: Request) {
+  const uyeVar = uyeCoz((await cookies()).get("gd_uye")?.value);
   const ip =
     req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "yerel";
   try {
     const res = await fetch(`${SERVIS}/lead`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip },
+      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip, "x-uye": uyeVar?.eposta ?? "" },
       body: await req.text(),
     });
     return Response.json(await res.json(), { status: res.status });

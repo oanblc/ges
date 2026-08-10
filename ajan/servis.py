@@ -476,6 +476,7 @@ def saglik():
 
 @app.post("/sohbet")
 async def sohbet_ucu(istek: Request):
+    _uye_aktivite_kaydet(istek, "sohbet")
     ip = _gercek_ip(istek)
     bakim = _bakimda()
     if bakim:
@@ -639,6 +640,7 @@ MEVZUAT_ARACI = [{
 
 @app.post("/mevzuat-soru")
 async def mevzuat_soru(istek: Request):
+    _uye_aktivite_kaydet(istek, "mevzuat")
     """Mevzuat sayfasının AI araması — yalnız mevzuat kayıtlarını gören ucuz model (Haiku)."""
     ip = _gercek_ip(istek)
     bakim = _bakimda()
@@ -704,6 +706,7 @@ AYIKLAMA_ARACI = [{
 
 @app.post("/fatura-ayikla")
 async def fatura_ayikla(istek: Request):
+    _uye_aktivite_kaydet(istek, "fatura")
     """Fatura görseli/PDF'inden alanları okur — fatura sihirbazının ilk adımı."""
     ip = _gercek_ip(istek)
     bakim = _bakimda()
@@ -774,6 +777,7 @@ POLICE_ARACI = [{
 
 @app.post("/police-degerlendir")
 async def police_degerlendir(istek: Request):
+    _uye_aktivite_kaydet(istek, "police")
     """Sigorta poliçesini okur, GES kapsamı açısından kb ile denetimli değerlendirir."""
     ip = _gercek_ip(istek)
     bakim = _bakimda()
@@ -898,6 +902,7 @@ TEKLIF_ARACI = [{
 
 @app.post("/teklif-degerlendir")
 async def teklif_degerlendir(istek: Request):
+    _uye_aktivite_kaydet(istek, "teklif")
     """Teklif görseli/PDF'ini okur, kb bantlarıyla tarafsız değerlendirme üretir."""
     ip = _gercek_ip(istek)
     bakim = _bakimda()
@@ -1443,6 +1448,52 @@ def _uye_dosya(eposta: str) -> Path:
     return UYE_DIZIN / (hashlib.sha256(eposta.encode()).hexdigest()[:24] + ".json")
 
 
+AKTIVITE_DIZIN = LEAD_DIZIN.parent / "aktivite"
+AKTIVITE_ADI = {
+    "sohbet": "Asistana soru sordu",
+    "fatura": "Fatura analizi yaptı",
+    "teklif": "Teklif değerlendirdi",
+    "police": "Poliçe analizi yaptı",
+    "mevzuat": "Mevzuat araması yaptı",
+    "lead": "Danışmanlık talebi bıraktı",
+    "giris": "Giriş yaptı",
+    "kayit": "Hesap oluşturdu",
+}
+
+
+def _aktivite_yaz(eposta: str, tur: str) -> None:
+    """Üye aktivitesini günlük JSONL'e ekler ve üye dosyasındaki sayaç/son'u günceller."""
+    eposta = (eposta or "").strip().lower()
+    if not eposta or tur not in AKTIVITE_ADI:
+        return
+    try:
+        AKTIVITE_DIZIN.mkdir(parents=True, exist_ok=True)
+        zaman = datetime.datetime.now().isoformat(timespec="seconds")
+        gun = zaman[:10]
+        with (AKTIVITE_DIZIN / f"{gun}.jsonl").open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"eposta": eposta, "tur": tur, "zaman": zaman},
+                               ensure_ascii=False) + "\n")
+        dosya = _uye_dosya(eposta)
+        if dosya.exists():
+            kayit = json.loads(dosya.read_text(encoding="utf-8"))
+            kayit["aktiviteSayisi"] = int(kayit.get("aktiviteSayisi", 0)) + 1
+            kayit["sonAktivite"] = zaman
+            kayit["sonAktiviteTur"] = tur
+            dosya.write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    except Exception as e:
+        print(f"aktivite yazılamadı ({eposta}/{tur}): {type(e).__name__}: {e}")
+
+
+def _uye_aktivite_kaydet(istek, tur: str) -> None:
+    """İstek başlığındaki x-uye e-postasına göre aktivite yazar (proxy'den gelir)."""
+    try:
+        eposta = istek.headers.get("x-uye", "")
+        if eposta:
+            _aktivite_yaz(eposta, tur)
+    except Exception:
+        pass
+
+
 def _sifre_ozeti(sifre: str, tuz: str = "") -> tuple[str, str]:
     import hashlib
     import secrets
@@ -1471,6 +1522,83 @@ def _sifirla_html(ad, baglanti):
               + '<p style="margin:0;font-size:12.5px;color:#7C8B84">Bu isteği siz yapmadıysanız '
                 'bu iletiyi yok sayabilirsiniz; şifreniz değişmez.</p>')
     return _eposta_kabuk("Şifre sıfırlama", icerik, "Şifrenizi yenilemek için bağlantınız hazır.")
+
+
+@app.post("/yonetim/uyeler")
+def yonetim_uyeler(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    uyeler = []
+    if UYE_DIZIN.exists():
+        for f in UYE_DIZIN.glob("*.json"):
+            try:
+                k = json.loads(f.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            uyeler.append({
+                "ad": k.get("ad", ""),
+                "eposta": k.get("eposta", ""),
+                "kayit": k.get("kayit", ""),
+                "sonGiris": k.get("sonGiris", ""),
+                "girisSayisi": int(k.get("girisSayisi", 0)),
+                "aktiviteSayisi": int(k.get("aktiviteSayisi", 0)),
+                "sonAktivite": k.get("sonAktivite", ""),
+                "sonAktiviteTur": k.get("sonAktiviteTur", ""),
+            })
+    uyeler.sort(key=lambda u: u.get("kayit", ""), reverse=True)
+    bugun = datetime.date.today().isoformat()
+    hafta = (datetime.date.today() - datetime.timedelta(days=7)).isoformat()
+    ozet = {
+        "toplam": len(uyeler),
+        "buHafta": sum(1 for u in uyeler if u.get("kayit", "")[:10] >= hafta),
+        "bugun": sum(1 for u in uyeler if u.get("kayit", "")[:10] == bugun),
+        "girisYapan": sum(1 for u in uyeler if u.get("sonGiris")),
+    }
+    return {"uyeler": uyeler, "ozet": ozet, "aktiviteAdi": AKTIVITE_ADI}
+
+
+@app.post("/yonetim/uye-aktivite")
+async def yonetim_uye_aktivite(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        govde = {}
+    filtre = str(govde.get("eposta", "")).strip().lower()
+    kayitlar = []
+    if AKTIVITE_DIZIN.exists():
+        for f in sorted(AKTIVITE_DIZIN.glob("*.jsonl"), reverse=True)[:14]:
+            try:
+                for satir in f.read_text(encoding="utf-8").splitlines():
+                    if not satir.strip():
+                        continue
+                    o = json.loads(satir)
+                    if filtre and o.get("eposta") != filtre:
+                        continue
+                    kayitlar.append(o)
+            except Exception:
+                pass
+    kayitlar.sort(key=lambda o: o.get("zaman", ""), reverse=True)
+    return {"aktiviteler": kayitlar[:200], "aktiviteAdi": AKTIVITE_ADI}
+
+
+@app.post("/yonetim/uye-sil")
+async def yonetim_uye_sil(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    eposta = str(govde.get("eposta", "")).strip().lower()
+    if not _EPOSTA_BICIM.match(eposta):
+        return JSONResponse({"hata": "geçersiz e-posta"}, status_code=400)
+    dosya = _uye_dosya(eposta)
+    if dosya.exists():
+        dosya.unlink()
+        return {"durum": "ok"}
+    return JSONResponse({"hata": "üye bulunamadı"}, status_code=404)
 
 
 @app.post("/yonetim/eposta-kuyruk")
@@ -1530,6 +1658,7 @@ async def uye_kayit(istek: Request):
         "ad": ad, "eposta": eposta, "tuz": tuz, "ozet": ozet,
         "kayit": datetime.datetime.now().isoformat(timespec="seconds"),
     }, ensure_ascii=False), encoding="utf-8")
+    _aktivite_yaz(eposta, "kayit")
     _eposta_arkaplan(eposta, "Aramıza hoş geldiniz — GES Danışmanı", _uye_hosgeldin_html(ad))
     return {"durum": "ok", "ad": ad, "eposta": eposta}
 
@@ -1552,6 +1681,10 @@ async def uye_giris(istek: Request):
     import hmac as _hmac
     if not _hmac.compare_digest(ozet, kayit["ozet"]):
         return JSONResponse({"hata": "E-posta ya da şifre hatalı."}, status_code=401)
+    kayit["sonGiris"] = datetime.datetime.now().isoformat(timespec="seconds")
+    kayit["girisSayisi"] = int(kayit.get("girisSayisi", 0)) + 1
+    dosya.write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    _aktivite_yaz(eposta, "giris")
     return {"durum": "ok", "ad": kayit["ad"], "eposta": eposta}
 
 
@@ -1612,6 +1745,7 @@ async def uye_sifre_sifirla(istek: Request):
 
 @app.post("/lead")
 async def lead_ucu(istek: Request):
+    _uye_aktivite_kaydet(istek, "lead")
     ip = _gercek_ip(istek)
     if _sinirli_mi(ip):
         return JSONResponse({"hata": "sınır"}, status_code=429)
