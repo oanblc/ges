@@ -7,6 +7,7 @@ const IZINLI = new Set([
   "/yonetim/sss-kaydet",
   "/yonetim/ayarlar",
   "/yonetim/talep-durum",
+  "/yonetim/talep-yanit",
   "/yonetim/taslak-okundu",
   "/yonetim/eposta-tani",
   "/yonetim/eposta-kuyruk",

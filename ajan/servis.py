@@ -33,7 +33,8 @@ LEAD_DIZIN = Path(os.environ.get("LEAD_DIZIN", str(ROOT / "kb" / "lead")))
 LOG_DIZIN = Path(os.environ.get("LOG_DIZIN", str(LEAD_DIZIN.parent / "log")))
 
 
-def _sohbet_logla(soru: str, cevap: str, durum: str, ekli: bool = False, sure: float = 0.0):
+def _sohbet_logla(soru: str, cevap: str, durum: str, ekli: bool = False, sure: float = 0.0,
+                  eposta: str = "", oturum: str = ""):
     """Her sohbeti günlük JSONL dosyasına yazar; hata loglamayı asla akışa bulaştırmaz."""
     try:
         LOG_DIZIN.mkdir(parents=True, exist_ok=True)
@@ -44,6 +45,8 @@ def _sohbet_logla(soru: str, cevap: str, durum: str, ekli: bool = False, sure: f
             "sure_sn": round(sure, 1),
             "soru": (soru or "")[:1000],
             "cevap": (cevap or "")[:4000],
+            "eposta": (eposta or "").strip().lower()[:120],  # üye paneli sohbet geçmişi buradan
+            "oturum": (oturum or "").strip()[:60],
         }
         dosya = LOG_DIZIN / f"sohbet-{time.strftime('%Y-%m-%d')}.jsonl"
         with dosya.open("a", encoding="utf-8") as f:
@@ -498,6 +501,9 @@ async def sohbet_ucu(istek: Request):
     mesajlar = _temiz_mesajlar(govde.get("mesajlar", []))
     if not mesajlar or mesajlar[-1]["role"] != "user":
         return JSONResponse({"hata": "Geçerli bir soru gönderin."}, status_code=400)
+    # üye paneli: web proxy'si üyenin e-postasını ve tarayıcı oturum kimliğini başlıkla yollar
+    uye_eposta = (istek.headers.get("x-uye", "") or "").strip().lower()[:120]
+    oturum = (istek.headers.get("x-oturum", "") or "").strip()[:60]
 
     def uret():
         if not _eszamanli.acquire(blocking=False):
@@ -520,7 +526,8 @@ async def sohbet_ucu(istek: Request):
                 if kisa:
                     yield _sse("delta", {"t": kisa})
                     yield _sse("bitti", {})
-                    _sohbet_logla(soru, kisa, "kapi", sure=time.time() - baslangic)
+                    _sohbet_logla(soru, kisa, "kapi", sure=time.time() - baslangic,
+                                  eposta=uye_eposta, oturum=oturum)
                     return
             sistem = SISTEM + GEMINI_EK + _kb_yukle()
             icerikler = [{"role": "user" if m["role"] == "user" else "model",
@@ -559,7 +566,8 @@ async def sohbet_ucu(istek: Request):
             if not metin:
                 yield _sse("duzeltme", {"metin": GUVENLI_YANIT})
                 yield _sse("bitti", {})
-                _sohbet_logla(soru, "", "guvenli-yanit", ekli=ekli, sure=time.time() - baslangic)
+                _sohbet_logla(soru, "", "guvenli-yanit", ekli=ekli, sure=time.time() - baslangic,
+                              eposta=uye_eposta, oturum=oturum)
                 return
 
             yield _sse("durum", {"mesaj": "denetleniyor"})
@@ -582,15 +590,18 @@ async def sohbet_ucu(istek: Request):
                     yield _sse("duzeltme", {"metin": yeni})
                     yield _sse("denetim", {"sonuc": "onay", "revize": True})
                     _sohbet_logla(soru, yeni, "onay-revize", ekli=ekli,
-                                  sure=time.time() - baslangic)
+                                  sure=time.time() - baslangic,
+                                  eposta=uye_eposta, oturum=oturum)
                 else:
                     yield _sse("duzeltme", {"metin": GUVENLI_YANIT})
                     yield _sse("denetim", {"sonuc": "guvenli-yanit"})
                     _sohbet_logla(soru, metin, "guvenli-yanit", ekli=ekli,
-                                  sure=time.time() - baslangic)
+                                  sure=time.time() - baslangic,
+                                  eposta=uye_eposta, oturum=oturum)
             else:
                 yield _sse("denetim", {"sonuc": "onay"})
-                _sohbet_logla(soru, metin, "onay", ekli=ekli, sure=time.time() - baslangic)
+                _sohbet_logla(soru, metin, "onay", ekli=ekli, sure=time.time() - baslangic,
+                              eposta=uye_eposta, oturum=oturum)
             yield _sse("bitti", {})
         except Exception as e:
             metin = str(e)
@@ -605,7 +616,7 @@ async def sohbet_ucu(istek: Request):
                 yield _sse("hata", {"mesaj": f"Beklenmeyen hata ({type(e).__name__}); "
                                              "lütfen yeniden deneyin."})
             _sohbet_logla(soru, f"[{type(e).__name__}] {metin[:200]}", "hata",
-                          sure=time.time() - baslangic)
+                          sure=time.time() - baslangic, eposta=uye_eposta, oturum=oturum)
         finally:
             _eszamanli.release()
 
@@ -1741,6 +1752,402 @@ async def uye_sifre_sifirla(istek: Request):
     kayit.pop("jeton_sonu", None)
     dosya.write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
     return {"durum": "ok", "ad": kayit["ad"], "eposta": eposta}
+
+
+# ---- Üye paneli uçları (web'deki /hesap sayfası bu API'yi kullanır) ----
+# Kimlik: web proxy'si doğrulanmış üyenin e-postasını x-uye başlığıyla yollar.
+TALEP_DIZIN = LEAD_DIZIN.parent / "talep"
+GECERLI_TALEP_KONU = {"fizibilite", "mevzuat", "teklif", "diger"}
+GECERLI_TALEP_DURUM = {"acik", "yanitlandi", "kapandi"}
+_TALEP_ID = re.compile(r"^t-\d{8}-\d{6}-[0-9a-f]{4}$")
+TALEP_KONU_ADI = {"fizibilite": "Fizibilite", "mevzuat": "Mevzuat",
+                  "teklif": "Teklif", "diger": "Diğer"}
+
+
+def _uye_eposta(istek) -> str:
+    """x-uye başlığındaki üye e-postasını normalize eder; yoksa boş döner."""
+    try:
+        return (istek.headers.get("x-uye", "") or "").strip().lower()[:120]
+    except Exception:
+        return ""
+
+
+def _uye_oku(eposta: str):
+    """Üye dosyasını okur; yoksa/bozuksa None döner."""
+    try:
+        return json.loads(_uye_dosya(eposta).read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _gun_siniri(gun: int = 90) -> str:
+    return (datetime.date.today() - datetime.timedelta(days=gun)).isoformat()
+
+
+def _talep_oku(kimlik: str):
+    try:
+        return json.loads((TALEP_DIZIN / f"{kimlik}.json").read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _talep_yaz(kayit: dict) -> None:
+    TALEP_DIZIN.mkdir(parents=True, exist_ok=True)
+    (TALEP_DIZIN / f"{kayit['id']}.json").write_text(
+        json.dumps(kayit, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _talep_listesi(eposta: str = ""):
+    """Talep kayıtları, en yeni önce; eposta verilirse yalnız o üyeninkiler."""
+    liste = []
+    if TALEP_DIZIN.exists():
+        for f in TALEP_DIZIN.glob("t-*.json"):
+            try:
+                k = json.loads(f.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if eposta and k.get("eposta") != eposta:
+                continue
+            liste.append(k)
+    liste.sort(key=lambda k: k.get("guncelleme", ""), reverse=True)
+    return liste
+
+
+def _uye_talep_onay_html(ad, konu):
+    icerik = (f'<p style="margin:0 0 14px">Merhaba {ad or "değerli üyemiz"},</p>'
+              f'<p style="margin:0 0 14px"><b>{TALEP_KONU_ADI.get(konu, konu)}</b> konulu '
+              'talebinizi aldık. Ekibimiz en kısa sürede inceleyip hesap sayfanız üzerinden '
+              'cevap yazacak; cevap geldiğinde ayrıca e-posta ile haber vereceğiz.</p>'
+              + _dugme("Taleplerimi gör", "https://www.gesdanismani.com/hesap"))
+    return _eposta_kabuk("Talebiniz alındı", icerik,
+                         "Talebinizi aldık; en kısa sürede cevaplayacağız.")
+
+
+def _uye_talep_cevap_html(ad):
+    icerik = (f'<p style="margin:0 0 14px">Merhaba {ad or "değerli üyemiz"},</p>'
+              '<p style="margin:0 0 14px">Talebinize ekibimizden cevap geldi. Cevabı okumak ve '
+              'yazışmaya devam etmek için hesap sayfanızı açın.</p>'
+              + _dugme("Cevabı oku", "https://www.gesdanismani.com/hesap"))
+    return _eposta_kabuk("Talebinize cevap geldi", icerik,
+                         "Ekibimiz talebinize cevap yazdı.")
+
+
+def _uye_talep_bildirim_html(kayit):
+    ilk = (kayit.get("mesajlar") or [{}])[0]
+    icerik = (f"<p style='margin:0 0 6px;font-size:15px'><b>Üye:</b> "
+              f"<span style='color:#0A6B5C'>{kayit.get('ad') or '—'} "
+              f"({kayit.get('eposta') or '—'})</span></p>"
+              f"<p style='margin:0 0 6px'><b>Konu:</b> "
+              f"{TALEP_KONU_ADI.get(kayit.get('konu'), kayit.get('konu'))}</p>"
+              f"<p style='margin:0 0 16px;font-size:13px;color:#7C8B84'>{kayit.get('olusturma')}</p>"
+              f"<p style='margin:7px 0;padding:9px 13px;background:#F2F6F1;"
+              f"border:1px solid #E4E9E2;border-radius:9px;font-size:13px'>"
+              f"{str(ilk.get('metin', ''))[:800]}</p>"
+              + _dugme("Paneli aç", "https://www.gesdanismani.com/yonetim/uye-talepleri"))
+    return _eposta_kabuk("Yeni üye talebi", icerik,
+                         f"Üye talebi: {kayit.get('eposta') or '?'}")
+
+
+def _bildirim_gonder(eposta: str, olay: str, veri: dict) -> None:
+    """Üyeye bildirim tek kapıdan çıkar — şimdilik yalnız e-posta, ileride push eklenecek.
+    "talep-alindi" onayı her zaman gider; diğer olaylar üyenin bildirim tercihine bakar."""
+    try:
+        if not eposta:
+            return
+        kayit = _uye_oku(eposta) or {}
+        if olay != "talep-alindi" and not kayit.get("bildirimTercihi", True):
+            return
+        ad = kayit.get("ad", "")
+        if olay == "talep-alindi":
+            _eposta_arkaplan(eposta, "Talebiniz alındı — GES Danışmanı",
+                             _uye_talep_onay_html(ad, veri.get("konu", "")))
+        elif olay == "talep-cevap":
+            _eposta_arkaplan(eposta, "Talebinize cevap geldi — GES Danışmanı",
+                             _uye_talep_cevap_html(ad))
+    except Exception as e:
+        print(f"bildirim gönderilemedi ({eposta}/{olay}): {type(e).__name__}: {e}")
+
+
+@app.get("/uye/sohbetler")
+async def uye_sohbetler(istek: Request):
+    """Üyenin son 90 günlük sohbetleri, oturum bazında gruplu — en yeni oturum önce."""
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    sinir = _gun_siniri(90)
+    oturumlar = {}
+    if LOG_DIZIN.exists():
+        for dosya in sorted(LOG_DIZIN.glob("sohbet-*.jsonl"), reverse=True):
+            if dosya.stem.replace("sohbet-", "") < sinir:
+                continue
+            try:
+                satirlar = dosya.read_text(encoding="utf-8").splitlines()
+            except Exception:
+                continue
+            for satir in satirlar:
+                try:
+                    k = json.loads(satir)
+                except ValueError:
+                    continue
+                # eski kayıtlarda eposta/oturum alanı yok — sessizce atlanır
+                if k.get("eposta") != eposta:
+                    continue
+                anahtar = k.get("oturum") or f"tekil-{k.get('zaman', '')}"
+                grup = oturumlar.setdefault(anahtar, {
+                    "oturum": anahtar, "baslangic": k.get("zaman", ""),
+                    "son": k.get("zaman", ""), "adet": 0,
+                    "ilkSoru": k.get("soru", ""), "mesajlar": [],
+                })
+                zaman = k.get("zaman", "")
+                if zaman < grup["baslangic"]:
+                    grup["baslangic"] = zaman
+                    grup["ilkSoru"] = k.get("soru", "")
+                if zaman > grup["son"]:
+                    grup["son"] = zaman
+                grup["adet"] += 1
+                grup["mesajlar"].append({"soru": k.get("soru", ""),
+                                         "cevap": k.get("cevap", ""), "zaman": zaman})
+    liste = sorted(oturumlar.values(), key=lambda g: g.get("son", ""), reverse=True)[:50]
+    for grup in liste:
+        grup["mesajlar"] = sorted(grup["mesajlar"], key=lambda m: m.get("zaman", ""))[:30]
+    return {"sohbetler": liste}
+
+
+@app.post("/uye/talep")
+async def uye_talep(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    konu = str(govde.get("konu", "")).strip()
+    mesaj = str(govde.get("mesaj", "")).strip()[:4000]
+    if konu not in GECERLI_TALEP_KONU:
+        return JSONResponse({"hata": "Geçerli bir konu seçin."}, status_code=400)
+    if not mesaj:
+        return JSONResponse({"hata": "Talebinizi yazın."}, status_code=400)
+    import secrets
+    uye = _uye_oku(eposta) or {}
+    zaman = datetime.datetime.now().isoformat(timespec="seconds")
+    kayit = {
+        "id": "t-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+              + "-" + secrets.token_hex(2),
+        "eposta": eposta,
+        "ad": uye.get("ad", ""),
+        "konu": konu,
+        "durum": "acik",
+        "mesajlar": [{"kim": "uye", "metin": mesaj, "zaman": zaman}],
+        "olusturma": zaman,
+        "guncelleme": zaman,
+    }
+    _talep_yaz(kayit)
+    _aktivite_yaz(eposta, "lead")
+    _eposta_arkaplan(_smtp_ayar()["bildirim"],
+                     f"Yeni üye talebi — {TALEP_KONU_ADI.get(konu, konu)} ({eposta})",
+                     _uye_talep_bildirim_html(kayit))
+    _bildirim_gonder(eposta, "talep-alindi", {"konu": konu})
+    return {"durum": "ok", "id": kayit["id"]}
+
+
+@app.get("/uye/talepler")
+async def uye_talepler(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    return {"talepler": _talep_listesi(eposta)}
+
+
+@app.post("/uye/talep-yanit")
+async def uye_talep_yanit(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    kimlik = str(govde.get("id", ""))
+    mesaj = str(govde.get("mesaj", "")).strip()[:4000]
+    if not _TALEP_ID.match(kimlik):
+        return JSONResponse({"hata": "geçersiz id"}, status_code=400)
+    if not mesaj:
+        return JSONResponse({"hata": "Mesajınızı yazın."}, status_code=400)
+    kayit = _talep_oku(kimlik)
+    if kayit is None:
+        return JSONResponse({"hata": "Talep bulunamadı."}, status_code=404)
+    if kayit.get("eposta") != eposta:
+        return JSONResponse({"hata": "Bu talep size ait değil."}, status_code=403)
+    zaman = datetime.datetime.now().isoformat(timespec="seconds")
+    kayit.setdefault("mesajlar", []).append({"kim": "uye", "metin": mesaj, "zaman": zaman})
+    if kayit.get("durum") in ("yanitlandi", "kapandi"):
+        kayit["durum"] = "acik"
+    kayit["guncelleme"] = zaman
+    _talep_yaz(kayit)
+    return {"durum": "ok", "talep": kayit}
+
+
+@app.get("/yonetim/uye-talepleri")
+async def yonetim_uye_talepleri(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    return {"talepler": _talep_listesi()}
+
+
+@app.post("/yonetim/talep-yanit")
+async def yonetim_talep_yanit(istek: Request):
+    if _yetkisiz(istek):
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "geçersiz gövde"}, status_code=400)
+    kimlik = str(govde.get("id", ""))
+    mesaj = str(govde.get("mesaj", "")).strip()[:4000]
+    durum = str(govde.get("durum", "")).strip()
+    if not _TALEP_ID.match(kimlik):
+        return JSONResponse({"hata": "geçersiz id"}, status_code=400)
+    if not mesaj and not durum:
+        return JSONResponse({"hata": "mesaj boş"}, status_code=400)
+    if durum and durum not in GECERLI_TALEP_DURUM:
+        return JSONResponse({"hata": "geçersiz durum"}, status_code=400)
+    kayit = _talep_oku(kimlik)
+    if kayit is None:
+        return JSONResponse({"hata": "bulunamadı"}, status_code=404)
+    zaman = datetime.datetime.now().isoformat(timespec="seconds")
+    if mesaj:
+        kayit.setdefault("mesajlar", []).append({"kim": "ekip", "metin": mesaj, "zaman": zaman})
+    kayit["durum"] = durum or "yanitlandi"
+    kayit["guncelleme"] = zaman
+    _talep_yaz(kayit)
+    if mesaj:  # salt durum değişikliği üyeye e-posta düşürmez
+        _bildirim_gonder(kayit.get("eposta", ""), "talep-cevap", {"id": kimlik})
+    return {"durum": "ok", "talep": kayit}
+
+
+@app.get("/uye/ozet")
+async def uye_ozet(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    kayit = _uye_oku(eposta)
+    if kayit is None:
+        return JSONResponse({"hata": "Üye bulunamadı."}, status_code=404)
+    sinir = _gun_siniri(90)
+    soru_sayisi, analiz_sayisi = 0, 0
+    if AKTIVITE_DIZIN.exists():
+        for f in AKTIVITE_DIZIN.glob("*.jsonl"):
+            if f.stem < sinir:
+                continue
+            try:
+                for satir in f.read_text(encoding="utf-8").splitlines():
+                    if not satir.strip():
+                        continue
+                    o = json.loads(satir)
+                    if o.get("eposta") != eposta:
+                        continue
+                    if o.get("tur") == "sohbet":
+                        soru_sayisi += 1
+                    elif o.get("tur") in ("fatura", "teklif", "police", "mevzuat"):
+                        analiz_sayisi += 1
+            except Exception:
+                pass
+    acik_talep = sum(1 for t in _talep_listesi(eposta) if t.get("durum") == "acik")
+    return {
+        "ad": kayit.get("ad", ""),
+        "eposta": eposta,
+        "kayit": kayit.get("kayit", ""),
+        "soruSayisi": soru_sayisi,
+        "analizSayisi": analiz_sayisi,
+        "sonAktivite": kayit.get("sonAktivite", ""),
+        "acikTalep": acik_talep,
+    }
+
+
+@app.post("/uye/guncelle")
+async def uye_guncelle(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    ad = str(govde.get("ad", "")).strip()[:80]
+    if len(ad) < 2:
+        return JSONResponse({"hata": "Adınızı girin."}, status_code=400)
+    kayit = _uye_oku(eposta)
+    if kayit is None:
+        return JSONResponse({"hata": "Üye bulunamadı."}, status_code=404)
+    kayit["ad"] = ad
+    _uye_dosya(eposta).write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    return {"durum": "ok", "ad": ad}
+
+
+@app.post("/uye/sifre-degistir")
+async def uye_sifre_degistir(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    if _sinirli_mi(_gercek_ip(istek)):
+        return JSONResponse({"hata": "sınır"}, status_code=429)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    eski = str(govde.get("eski", ""))[:100]
+    yeni = str(govde.get("yeni", ""))[:100]
+    if len(yeni) < 8:
+        return JSONResponse({"hata": "Yeni şifre en az 8 karakter olmalı."}, status_code=400)
+    kayit = _uye_oku(eposta)
+    if kayit is None:
+        return JSONResponse({"hata": "Üye bulunamadı."}, status_code=404)
+    import hmac as _hmac
+    _, ozet = _sifre_ozeti(eski, kayit["tuz"])
+    if not _hmac.compare_digest(ozet, kayit["ozet"]):
+        return JSONResponse({"hata": "Mevcut şifreniz hatalı."}, status_code=400)
+    tuz, ozet = _sifre_ozeti(yeni)
+    kayit.update(tuz=tuz, ozet=ozet)
+    _uye_dosya(eposta).write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    return {"durum": "ok"}
+
+
+@app.post("/uye/tercih")
+async def uye_tercih(istek: Request):
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    try:
+        govde = await istek.json()
+    except ValueError:
+        return JSONResponse({"hata": "Geçersiz istek."}, status_code=400)
+    kayit = _uye_oku(eposta)
+    if kayit is None:
+        return JSONResponse({"hata": "Üye bulunamadı."}, status_code=404)
+    kayit["bildirimTercihi"] = bool(govde.get("bildirim", True))
+    _uye_dosya(eposta).write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    return {"durum": "ok", "bildirim": kayit["bildirimTercihi"]}
+
+
+@app.post("/uye/sil")
+async def uye_sil(istek: Request):
+    """Silme talebi işaretlenir; dosya 7 gün sonra ayrı temizlik işiyle kaldırılır."""
+    eposta = _uye_eposta(istek)
+    if not eposta:
+        return JSONResponse({"hata": "yetkisiz"}, status_code=401)
+    kayit = _uye_oku(eposta)
+    if kayit is None:
+        return JSONResponse({"hata": "Üye bulunamadı."}, status_code=404)
+    kayit["silinmeTalebi"] = datetime.datetime.now().isoformat(timespec="seconds")
+    _uye_dosya(eposta).write_text(json.dumps(kayit, ensure_ascii=False), encoding="utf-8")
+    return {"durum": "ok"}
 
 
 @app.post("/lead")

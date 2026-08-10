@@ -15,7 +15,12 @@ export async function POST(req: Request) {
   try {
     res = await fetch(`${SERVIS}/sohbet`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip, "x-uye": uyeBilgi.eposta ?? "" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Forwarded-For": ip,
+        "x-uye": uyeBilgi.eposta ?? "",
+        "x-oturum": req.headers.get("x-oturum") ?? "",
+      },
       body: await req.text(),
     });
   } catch {

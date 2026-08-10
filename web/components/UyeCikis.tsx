@@ -1,6 +1,8 @@
 "use client";
 
-export default function UyeCikis() {
+import { Cikis } from "./Icons";
+
+export default function UyeCikis({ ikonlu = false }: { ikonlu?: boolean }) {
   async function cikis() {
     await fetch("/api/uye", {
       method: "POST",
@@ -11,6 +13,7 @@ export default function UyeCikis() {
   }
   return (
     <button type="button" className="uye-cikis" onClick={cikis}>
+      {ikonlu && <Cikis className="i" />}
       Çıkış yap
     </button>
   );

@@ -53,6 +53,31 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
   // Sohbet geçmişi sekme oturumunda saklanır — sayfa yenilenince kaybolmaz,
   // sekme kapanınca temizlenir (kişisel veri kalıcı olmaz).
   const YEREL_ANAHTAR = "gd-sohbet";
+  // Konuşma başına oturum kimliği: sunucuda sohbetlerin gruplanmasını sağlar.
+  const OTURUM_ANAHTAR = "gd-oturum";
+  const oturumRef = useRef<string>("");
+  const oturumUret = () =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  const oturumAl = (): string => {
+    if (!oturumRef.current) {
+      try {
+        oturumRef.current = sessionStorage.getItem(OTURUM_ANAHTAR) ?? "";
+      } catch {
+        /* engelli depolama — sessizce geç */
+      }
+      if (!oturumRef.current) {
+        oturumRef.current = oturumUret();
+        try {
+          sessionStorage.setItem(OTURUM_ANAHTAR, oturumRef.current);
+        } catch {
+          /* yoksay */
+        }
+      }
+    }
+    return oturumRef.current;
+  };
   const yuklendiRef = useRef(false);
   useEffect(() => {
     try {
@@ -87,8 +112,11 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
 
   const sohbetiTemizle = () => {
     setMesajlar([]);
+    // yeni konuşma: oturum kimliğini de yenile
+    oturumRef.current = oturumUret();
     try {
       sessionStorage.removeItem(YEREL_ANAHTAR);
+      sessionStorage.setItem(OTURUM_ANAHTAR, oturumRef.current);
     } catch {
       /* yoksay */
     }
@@ -168,7 +196,7 @@ export default function AsistanSohbet({ ilkSoru }: { ilkSoru?: string }) {
     try {
       const res = await fetch("/api/asistan", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-oturum": oturumAl() },
         body: JSON.stringify({ mesajlar: gecmis }),
       });
       if (!res.ok || !res.body) {
