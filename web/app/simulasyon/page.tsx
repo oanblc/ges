@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Simulasyon from "@/components/Simulasyon";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
-import UyeKilit from "@/components/UyeKilit";
 import { uyeOku } from "@/lib/uye";
 import { SunDolu } from "@/components/Icons";
 
@@ -37,7 +36,7 @@ export default async function SimulasyonSayfa() {
 
       <div className="calc-grid">
         <section className="tool genis" aria-label="Güneş sahası simülasyonu">
-          {uye ? <Simulasyon /> : <UyeKilit donus="/simulasyon" />}
+          <Simulasyon />
         </section>
       </div>
 

@@ -6,16 +6,13 @@ const SERVIS = process.env.ASISTAN_SERVIS_URL ?? "http://127.0.0.1:8756";
 export async function POST(req: Request) {
   const uyeDepo = await cookies();
   const uyeBilgi = uyeCoz(uyeDepo.get("gd_uye")?.value);
-  if (!uyeBilgi) {
-    return Response.json({ hata: "Bu araç üyelere özeldir; lütfen giriş yapın." }, { status: 401 });
-  }
   const ip =
     req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "yerel";
   let res: Response;
   try {
     res = await fetch(`${SERVIS}/teklif-degerlendir`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip, "x-uye": uyeBilgi.eposta ?? "" },
+      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip, "x-uye": uyeBilgi?.eposta ?? "" },
       body: await req.text(),
     });
   } catch {

@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import SiteHead from "@/components/SiteHead";
-import UyeKilit from "@/components/UyeKilit";
-import { uyeOku } from "@/lib/uye";
 import SiteFoot from "@/components/SiteFoot";
 import AsistanSohbet from "@/components/AsistanSohbet";
 import { META, PIYASA } from "@/data/kb";
@@ -21,7 +19,6 @@ export default async function AsistanSayfa({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const uye = await uyeOku();
   const p = await searchParams;
   const ilkSoru = typeof p.soru === "string" ? p.soru.slice(0, 500) : undefined;
 
@@ -39,7 +36,7 @@ export default async function AsistanSayfa({
       </div>
 
       <div className="as-wrap">
-        {uye ? <AsistanSohbet ilkSoru={ilkSoru} /> : <UyeKilit donus="/asistan" />}
+        <AsistanSohbet ilkSoru={ilkSoru} />
 
         <aside className="as-side">
           <div className="side-card">

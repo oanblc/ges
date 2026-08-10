@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import MevzuatArama from "@/components/MevzuatArama";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
-import UyeKilit from "@/components/UyeKilit";
 import { uyeOku } from "@/lib/uye";
 import mevzuat from "@/data/mevzuat.json";
 import { SunDolu } from "@/components/Icons";
@@ -43,7 +42,7 @@ export default async function Mevzuat() {
         </div>
 
         <section className="dk-bolum" style={{ paddingBottom: 48 }} aria-label="Mevzuat kütüphanesi">
-          {uye ? <MevzuatArama /> : <UyeKilit donus="/mevzuat" />}
+          <MevzuatArama />
         </section>
       </main>
       <SiteFoot notu="Özetler bilgilendirme amaçlıdır; resmî metin Resmî Gazete'dir." />

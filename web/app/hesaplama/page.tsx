@@ -3,7 +3,6 @@ import Batarya from "@/components/Batarya";
 import Maliyet from "@/components/Maliyet";
 import Roi from "@/components/Roi";
 import SiteHead from "@/components/SiteHead";
-import UyeKilit from "@/components/UyeKilit";
 import { uyeOku } from "@/lib/uye";
 import SiteFoot from "@/components/SiteFoot";
 import { META } from "@/data/kb";
@@ -68,7 +67,7 @@ export default async function Hesaplama() {
             Ne kadar para gider? Bantlar 2026 piyasa tekliflerinden ve EPC fiyat listelerinden
             derlenmiştir; kesin rakam yerinde keşifle netleşir.
           </p>
-          {uye ? <Maliyet /> : <UyeKilit donus="/hesaplama" />}
+          <Maliyet />
         </section>
 
         <section className="tool" id="roi" aria-labelledby="roiBaslik">

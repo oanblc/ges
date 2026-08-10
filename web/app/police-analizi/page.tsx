@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import PoliceSihirbazi from "@/components/PoliceSihirbazi";
 import SiteFoot from "@/components/SiteFoot";
 import SiteHead from "@/components/SiteHead";
-import UyeKilit from "@/components/UyeKilit";
 import { uyeOku } from "@/lib/uye";
 import { SunDolu } from "@/components/Icons";
 
@@ -38,7 +37,7 @@ export default async function PoliceAnalizi() {
 
       <div className="calc-grid">
         <section className="tool genis" aria-label="Poliçe sihirbazı">
-          {uye ? <PoliceSihirbazi /> : <UyeKilit donus="/police-analizi" />}
+          <PoliceSihirbazi />
         </section>
       </div>
 
