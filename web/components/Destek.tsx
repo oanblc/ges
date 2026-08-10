@@ -8,7 +8,7 @@ import { Ev, Fabrika, Filiz, Ok } from "./Icons";
  * kb/ozel-durumlar.md bulgularıyla birebir; rakamlar oradan gelir.
  */
 
-type Profil = "konut" | "isletme" | "tarimsal";
+export type Profil = "konut" | "isletme" | "tarimsal";
 type Durum = "ok" | "sart" | "yok";
 
 interface Sonuc {
@@ -134,10 +134,15 @@ function sonuclar(profil: Profil, imalatciKobi: boolean, cksKayitli: boolean): S
   ];
 }
 
-export default function Destek() {
-  const [profil, setProfil] = useState<Profil>("konut");
+export default function Destek({ disProfil }: { disProfil?: Profil | null }) {
+  const [icProfil, setIcProfil] = useState<Profil>("konut");
   const [imalatciKobi, setImalatciKobi] = useState(true);
   const [cksKayitli, setCksKayitli] = useState(true);
+  // Dışarıdan profil verildiyse (destekler sayfası) kendi seçicisini gizler;
+  // null "Tümü" demektir — kişisel özet gösterilmez.
+  const denetimli = disProfil !== undefined;
+  const profil = denetimli ? disProfil : icProfil;
+  if (profil === null) return null;
 
   const liste = sonuclar(profil, imalatciKobi, cksKayitli);
   const asistanSoru = {
@@ -148,17 +153,19 @@ export default function Destek() {
 
   return (
     <>
-      <div className="rtoggle" aria-label="Profil seçimi">
-        <button className={profil === "konut" ? "on" : ""} aria-pressed={profil === "konut"} onClick={() => setProfil("konut")}>
-          <Ev className="i" /> Konut
-        </button>
-        <button className={profil === "isletme" ? "on" : ""} aria-pressed={profil === "isletme"} onClick={() => setProfil("isletme")}>
-          <Fabrika className="i" /> İşletme
-        </button>
-        <button className={profil === "tarimsal" ? "on" : ""} aria-pressed={profil === "tarimsal"} onClick={() => setProfil("tarimsal")}>
-          <Filiz className="i" /> Tarımsal
-        </button>
-      </div>
+      {!denetimli && (
+        <div className="rtoggle" aria-label="Profil seçimi">
+          <button className={profil === "konut" ? "on" : ""} aria-pressed={profil === "konut"} onClick={() => setIcProfil("konut")}>
+            <Ev className="i" /> Konut
+          </button>
+          <button className={profil === "isletme" ? "on" : ""} aria-pressed={profil === "isletme"} onClick={() => setIcProfil("isletme")}>
+            <Fabrika className="i" /> İşletme
+          </button>
+          <button className={profil === "tarimsal" ? "on" : ""} aria-pressed={profil === "tarimsal"} onClick={() => setIcProfil("tarimsal")}>
+            <Filiz className="i" /> Tarımsal
+          </button>
+        </div>
+      )}
 
       {profil === "isletme" && (
         <label className="d-soru">

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Destek from "@/components/Destek";
 import DesteklerListe from "@/components/DesteklerListe";
 import SiteHead from "@/components/SiteHead";
 import SiteFoot from "@/components/SiteFoot";
@@ -42,19 +41,6 @@ export default function Destekler() {
         </p>
         <span className="pulse">Son kontrol: {tarihTr(destekVeri.guncelleme)}</span>
       </div>
-
-      <section className="dk-bolum" id="uygunluk" aria-labelledby="uygunlukBaslik">
-        <div className="tool">
-          <h2 id="uygunlukBaslik">
-            <Kalkan className="i" /> Size Uygun Destekler
-          </h2>
-          <p className="tanim">
-            Profilinizi seçin; yararlanabileceğiniz hibe, kredi ve vergi avantajlarını
-            şartlarıyla görün. Programların tam listesi aşağıdadır.
-          </p>
-          <Destek />
-        </div>
-      </section>
 
       <DesteklerListe />
 
