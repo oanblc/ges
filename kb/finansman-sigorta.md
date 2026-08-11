@@ -1,7 +1,7 @@
 ---
 konu: GES finansman (kredi, KOSGEB, leasing, ESCO) ve sigorta
-guncelleme: 2026-08-06
-durum: yayin (Ozan onayi 6 Agu 2026)
+guncelleme: 2026-08-11
+durum: yayin (Ozan onayi 6 Agu 2026; 11 Agu 2026 ek: §6b deprem/DASK-GES bolumu)
 teyit: banka faizleri ilansız (rakam verme, yapı ver); genel satışta panel KDV oranı GİB'den; sigorta primi teklife bağlı
 ---
 
@@ -37,6 +37,13 @@ teyit: banka faizleri ilansız (rakam verme, yapı ver); genel satışta panel K
 - Anadolu bireysel çatı ürünü: ≤25 kW, panel ≤10 yaş, azami 50.000 EUR, konut. Standart konut poliçesi GES'i OTOMATİK KAPSAMAZ — ek ürün gerekir.
 - Prim: ilansız; sektör pratiği ~‰3-7/yıl (teklife bağlı diye yayınla).
 
+## 6b. Deprem teminatı ve DASK-GES ilişkisi (eklendi 11 Ağu 2026)
+- DASK (zorunlu deprem sigortası) YALNIZ BİNA GÖVDESİNİ kapsar: temel, taşıyıcı/ana duvarlar, ortak duvarlar, tavan-taban, merdiven, asansör, çatı, baca. Kapsam listesi yapı bileşenleriyle sınırlı; eşya, kâr kaybı, enkaz kaldırma vb. hariç. Çatı GES/panel/inverter yapı bileşeni değildir → DASK'ın panel hasarını karşılamayacağı varsayılmalı; müşteriye "DASK'ım var, panelim güvende" dedirtme. (Kaynak: dask.gov.tr teminat ve kapsam sayfası, erişim 11 Ağu 2026.)
+- Standart konut poliçesi de GES'i OTOMATİK KAPSAMAZ (§6 çıpası) → depreme karşı panel koruması için ayrı ürün/zeyil gerekir.
+- Bireysel çözüm: Anadolu "Bireysel Çatı Tipi Güneş Enerji Paneli Sigortası"nda DEPREM ayrı teminat olarak üründe listeleniyor (elektronik cihaz, kâr/gelir kaybı, GLKHHKNH-terör ile birlikte); şartlar §6'daki gibi ≤25 kW, panel ≤10 yaş, azami 50.000 EUR, konut. Allianz'ın da çatı tipi güneş paneli sigortası ürünü var. (Kaynaklar: anadolusigorta.com.tr ürün sayfası, allianz.com.tr; erişim 11 Ağu 2026.)
+- Ticari GES poliçesi: deprem, doğal afet teminatları içinde sunuluyor (yangın-yıldırım-infilak, sel, fırtına, yer kayması ile birlikte); depreme bağlı KÂR KAYBI ayrı teminat olarak alınabiliyor. (Kaynaklar: Piagrid GES sigortası rehberi, Anadolu GES sigortası, sektör aracıları CSİ/İdeal; erişim 11 Ağu 2026.)
+- Teklifte yazılı sorulacaklar: deprem teminatının poliçede AÇIKÇA yazılı olduğu; deprem için muafiyet/koasürans oranı (TEYİT GEREKLİ — şirket/teklif bazlı, genel oran yayımlamıyoruz); DASK azami teminat üstü bina değeri için ihtiyari deprem sigortası; bataryalı sistemde bataryanın poliçeye bildirildiği (teknik-depolama.md: bildirilmemiş kurulum ret gerekçesi).
+
 ## 7. Vergisel
 - Amortisman: normal 10 yıl; azalan bakiyelerle 5; YTB'de süre yarısı.
 - YTB (e-TUYS): KDV istisnası, gümrük muafiyeti, indirimli KV, damga/harç, SGK desteği.
@@ -53,3 +60,6 @@ Ziraat, Garanti BBVA, Halkbank, Piagrid (GES kredisi 28.03.2026 + sigorta 04.03.
 HangiKredi, TSKB/EBRD GEFF, KobiTime, Sanayi Gazetesi, İş/YK/QNB Leasing, Ege Hukuk, Enerjisa,
 Anadolu Sigorta (GES + bireysel çatı), Allianz, Azimut (amortisman), KPMG, Green Enerji,
 Güneş Sepeti, SolarKonsept, Türkiye Solar Market, MY Enerji. (Erişim: 6 Ağustos 2026)
+§6b ek kaynaklar: dask.gov.tr (teminat ve kapsam), Anadolu Sigorta (bireysel çatı tipi GES paneli sigortası),
+Allianz (çatı tipi güneş paneli sigortası), Piagrid GES sigortası rehberi, CSİ Sigorta, İdeal Sigorta.
+(Erişim: 11 Ağustos 2026)

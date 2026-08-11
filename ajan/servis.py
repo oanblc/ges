@@ -843,16 +843,19 @@ async def police_degerlendir(istek: Request):
         "TARAFSIZ bir değerlendirme yaz:\n"
         "1) Bu poliçe GES'i kapsıyor mu; kapsamıyorsa hangi ek ürün/zeyil gerekir?\n"
         "2) GES için kritik teminatlardan (yangın, dolu/fırtına, hırsızlık, makine kırılması, "
-        "elektronik cihaz, işletmede kâr kaybı; kurulum dönemi için CAR/EAR) hangileri VAR, "
-        "hangileri GÖRÜNMÜYOR — tablo hâlinde say.\n"
+        "elektronik cihaz, doğal afet — deprem dahil, bilgi tabanında yer alan kurallar "
+        "çerçevesinde ve varsa DASK/zeyil ayrımıyla —, işletmede kâr kaybı; kurulum dönemi "
+        "için CAR/EAR) hangileri VAR, hangileri GÖRÜNMÜYOR — tablo hâlinde say.\n"
         "3) Muafiyet/istisna satırlarında GES sahibini zorlayacak maddeler var mı?\n"
         "4) 'Sigortacınıza sormanız gerekenler' başlığıyla 3-5 net soru ver.\n"
         "Kurallar: sigorta şirketi adı anma; prim rakamı tahmin etme (prim teklife bağlıdır de); "
         "belgeden okunmuş bilgiyi veri kabul et; kb'de olmayan kural üretme; iç dosya adlarını "
-        "anma. Markdown başlıklarıyla, sade Türkçe. Sonuna 'Bu değerlendirme bilgilendirme "
-        "amaçlıdır; poliçe şartları için sigortacınız bağlayıcıdır.' ekle."
+        "anma. Markdown başlıklarıyla, sade Türkçe. SON SATIR tam olarak şu tek birleşik "
+        "cümle olsun: 'Bu yanıt bilgilendirme amaçlıdır; bağlayıcı görüş değildir — poliçe "
+        "şartlarında sigortacınızın metni esastır.'"
     )
     try:
+        baslangic = time.time()
         sistem = SISTEM + GEMINI_EK + _kb_yukle()
         icerikler = [{"role": "user", "parts": [{"text": soru + "\n\n" + gorev}]}]
         p2 = gemini.uret(sistem, icerikler, max_cikti=4096, sure=240)
@@ -875,7 +878,8 @@ async def police_degerlendir(istek: Request):
                 return JSONResponse({"hata": "Bu poliçe için doğrulanmış bir değerlendirme "
                                              "üretemedik; asistana sorarak ilerleyebilirsiniz."},
                                     status_code=502)
-        _sohbet_logla(soru[:300], analiz, f"police-{denetim}")
+        _sohbet_logla(soru[:300], analiz, f"police-{denetim}", ekli=True,
+                      sure=time.time() - baslangic)
         return {"alanlar": alanlar, "analiz": analiz, "denetim": denetim}
     except Exception as e:
         print(f"HATA police ({type(e).__name__}): {str(e)[:200]}", flush=True)
@@ -891,6 +895,9 @@ TEKLIF_ARACI = [{
         "properties": {
             "belge_teklif_mi": {"type": "boolean",
                                 "description": "Belge gerçekten bir GES teklifi/proforma mı"},
+            "sistem_turu": {"type": "string",
+                            "enum": ["cati", "arazi", "offgrid", "sulama", "carport", "diger"],
+                            "description": "Belgeden anlaşılan kurulum türü; emin değilsen 'diger'"},
             "guc_kwp": {"type": "number", "minimum": 0, "description": "Teklif edilen kurulu güç"},
             "panel_adet": {"type": "number", "minimum": 0},
             "panel_wp": {"type": "number", "minimum": 0, "description": "Panel başına Wp"},
@@ -965,8 +972,13 @@ async def teklif_degerlendir(istek: Request):
         "TEKLİF DEĞERLENDİRME GÖREVİ. Yukarıdaki alanlar ziyaretçinin yüklediği teklif "
         "belgesinden okundu. Bilgi tabanındaki güncel maliyet bantları, ekipman fiyatları ve "
         "garanti standartlarıyla TARAFSIZ bir değerlendirme yaz:\n"
-        "1) kW başına maliyeti hesapla, segmentine göre kb bandında nereye düştüğünü söyle "
-        "(bandın altı/içi/üstü).\n"
+        "1) kW başına maliyeti hesapla ve sistem türüne göre DOĞRU bantla kıyasla: "
+        "çatı/arazi ise mevcut anahtar teslim bandı; offgrid/sulama/carport ise bilgi "
+        "tabanındaki sistem türleri fiyat tablosundaki İLGİLİ bant — hangi bantla "
+        "kıyasladığını raporda belirt. Tür 'diger' ya da belirsizse bant kıyası YAPMA ve "
+        "bunu dürüstçe söyle. Bandın altı/içi/üstü olduğunu yaz.\n"
+        "Döviz kuralı: teklif TL dışında bir para birimindeyse kur VARSAYMA; ₺/kW kıyası "
+        "yapamadığını açıkça yaz ve kullanıcıdan güncel kurla TL karşılığını iste.\n"
         "2) Okunabilen kalemleri tek tek değerlendir (panel Wp sınıfı güncel mi, inverter "
         "boyu güce uygun mu, batarya varsa TL/kWh makul mu).\n"
         "3) Teklifte GÖRÜNMEYEN kritik kalemleri listele (proje-onay süreci, çift yönlü "
@@ -980,6 +992,7 @@ async def teklif_degerlendir(istek: Request):
         "'Bu değerlendirme bilgilendirme amaçlıdır; bağlayıcı görüş değildir.' ekle."
     )
     try:
+        baslangic = time.time()
         sistem = SISTEM + GEMINI_EK + _kb_yukle()
         icerikler = [{"role": "user", "parts": [{"text": soru + "\n\n" + gorev}]}]
         p2 = gemini.uret(sistem, icerikler, max_cikti=4096, sure=240)
@@ -1002,7 +1015,8 @@ async def teklif_degerlendir(istek: Request):
                 return JSONResponse({"hata": "Bu teklif için doğrulanmış bir değerlendirme "
                                              "üretemedik; asistana sorarak ilerleyebilirsiniz."},
                                     status_code=502)
-        _sohbet_logla(soru[:300], analiz, f"teklif-{denetim}")
+        _sohbet_logla(soru[:300], analiz, f"teklif-{denetim}", ekli=True,
+                      sure=time.time() - baslangic)
         return {"alanlar": alanlar, "analiz": analiz, "denetim": denetim}
     except Exception as e:
         print(f"HATA teklif ({type(e).__name__}): {str(e)[:200]}", flush=True)
@@ -1060,6 +1074,77 @@ def _uretim_profili() -> dict:
 
 
 _PROFIL = _uretim_profili()
+
+# PVGIS gerçek profilleri (web/data/pvgis.json — Simulasyon.tsx ile AYNI kaynak):
+# il başına mevsimlik (kış/bahar/yaz) 24 saatlik W/kWp ortalamaları. Ay → mevsim
+# eşlemesi Simulasyon.tsx yıllık ağırlığıyla uyumlu (kış Ara-Şub, yaz Haz-Ağu, kalan bahar).
+PVGIS_YOL = ROOT / "web" / "data" / "pvgis.json"
+_AY_MEVSIM = {12: "kis", 1: "kis", 2: "kis", 6: "yaz", 7: "yaz", 8: "yaz"}
+_pvgis_iller = None      # il anahtarı → ham kayıt (tembel yükleme)
+_pvgis_profiller = {}    # il anahtarı → {(ay, saat): yıllık pay} önbelleği
+
+
+def _pvgis_yukle():
+    global _pvgis_iller
+    if _pvgis_iller is None:
+        try:
+            ham = json.loads(PVGIS_YOL.read_text(encoding="utf-8"))["iller"]
+            _pvgis_iller = {_il_anahtar(ad): v for ad, v in ham.items()}
+        except Exception as e:
+            print(f"pvgis.json okunamadı, geometrik profile düşülüyor: "
+                  f"{type(e).__name__}: {e}", flush=True)
+            _pvgis_iller = {}
+    return _pvgis_iller
+
+
+def _il_profili(anahtar: str):
+    """(profil, kaynak): PVGIS varsa ilin gerçek saatlik profili, yoksa geometrik model.
+    Profil değeri = yıllık üretimin o ay-saatteki GÜNLÜK payı; yıllık toplam kwp × ILLER[il]
+    olacak şekilde normalize edilir (simülasyon kartıyla model farkı kalmasın diye)."""
+    if anahtar in _pvgis_profiller:
+        return _pvgis_profiller[anahtar], "pvgis"
+    kayit = _pvgis_yukle().get(anahtar)
+    if kayit:
+        try:
+            mevsim = kayit["profil"]
+            toplam = sum(AY_GUN[m - 1] * sum(mevsim[_AY_MEVSIM.get(m, "bahar")])
+                         for m in range(1, 13))
+            profil = {}
+            for m in range(1, 13):
+                for h, w in enumerate(mevsim[_AY_MEVSIM.get(m, "bahar")]):
+                    if w > 0:
+                        profil[(m, h)] = w / toplam
+            _pvgis_profiller[anahtar] = profil
+            return profil, "pvgis"
+        except (KeyError, TypeError, ZeroDivisionError) as e:
+            print(f"pvgis profili bozuk ({anahtar}): {type(e).__name__}", flush=True)
+    return _PROFIL, "geometri"
+
+
+def _tl_bicim(v: float) -> str:
+    """Türkçe ondalık biçim: 2.9097 → '2,9097'."""
+    return f"{v:.4f}".replace(".", ",")
+
+
+# Abone grubu varsayılanları — asistan.py EPDK 4 Nisan 2026 vergisiz birimleri
+# (tek doğruluk kaynağı kb/tarifeler.md). "satis" = saatlik mahsupta fazla üretimin
+# değerlendiği grubun ÇIPLAK aktif enerji bedeli. OSB'nin EPDK dağıtım tablosunda
+# karşılığı yok; sanayi OG çift terimli dağıtım birimi yaklaşık kullanılır.
+GRUP_TARIFE = {
+    "mesken": {"aktif": EPDK_ENERJI["mesken_k2"], "dagitim": EPDK_DAGITIM["mesken_ag"],
+               "satis": EPDK_ENERJI["mesken_k2"],
+               "ad": "mesken (K2 enerji + AG dağıtım)"},
+    "ticarethane": {"aktif": EPDK_ENERJI["ticarethane_k1"],
+                    "dagitim": EPDK_DAGITIM["ticarethane_og_tek"],
+                    "satis": EPDK_ENERJI["ticarethane_k1"],
+                    "ad": "ticarethane (K1 enerji + OG tek terim dağıtım)"},
+    "sanayi": {"aktif": EPDK_ENERJI["sanayi_og"], "dagitim": EPDK_DAGITIM["sanayi_og_tek"],
+               "satis": EPDK_ENERJI["sanayi_og"],
+               "ad": "sanayi OG (tek terim dağıtım)"},
+    "osb": {"aktif": EPDK_ENERJI["sanayi_og"], "dagitim": EPDK_DAGITIM["sanayi_og_cift"],
+            "satis": EPDK_ENERJI["sanayi_og"],
+            "ad": "OSB (sanayi OG enerji + çift terim dağıtım yaklaşımı)"},
+}
 
 
 def _hucre_sayi(v):
@@ -1285,16 +1370,25 @@ async def saatlik_analiz(istek: Request):
         return JSONResponse({"hata": "Gündüz (07-19) tüketimi çözümlenemedi; dosyadaki kWh "
                                      "kolonunu kontrol edin."}, status_code=400)
 
-    # --- il verimi ---
+    # --- il verimi + üretim profili (PVGIS; yoksa geometrik model) ---
     il = str(govde.get("il", ""))
-    verim = ILLER.get(_il_anahtar(il))
+    il_anahtar = _il_anahtar(il)
+    verim = ILLER.get(il_anahtar)
     il_notu = None
     if verim is None:
         verim = 1450
         il_notu = (f"'{il or 'il belirtilmedi'}' il listesinde bulunamadı; Türkiye ortalaması "
                    "1450 kWh/kWp/yıl kullanıldı.")
+    profil, profil_kaynak = _il_profili(il_anahtar)
 
-    # --- birim fiyatlar (verilmediyse EPDK sanayi OG varsayılanı) ---
+    # --- abone grubu (varsayılan sanayi; frontend seçtiriyor) ---
+    grup = str(govde.get("grup") or "sanayi").strip().lower()
+    if grup not in GRUP_TARIFE:
+        return JSONResponse({"hata": "grup 'mesken', 'ticarethane', 'sanayi' veya 'osb' "
+                                     "olmalı."}, status_code=400)
+    tarife = GRUP_TARIFE[grup]
+
+    # --- birim fiyatlar (verilmediyse seçili grubun EPDK tarifesi) ---
     def _pozitif(anahtar):
         try:
             f = float(govde.get(anahtar))
@@ -1305,11 +1399,12 @@ async def saatlik_analiz(istek: Request):
     dagitim = _pozitif("dagitim_tl_kwh")
     fiyat_varsayilan = aktif is None or dagitim is None
     if aktif is None:
-        aktif = EPDK_ENERJI["sanayi_og"]
+        aktif = tarife["aktif"]
     if dagitim is None:
-        dagitim = EPDK_DAGITIM["sanayi_og_tek"]
-    # Fazla üretim: saatlik mahsupta abone grubu ÇIPLAK aktif enerji bedeli (muhafazakâr)
-    satis_birim = min(aktif, EPDK_ENERJI["sanayi_og"])
+        dagitim = tarife["dagitim"]
+    # Fazla üretim (saatlik mahsup, muhafazakâr):
+    # satış birimi = min(girilen aktif bedel, seçili grubun çıplak aktif enerji bedeli)
+    satis_birim = min(aktif, tarife["satis"])
 
     # --- senaryolar: kwpListe verildiyse TAM o değerler; yoksa gündüz ort. yükün
     #     %50/%75/%100/%125'i ---
@@ -1329,19 +1424,20 @@ async def saatlik_analiz(istek: Request):
         if not adaylar:
             return JSONResponse({"hata": "kwpListe geçerli (0'dan büyük) bir kWp değeri "
                                          "içermiyor."}, status_code=400)
-    else:
-        adaylar = [round(gunduz_ort_kw * oran, 1) for oran in (0.5, 0.75, 1.0, 1.25)]
+    kucuk_tuketici = False
+    if not kwp_ozel:
+        if gunduz_ort_kw * 0.5 < 2:
+            adaylar, kucuk_tuketici = [2.0, 3.0, 5.0], True
+        else:
+            adaylar = [round(gunduz_ort_kw * oran, 1) for oran in (0.5, 0.75, 1.0, 1.25)]
 
     senaryolar = []
     for kwp in adaylar:
-        if not kwp_ozel:
-            if kwp < 0.5:
-                continue
-        else:
+        if kwp_ozel:
             kwp = round(kwp, 2)
         uret_top, oz_top = 0.0, 0.0
         for (gun, saat), kwh in seri.items():
-            u = kwp * verim * _PROFIL.get((gun.month, saat), 0.0)
+            u = kwp * verim * profil.get((gun.month, saat), 0.0)
             uret_top += u
             oz_top += min(u, kwh)
         oz_oran = oz_top / uret_top if uret_top else 0.0
@@ -1369,27 +1465,37 @@ async def saatlik_analiz(istek: Request):
         f"Hesap tarihi {datetime.date.today().isoformat()}; veri aralığı "
         f"{ilk.isoformat()} – {son.isoformat()} ({gun_sayisi} gün).",
         f"İl verimi: {verim} kWh/kWp/yıl" + (f" ({il})." if not il_notu else "."),
-        "Üretim eğrisi basit güneş geometrisiyle kuruldu: 38,5°K enlemi için ay ortası gün "
-        "uzunluğu, öğle (13:00) tepe noktalı sinüs profili; aylık enerji ağırlığı gün "
-        "uzunluğunun karesiyle orantılı. Saha simülasyonu değildir, öz tüketim oranı "
-        "yaklaşıktır.",
+        ("Üretim eğrisi PVGIS v5.2 saatlik mevsim ortalamalarından (30° eğim, güney; "
+         "simülasyon sayfasıyla aynı profil); yıllık toplam il özgül verimine normalize "
+         "edildi. Öz tüketim oranı yaklaşıktır."
+         if profil_kaynak == "pvgis" else
+         "PVGIS profili yüklenemediği için üretim eğrisi basit güneş geometrisiyle kuruldu: "
+         "38,5°K enlemi için ay ortası gün uzunluğu, öğle (13:00) tepe noktalı sinüs "
+         "profili; aylık enerji ağırlığı gün uzunluğunun karesiyle orantılı. Öz tüketim "
+         "oranı yaklaşıktır."),
         "Öz tüketim oranı yüklenen dönemin saatlik çakıştırmasından bulunup yıla genellendi; "
         "mevsimsel tüketim farkları sapma yaratabilir.",
-        ("Kurulu güç adayları istekte verilen kWp listesinden alındı."
-         if kwp_ozel else
-         "Kurulu güç adayları gündüz (07-19) ortalama yükün %50/%75/%100/%125'i; kW ≈ kWp "
-         "kabul edildi (DC/AC ≈ 1)."),
+        ("Kurulu güç adayları istekte verilen kWp listesinden alındı." if kwp_ozel
+         else ("Tüketiminiz küçük; pratik en küçük kurulumlar (2 / 3 / 5 kWp) gösterildi."
+               if kucuk_tuketici else
+               "Kurulu güç adayları gündüz (07-19) ortalama yükün %50/%75/%100/%125'i; "
+               "kW ≈ kWp kabul edildi (DC/AC ≈ 1).")),
         "Fazla üretim, 1 Mayıs 2026 saatlik mahsuplaşma kuralına uygun muhafazakâr birimle "
-        f"(abone grubu çıplak aktif enerji bedeli, {round(satis_birim, 4)} TL/kWh) "
-        "değerlendi; PTF/YEKDEM üst senaryoları dahil edilmedi.",
+        "değerlendi: satış birimi = min(girilen aktif bedel, seçili grubun çıplak aktif "
+        f"enerji bedeli) = {_tl_bicim(satis_birim)} ₺/kWh; PTF/YEKDEM üst senaryoları "
+        "dahil edilmedi.",
         "Yatırım maliyeti güncel anahtar teslim ₺/kW bandından (Ağu 2026, OG ölçeği); "
         "kesin tutar için teklif alın. Tüm tutarlar vergiler hariçtir.",
     ]
     if fiyat_varsayilan:
-        notlar.append("Birim fiyat verilmediği için EPDK 4 Nisan 2026 sanayi OG tarifesi "
-                      f"varsayıldı (aktif {round(EPDK_ENERJI['sanayi_og'], 4)} + dağıtım "
-                      f"{round(EPDK_DAGITIM['sanayi_og_tek'], 4)} TL/kWh, vergiler hariç); "
-                      "faturanızdaki birim fiyatlarla sonuç değişir.")
+        notlar.append(f"Birim fiyat verilmediği için EPDK 4 Nisan 2026 {tarife['ad']} "
+                      f"tarifesi varsayıldı (aktif {_tl_bicim(aktif)} + dağıtım "
+                      f"{_tl_bicim(dagitim)} ₺/kWh, vergiler hariç); faturanızdaki birim "
+                      "fiyatlarla sonuç değişir.")
+    if grup == "mesken":
+        notlar.append("Meskenler aylık mahsuplaşmaya tabidir; bu analiz öz tüketim "
+                      "profilinizi gösterir, saatlik mahsup TL hesabı işletme rejimine "
+                      "göredir.")
     if il_notu:
         notlar.append(il_notu)
 

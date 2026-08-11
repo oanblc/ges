@@ -51,7 +51,12 @@ const MITLER = [
   },
 ];
 
-const KONULAR = [
+const KONULAR: Array<{
+  baslik: string;
+  ozet: string;
+  soru: string;
+  ek?: { href: string; metin: string };
+}> = [
   {
     baslik: "Tarifeler ve Faturanız",
     ozet:
@@ -87,6 +92,7 @@ const KONULAR = [
     ozet:
       "KOSGEB, YTB, IPARD, banka kredileri ve leasing yapıları; konut poliçesinin GES'i otomatik kapsamadığı gerçeği.",
     soru: "GES yatırımımı nasıl finanse edebilirim?",
+    ek: { href: "/police-analizi", metin: "Poliçenizi ücretsiz analiz edin" },
   },
   {
     baslik: "Kurulumcu Seçimi ve Güvenlik",
@@ -144,7 +150,7 @@ export default function Rehber() {
               <b>{k.baslik}</b>
               <p><Aciklamali>{k.ozet}</Aciklamali></p>
               <div className="dk-alt">
-                <span />
+                {k.ek ? <a href={k.ek.href}>{k.ek.metin}</a> : <span />}
                 <a href={`/asistan?soru=${encodeURIComponent(k.soru)}`}>
                   Asistana Sorun <Ok className="i" />
                 </a>

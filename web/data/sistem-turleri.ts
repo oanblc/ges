@@ -12,20 +12,22 @@ export const SISTEM_KAYNAK_NOT =
 /* ---------- Off-grid (bataryalı bağımsız) ---------- */
 export const OFFGRID = {
   dod: 0.8, // LiFePO4 kullanılabilir kapasite (DoD) — kb §2, 10 Ağu 2026
+  cevrimVerim: 0.85, // inverter+kablo verimi — kb/teknik-depolama.md ortak formül, 11 Ağu 2026 (batarya = günlük × otonomi ÷ 0,8 ÷ 0,85 ≈ ×1,47)
   kisPsh: 2.5, // kış tepe güneş saati (boyutlandırıcı mevsim) — kb/teknik-ozel-uygulamalar.md örneği, 10 Ağu 2026
   sistemVerim: 0.75, // panel→batarya→yük zinciri kaybı — kb §2 formülü
   /** Hazır paket bantları [batarya kWh tavanı, alt ₺, üst ₺] — SolarDepo/Power Enerji ilanları, Ağu 2026 (KDV durumu ilanlarda belirsiz) */
   paketBant: [
-    [3, 55000, 72000], // küçük bağ evi: 2-3 panel + 2-3 kWh akü
+    [3, 55000, 72000], // küçük bağ evi (~1 kWh/gün profili): 2-3 panel + 2-3 kWh akü
     [6, 60000, 125000], // tiny house/konteyner: 3-4 panel + ~5 kWh LFP + 3-6 kW inverter
     [10, 178000, 225000], // yayla/müstakil ev (klima dahil): ~4-5 kWp + 5-10 kWh LFP
   ] as Array<[number, number, number]>,
   // 10 kWh üzeri hazır paket kb'de TEYİT BEKLİYOR → sabit yok; kb'nin önerdiği modüler yol:
   lfpTlKwh: [7800, 12000] as const, // modüler LFP ₺/kWh — kb/ekipman-fiyatlar.md, Ağu 2026
   hibritInverter10kwTl: [65000, 90000] as const, // 10 kW hibrit inverter — kb/ekipman-fiyatlar.md, Ağu 2026
-  /** Senaryo örnekleri (kb §2 tablosu + örnek hesap) */
+  /** Senaryo örnekleri (kb §2 tablosu + örnek hesap; 11 Ağu 2026 tutarlılık düzeltmesiyle eşleşik) */
   senaryolar: [
-    "Bağ evi (2,5 kWh/gün, 2 gün otonomi): ≈ 6,25 kWh batarya + 1,4 kWp panel + 2,4-3 kVA inverter — paket 55-72 bin ₺",
+    "Küçük bağ evi (~1 kWh/gün: aydınlatma+TV+şarj, 2 gün otonomi ≈ 2,9 kWh akü): 2-3 panel + 2-3 kWh akü — paket 55-72 bin ₺",
+    "Bağ evi (2,5 kWh/gün × 2 gün ≈ 7,4 kWh batarya, pratikte 8 kWh sınıfı): ~1,4 kWp panel + 2,4-3 kVA inverter — küçük paket yetmez; yayla/müstakil bandı (178-225 bin ₺) ya da modüler kurulum",
     "Tiny house / konteyner: 3-4 panel + ~5 kWh LFP + 3-6 kW inverter — 60-125 bin ₺",
     "Yayla / müstakil ev (klima dahil): ~4-5 kWp + 5-10 kWh LFP — 178-225 bin ₺",
   ],

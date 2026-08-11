@@ -36,11 +36,17 @@ export default async function Hesaplama() {
           için asistana taşıyabilirsiniz. Hibe ve kredi seçenekleri için{" "}
           <a href="/destekler">Destekler</a> sayfasına bakın.
         </p>
+        <p>
+          Hangi araç ne zaman? Hızlı bant tahmini için bu sayfa; gün gün senaryo denemek için{" "}
+          <a href="/simulasyon">Simülasyon</a>; gerçek faturanızla kişisel plan için{" "}
+          <a href="/fatura-analizi">Fatura Analizi</a>.
+        </p>
         <nav className="cip-nav" aria-label="Sayfa içi araçlar">
           <a href="#maliyet">Kurulum Maliyeti</a>
           <a href="#roi">Yatırım Getirisi</a>
           <a href="#batarya">Batarya</a>
           <a href="/fatura-analizi">Fatura Analizi ↗</a>
+          <a href="/simulasyon">Detaylı Simülasyon ↗</a>
         </nav>
       </div>
 

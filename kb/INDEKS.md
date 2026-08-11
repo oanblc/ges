@@ -1,6 +1,6 @@
 # Bilgi Tabanı Ana İndeksi — "Hangi soru hangi dosyadan cevaplanır"
 
-Asistanın RAG yönlendirme haritası. Son güncelleme: 6 Ağustos 2026.
+Asistanın RAG yönlendirme haritası. Son güncelleme: 11 Ağustos 2026 (denetçi tutarlılık turu).
 Tüm dosyalar kb kökünde yayında (6 Ağustos 2026 onay turu: 21 taslak onaylandı).
 
 ## Dosya kataloğu
@@ -86,3 +86,11 @@ Son tarife penceresi kontrolü: 1 Temmuz 2026'da YENİ TARİFE YAYIMLANMADI; 4 N
 - 30-90 kW büyük sulama GES anahtar teslim fiyatı (perakende ilan yok)
 - 20 kWh sınıfı off-grid hazır paket fiyatı; 300-400 Wp esnek panel fiyatı
 - KKYDP hibe üst limiti ~3 M₺ (güncel çağrı metninden teyit)
+- GES deprem teminatında muafiyet/koasürans oranı (şirket/teklif bazlı — genel oran yayımlanmıyor, poliçe metninden teyit)
+
+## Tutarlılık düzeltme turu — 11 Ağustos 2026 (6 denetçi bulgusu)
+- ✅ Off-grid batarya formülü TEKİLLEŞTİRİLDİ: günlük × otonomi ÷ 0,8 (LFP DoD) ÷ 0,85 (inverter+kablo verimi) ≈ ×1,47 — teknik-depolama.md, sistem-turleri-fiyatlar.md, teknik-ozel-uygulamalar.md aynı formülde. DİKKAT: web/data/sistem-turleri.ts hâlâ yalnız ÷0,8 kullanıyor → kod güncellemesi gerekir (Ozan onayı).
+- ✅ Bağ evi senaryosu formülle tutarlı: 2,5 kWh/gün × 2 gün → ≈7,4 kWh batarya; 55-72 bin ₺ paket ~1 kWh/gün profiline aittir (sistem-turleri-fiyatlar.md §2).
+- ✅ Sulama üst bandı netleşti: tabloya "30 HP ve üzeri PROJE BAZLI TEKLİF" satırı + 20-30 HP'de ₺/kWp hesabı uyarısı (sistem-turleri-fiyatlar.md §1).
+- ✅ Deprem/DASK-GES bölümü eklendi: DASK yalnız bina gövdesi, panel için ayrı ürün/zeyil şart (finansman-sigorta.md §6b, kaynaklı).
+- ✅ Ekipman §6 anahtar teslim bantları kb/taslak/2026-08-08-maliyet-arastirmasi.md ile hizalandı (web araçlarıyla aynı kaynak).

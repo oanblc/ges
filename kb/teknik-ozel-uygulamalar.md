@@ -1,7 +1,7 @@
 ---
 konu: Özel uygulamalar — carport, agrivoltaik, yüzer GES, BIPV/balkon, off-grid, sulama, ısı pompası, sıcak su
-guncelleme: 2026-08-06
-durum: yayin (Ozan onayi 6 Agu 2026)
+guncelleme: 2026-08-11
+durum: yayin (Ozan onayi 6 Agu 2026; 11 Agu 2026 tutarlilik duzeltmesi: off-grid batarya formulu ortak formule cekildi)
 ---
 # Özel Uygulama Tipleri (2026)
 ## Carport
@@ -13,8 +13,8 @@ durum: yayin (Ozan onayi 6 Agu 2026)
 ## Cephe/BIPV, balkon
 - Dikey panel: kışın 3-4 kat üretim, kar tutmaz; yıllıkta düz çatıyla başa baş/+%30'a kadar; kış-ısıtma profiline uyar. BIPV TR: CW, bipv.com.tr, Pimeks (modül 2-4× pahalı; kaplama yerine geçince prestij projede makul).
 - Balkon seti: 1-2 panel+mikro inverter (~15-35 bin ₺). YASAL GRİ ALAN: öz tüketim fiilen OK; şebekeye geri besleme için bağlantı anlaşması+çift yönlü sayaç şart (Almanya tipi basit kayıt YOK; mekanik sayaç geri döndürme = usulsüz kullanım riski — NET UYARI). Anti-islanding fişte gerilim bırakmaz; yine de ayrı sigortalı hat öner.
-## Off-grid (bağ evi örneği — editör hesabı)
-- 2,5 kWh/gün → batarya 2 gün ÷0,8 DoD = 6,25 kWh (24V 280Ah LFP) → panel kış 2,5 PSH ×0,75 → ~1,4 kWp (3×455) → MPPT 60 A → inverter 2,4-3 kVA tam sinüs (pompa kalkışı 3×).
+## Off-grid (bağ evi örneği — editör hesabı; kb ORTAK FORMÜL 11 Ağu 2026)
+- 2,5 kWh/gün → batarya = 2,5 × 2 gün ÷ 0,8 (LFP DoD) ÷ 0,85 (inverter+kablo verimi) ≈ 7,4 kWh (pratikte 8 kWh sınıfı, örn. 24V 320Ah LFP) → panel kış 2,5 PSH ×0,75 → ~1,4 kWp (3×455) → MPPT 60 A → inverter 2,4-3 kVA tam sinüs (pompa kalkışı 3×). (Formül teknik-depolama.md ve sistem-turleri-fiyatlar.md ile aynı; AC tüketim inverter kaybı kadar fazla enerji çektiği için ÷0,85 ayrıca uygulanır.)
 - Kış = boyutlandırıcı; sürekli kış kullanımı: panel 2-3× veya jeneratör hibrit (AGS). İzin gerekmez.
 ## Tarımsal sulama pompası
 - Mimari: paneller → solar VFD sürücü → 3 faz dalgıç; bulutta yavaşlar durmaz; kuru çalışma koruması.

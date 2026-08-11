@@ -5,4 +5,6 @@ COPY ajan/requirements.txt ajan/requirements.txt
 RUN pip install --no-cache-dir -r ajan/requirements.txt
 COPY ajan ajan
 COPY kb kb
+# saatlik-analiz üretim profili — simülasyonla aynı PVGIS kaynağı
+COPY web/data/pvgis.json web/data/pvgis.json
 CMD ["sh", "-c", "python -m uvicorn servis:app --app-dir ajan --host 0.0.0.0 --port ${PORT:-8756}"]

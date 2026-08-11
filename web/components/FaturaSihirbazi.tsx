@@ -24,6 +24,11 @@ type Alanlar = {
 };
 
 const IZINLI = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+/** Türkçe il adı normalizasyonu: toLocaleLowerCase("tr") tek başına "IZMIR" → "ızmır"
+ * ürettiğinden önce İ→i / I→ı çevrimi yapılır (ajan/asistan.py ile aynı yaklaşım). */
+const ilAnahtar = (s: string) =>
+  s.trim().replace(/İ/g, "i").replace(/I/g, "ı").toLocaleLowerCase("tr");
 const tl = (n: number) => "₺" + Math.round(n).toLocaleString("tr-TR");
 const binTl = (n: number) =>
   n >= 1_000_000
@@ -84,11 +89,12 @@ export default function FaturaSihirbazi() {
       setTip(a.abone_grubu === "mesken" ? "konut" : "isletme");
       setAylikFatura(Math.round(a.toplam_tutar_tl));
       setAylikKwh(Math.round(a.tuketim_kwh));
-      const bulunan = ILLER.find(([ad]) =>
-        a.il ? ad.toLocaleLowerCase("tr") === a.il.toLocaleLowerCase("tr") : false,
-      );
+      const bulunan = a.il ? ILLER.find(([ad]) => ilAnahtar(ad) === ilAnahtar(a.il!)) : undefined;
+      const eksikler = [...(a.okunamayanlar ?? [])];
       if (bulunan) setIl(bulunan[0]);
-      setOkunamayan(a.okunamayanlar ?? []);
+      else if (!eksikler.some((x) => ilAnahtar(x).startsWith("il")))
+        eksikler.push("il"); // sessizce İstanbul varsayma — kullanıcı aşağıdan seçsin
+      setOkunamayan(eksikler);
       setAdim(2);
     } catch (e) {
       setHata(e instanceof Error && e.message ? e.message : "Fatura okunamadı; daha net bir fotoğrafla deneyin.");
@@ -289,7 +295,7 @@ export default function FaturaSihirbazi() {
             <a
               className="gt-btn small"
               href={`/asistan?soru=${encodeURIComponent(
-                `${il}'de ${tip === "konut" ? "konut" : "işletme"} aboneliğim var, aylık faturam ${tl(aylikFatura)}. ${sonuc.kw} kW GES planımı detaylandırır mısın?`,
+                `${il}'de ${tip === "konut" ? "konut" : "işletme"} aboneliğim var, aylık faturam ${tl(aylikFatura)}${aylikKwh > 0 ? `, aylık tüketimim ${kwh(aylikKwh)}` : ""}. ${sonuc.kw} kW GES planımı detaylandırır mısın?`,
               )}`}
             >
               Asistanla Detaylandırın <Ok className="i" />

@@ -29,6 +29,14 @@ type Senaryo = {
   geriOdemeYil: number | null;
 };
 type Cikti = { ozet: Ozet; senaryolar: Senaryo[]; notlar: string[] };
+type Grup = "mesken" | "ticarethane" | "sanayi" | "osb";
+
+const GRUPLAR: Array<[Grup, string]> = [
+  ["mesken", "Mesken"],
+  ["ticarethane", "Ticarethane"],
+  ["sanayi", "Sanayi"],
+  ["osb", "OSB"],
+];
 
 const tl = (n: number) => "₺" + Math.round(n).toLocaleString("tr-TR");
 const binTl = (n: number) =>
@@ -57,6 +65,7 @@ export default function SaatlikAnaliz() {
   const [dosya, setDosya] = useState<File | null>(null);
   const [surukleniyor, setSurukleniyor] = useState<boolean>(false);
   const [il, setIl] = useState<string>("İstanbul");
+  const [grup, setGrup] = useState<Grup>("sanayi");
   const [aktifFiyat, setAktifFiyat] = useState<string>("");
   const [dagitimFiyat, setDagitimFiyat] = useState<string>("");
   const [mesgul, setMesgul] = useState<boolean>(false);
@@ -89,6 +98,7 @@ export default function SaatlikAnaliz() {
       });
       const govde: Record<string, unknown> = {
         il,
+        grup,
         dosya: { ad: dosya.name, tip, b64 },
       };
       const aktif = fiyatCoz(aktifFiyat);
@@ -120,11 +130,11 @@ export default function SaatlikAnaliz() {
     }
   }
 
+  // yalnız geri ödemesi hesaplanabilen senaryolar aday olur; hiçbirinde yoksa ★ basılmaz
+  const adaylar = sonuc?.senaryolar.filter((s) => (s.geriOdemeYil ?? 0) > 0) ?? [];
   const enIyi =
-    sonuc && sonuc.senaryolar.length > 0
-      ? sonuc.senaryolar.reduce((a, b) =>
-          (b.geriOdemeYil ?? 0) > 0 && ((a.geriOdemeYil ?? 0) <= 0 || (b.geriOdemeYil ?? 0) < (a.geriOdemeYil ?? 0)) ? b : a,
-        )
+    adaylar.length > 0
+      ? adaylar.reduce((a, b) => ((b.geriOdemeYil ?? 0) < (a.geriOdemeYil ?? 0) ? b : a))
       : null;
 
   return (
@@ -176,6 +186,22 @@ export default function SaatlikAnaliz() {
           </label>
           <p className="fs-not"><Aciklamali>Dosya yalnız bu analiz için kullanılır; saat saat okunur, tüketim profiliniz çıkarılır
             ve farklı GES boyutları için öz tüketim simülasyonu yapılır.</Aciklamali></p>
+          <div className="rf">
+            <label>Abone grubu</label>
+            <div className="rtoggle" aria-label="Abone grubu">
+              {GRUPLAR.map(([k, ad]) => (
+                <button
+                  key={k}
+                  type="button"
+                  className={grup === k ? "on" : ""}
+                  aria-pressed={grup === k}
+                  onClick={() => setGrup(k)}
+                >
+                  {ad}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="fs-form-izgara">
             <div className="rf">
               <label htmlFor="saIl">İl</label>
@@ -214,8 +240,11 @@ export default function SaatlikAnaliz() {
               </div>
             </div>
           </div>
-          <p className="fs-not">Birim fiyatları boş bırakırsanız güncel EPDK tarifesiyle hesaplanır; faturanızdaki
-            birim fiyatları girerseniz sonuçlar size özel olur.</p>
+          <p className="fs-not">Birim fiyatları boş bırakırsanız seçtiğiniz abone grubunun güncel EPDK tarifesiyle
+            hesaplanır; faturanızdaki birim fiyatları girerseniz sonuçlar size özel olur.</p>
+          {grup === "mesken" && (
+            <p className="fs-not">Meskenler aylık mahsuplaşmaya tabidir; bu araç öz tüketim profilinizi analiz eder.</p>
+          )}
           <div className="tool-cta">
             <button className="gt-btn small" type="submit" disabled={mesgul}>
               {mesgul ? "Analiz ediliyor…" : "Analiz Et"} <Ok className="i" />
@@ -304,6 +333,10 @@ export default function SaatlikAnaliz() {
           )}
           <p className="roi-note"><Aciklamali>Sonuçlar yüklediğiniz saatlik profil ve {il} güneşlenme verisiyle üretilen ön
             fizibilitedir; kesin tasarım yerinde keşif ister.</Aciklamali></p>
+          <p className="fs-not">
+            Tek bir boyutu gün gün oynatarak görmek için <a href="/simulasyon">Detaylı Simülasyon</a> sayfasını
+            kullanabilirsiniz.
+          </p>
           <div className="tool-cta">
             <a
               className="gt-btn small"

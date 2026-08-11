@@ -398,6 +398,8 @@ export default function Simulasyon() {
       ];
       el("sonucBaslik").textContent =
         `${S.guc.toLocaleString("tr-TR")} kWp · ${pb.adet.toLocaleString("tr-TR")} panel (${pb.alan.toLocaleString("tr-TR")} m²) · ${S.il}`;
+      // mesken 2× tavanı: yalnız uyarı, hesaba karışmaz (mevzuat: aşan kısım bedelsiz YEKDEM'e)
+      el("meskenTavanUyari").hidden = !(S.grup === "mesken" && yil.uretim > 2 * yil.tuketim);
       const havaAd = ({ acik: "açık", parcali: "ortalama", bulutlu: "bulutlu" } as Record<string, string>)[S.hava];
       const mevsimAd = ({ kis: "kış", bahar: "bahar/sonbahar", yaz: "yaz" } as Record<string, string>)[S.mevsim];
       el("sonucTablo").innerHTML = `
@@ -815,7 +817,8 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
             : ".") +
           (eksikler.length
             ? ` Faturadan okunamayanlar: <b>${eksikler.join(", ")}</b> — lütfen soldaki alanlardan elle girin.`
-            : "");
+            : "") +
+          ` <a href="/fatura-analizi">Detaylı fizibilite: Fatura Analizi ↗</a>`;
         el("uyduBanner").hidden = false;
         el("sahneKutu").scrollIntoView({ behavior: "smooth", block: "center" });
       } catch (e) {
@@ -1212,6 +1215,10 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
         <div className="sonuc-tablo-kutu">
           <table className="sonuc-tablo" id="sonucTablo"></table>
         </div>
+        <p className="karne-uyari" id="meskenTavanUyari" hidden>
+          Yıllık üretim, tüketiminizin 2 katını aşıyor — aşan kısım mevzuat gereği bedelsiz
+          YEKDEM&apos;e devrolur; bu boyut önerilmez.
+        </p>
         <div className="yatirim-ozet" id="yatirimOzet"></div>
         <div className="senaryo-kiyas" id="senaryoKiyas"></div>
         <div className="grafik25-kutu">
@@ -1234,6 +1241,10 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
             <span className="dip" id="saatlikDurum"></span>
           </div>
           <div className="senaryo-kiyas" id="saatlikKiyas" hidden></div>
+          <p className="dip" style={{ marginTop: 8 }}>
+            Dosyanızla birden çok GES boyutunu yan yana karşılaştırmak için{" "}
+            <a href="/saatlik-analiz">Saatlik Analiz</a> sayfasını kullanın.
+          </p>
         </div>
         <div className="karne-cta">
           <button className="gt-btn small" id="raporBtn" type="button">PDF Raporu İndir</button>

@@ -1,7 +1,7 @@
 ---
 konu: GES sistem türleri — sulama, off-grid, carport/şarj, ısı pompası paketi, esnek panel (boyutlandırma + fiyat)
-guncelleme: 2026-08-10
-durum: yayin (Ozan talebi 10 Agu 2026; kb kokune dogrudan yazim talimatla)
+guncelleme: 2026-08-11
+durum: yayin (Ozan talebi 10 Agu 2026; 11 Agu 2026 tutarlilik duzeltmesi: off-grid formul + bag evi senaryosu + sulama ust bandi)
 not: Fiyatlar "Ağustos 2026 itibarıyla" perakende/ilan taraması; teknik boyutlandırma detayı teknik-ozel-uygulamalar.md'de. 3 ayda bir güncelle.
 ---
 
@@ -21,8 +21,10 @@ not: Fiyatlar "Ağustos 2026 itibarıyla" perakende/ilan taraması; teknik boyut
 | 1-2 HP (0,75-1,5 kW) | 60-80 bin ₺ | 5-20 dönüm |
 | 3-5 HP (2,2-3,7 kW) | 95-135 bin ₺ | 20-40 dönüm |
 | 7,5-10 HP (5,5-7,5 kW) | 150-250 bin ₺ (7,5 HP montaj dahil 180-200 bin) | 40-80 dönüm |
-| 15+ HP (11+ kW) | 280-700 bin ₺ | 80+ dönüm |
+| 15-30 HP (11-22 kW) | 280-700 bin ₺ (üst uç ~20 HP; 30 HP'ye ekstrapolasyon bandı aşar, aşağıya bak) | 80+ dönüm |
+| 30 HP VE ÜZERİ | PROJE BAZLI TEKLİF — perakende ilan yok | — |
 - ₺/kWp (editör hesabı, 7,5 HP örneğinden): anahtar teslim ~17-20 bin ₺/kWp.
+- Bant sınırı notu (11 Ağu 2026): 30 HP → 39-45 kWp × 17-20 bin ₺/kWp ≈ 663-900 bin ₺, yani ilan bandındaki "700 bin" üst ucunu aşar → 20-30 HP arasında ilan bandına değil ₺/kWp hesabına güven, 30 HP ve üzerinde her durumda proje bazlı teklif.
 - 40-120 HP (30-90 kW) büyük sistemler: perakende fiyat İLAN EDİLMİYOR → proje bazlı teklif; TEYİT BEKLİYOR.
 - Geri ödeme 2,5-5 yıl (mazot/şebeke çekme alternatifine göre çoğu zaman ilk günden ucuz).
 
@@ -33,11 +35,12 @@ not: Fiyatlar "Ağustos 2026 itibarıyla" perakende/ilan taraması; teknik boyut
 - Kaynak: Power Enerji sulama sayfası, Kampa (5,5 HP paket), Dörtyol/TKDK 302.7, Piagrid TKDK sayfası. Son kontrol: 10 Ağu 2026.
 
 ## 2. Off-grid (bataryalı bağımsız) sistemler
-**Boyutlandırma (kb teknik-ozel-uygulamalar.md ile aynı)**
-- Batarya (kWh) = günlük tüketim (kWh/gün) × otonomi günü ÷ 0,8 (LiFePO4 DoD).
+**Boyutlandırma (kb ORTAK FORMÜL — teknik-depolama.md ve teknik-ozel-uygulamalar.md ile aynı, 11 Ağu 2026)**
+- Batarya (kWh) = günlük tüketim (kWh/gün) × otonomi günü ÷ 0,8 (LiFePO4 DoD) ÷ 0,85 (inverter+kablo verimi) ≈ günlük × otonomi × 1,47. Neden: AC tüketim bataryadan inverter kaybı kadar fazla enerji çeker; DoD ve verim bağımsız kayıplardır — tek "÷0,8" batarya boyutunu ~%15 eksik verir.
 - Panel (kWp) = günlük tüketim ÷ (kış PSH × 0,75). Kış = boyutlandırıcı; sürekli kış kullanımında panel 2-3× veya jeneratör hibrit.
 - Hibrit/off-grid inverter = tepe yük × 1,25; motorlu yük (pompa/buzdolabı) kalkışı 3× → tam sinüs şart.
-- Örnek (bağ evi 2,5 kWh/gün, 2 gün otonomi): 6,25 kWh batarya + ~1,4 kWp panel + 2,4-3 kVA inverter.
+- Örnek (bağ evi 2,5 kWh/gün, 2 gün otonomi): 2,5×2÷0,8÷0,85 ≈ 7,4 kWh batarya (pratikte 8 kWh sınıfı) + ~1,4 kWp panel + 2,4-3 kVA inverter. Bu profil 55-72 bin ₺'lik küçük paketle KARŞILANMAZ; tiny house paketi (~5 kWh) de alt kalır → 8-10 kWh sınıfı için yayla/müstakil bandına (178-225 bin ₺) veya modüler kuruluma bak.
+- 55-72 bin ₺ bandındaki paket (~2-3 kWh akü) ancak ~1 kWh/gün tüketim + 2 gün otonomi profilini taşır (1×2÷0,8÷0,85 ≈ 2,9 kWh): aydınlatma+TV+telefon şarjı; buzdolabı sürekli çalışmaz.
 
 **Hazır paket fiyat bantları (Ağu 2026; SolarDepo "indirimli liste" — KDV durumu ilanlarda belirsiz → sipariş öncesi teyit)**
 | Senaryo | Tipik içerik | Bant |

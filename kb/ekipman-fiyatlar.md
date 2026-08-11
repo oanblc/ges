@@ -1,7 +1,7 @@
 ---
 konu: GES ekipman türleri ve güncel fiyatlar (panel, inverter, batarya, montaj, anahtar teslim)
-guncelleme: 2026-08-08
-durum: yayin (Ozan onayi 6 Agu 2026)
+guncelleme: 2026-08-11
+durum: yayin (Ozan onayi 6 Agu 2026; 11 Agu 2026 tutarlilik duzeltmesi: §6 anahtar teslim bantlari 8 Agu arastirmasina hizalandi)
 not: TL fiyatlara "Ağustos 2026 itibarıyla" damgası; 3 ayda bir güncelleme önerilir
 ---
 
@@ -48,15 +48,16 @@ not: TL fiyatlara "Ağustos 2026 itibarıyla" damgası; 3 ayda bir güncelleme �
 - 50 kW ÜSTÜ proje onay + kabul bedeli: ayrı kurul kararında, tutar TEYİT BEKLİYOR.
 - SMM proje ücreti, statik rapor, çift yönlü sayaç bedeli: ilan edilmiyor → teklif kalemi.
 
-## 6. Anahtar teslim (Ağu 2026)
+## 6. Anahtar teslim (güncellendi 11 Ağu 2026 — kb/taslak/2026-08-08-maliyet-arastirmasi.md bantlarına hizalandı; web hesaplama araçlarıyla AYNI KAYNAK)
 | Segment | Bant | ₺/kW |
 |---|---|---|
-| Konut 5 kW | 120-190 bin ₺ | 24-36 bin |
-| Konut 10 kW | 200-300 bin ₺ | 20-30 bin |
-| Konut 25 kW | 450-650 bin ₺ | 18-26 bin |
+| Konut 5 kW (KDV dahil) | 120-180 bin ₺ | 24-36 bin |
+| Konut 10 kW (KDV dahil) | 200-320 bin ₺ | 20-32 bin |
+| Konut 25 kW (KDV dahil) | 500-800 bin ₺ | 20-32 bin |
 | Ticari 100 kW | 3,15 M₺ (KDV hariç) | 31,5 bin |
 | Ticari 250 kW | 6 M₺ | 24 bin |
 | 1 MW çatı | 22,5 M₺ | 22,5 bin |
+- Kaynak farkı notu: bu tablonun eski 6 Ağu değerleri (10 kW 200-300/20-30; 25 kW 450-650/18-26) tekil EPC listesi ağırlıklıydı; 8 Ağu araştırması (Azimut Nis-May 2026 EPC + Türkiye Solar Market piyasa ortalaması + saha teklifi) daha geniş piyasa bandı verdi → tablo o bantlara çekildi. Web /hesaplama araçları da aynı taslak bantları kullanır; kb-kod tutarlılığı için referans: kb/taslak/2026-08-08-maliyet-arastirmasi.md.
 - ÇELİŞKİ: 50 kW ₺/kW kaynaklar arasında tutarsız (40,5 bin vs 10-18 bin) — tek EPC listesine dayandırma, "teklif alın" notu şart.
 - Kırılım (1 MW): panel %35-40, inverter %12-15, konstrüksiyon %10-15, işçilik %12-15, kablo %8-10, trafo/bağlantı %5-10, proje/izin %3-5.
 - Trend: $/kW aşağı (küresel arz fazlası), ₺/kW yukarı (kur+işçilik). Geri dönüş: konut 4-8 yıl, ticari 3-5 yıl.

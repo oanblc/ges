@@ -57,7 +57,8 @@ function OffGridPanel() {
   const [otonomi, setOtonomi] = useState<number>(2);
 
   const h = useMemo(() => {
-    const bataryaKwh = (gunluk * otonomi) / OFFGRID.dod;
+    // kb ortak formülü (11 Ağu 2026): günlük × otonomi ÷ 0,8 (LFP DoD) ÷ 0,85 (inverter+kablo verimi)
+    const bataryaKwh = (gunluk * otonomi) / OFFGRID.dod / OFFGRID.cevrimVerim;
     const panelKwp = gunluk / (OFFGRID.kisPsh * OFFGRID.sistemVerim);
     const inverterKw = Math.max(3, Math.ceil(panelKwp * 1.2));
     const panelAdet = Math.max(2, Math.ceil((panelKwp * 1000) / EKIPMAN.panelWp));
@@ -71,7 +72,7 @@ function OffGridPanel() {
 
   const kalemler: Array<[string, string]> = [
     ["Güneş panelleri", `≈ ${sayi(h.panelKwp)} kWp (${h.panelAdet} adet ${EKIPMAN.panelWp} Wp) — kış güneşine göre boyutlandırıldı`],
-    ["LFP batarya", `≈ ${sayi(h.bataryaKwh)} kWh LiFePO4 (%80 DoD ile ${otonomi} gün otonomi)`],
+    ["LFP batarya", `≈ ${sayi(h.bataryaKwh)} kWh LiFePO4 — günlük × otonomi ÷ 0,8 (DoD) ÷ 0,85 (inverter+kablo verimi), ${otonomi} gün otonomi`],
     ["Hibrit inverter", `≈ ${h.inverterKw} kW tam sinüs — motorlu yük (pompa/buzdolabı) kalkışı için; tepe yükünüze göre teklifle kesinleşir`],
     ["Regülatör, montaj, kablolama", h.moduler ? "Panel ve montaj bu banda dahil değil — fiyat teklifle netleşir" : "Hazır pakete dahil"],
   ];
@@ -210,7 +211,7 @@ function SulamaPanel() {
             pompaj gerekiyorsa şebekeli/hibrit sürücü değerlendirilir.</li>
         )}
         {hp >= 30 && (
-          <li>30 HP üzeri büyük sistemlerde perakende fiyat ilan edilmiyor — fiyat proje bazlı
+          <li>30 HP ve üzeri büyük sistemlerde perakende fiyat ilan edilmiyor — fiyat proje bazlı
             teklifle netleşir.</li>
         )}
         {SULAMA.hibeNotlari.map((n) => <li key={n}>{n}</li>)}
@@ -307,6 +308,10 @@ function SarjPanel() {
         <li>{SARJ_LISANS_NOTU}</li>
         {cihaz.not && <li>{cihaz.not}</li>}
         {carportKwp > 0 && (
+          <li>Cihaz fiyatları KDV dahil perakende, carport GES bandı KDV hariç EPC — toplam bu
+            iki tabanın karmasıdır.</li>
+        )}
+        {carportKwp > 0 && (
           <li>Carport konstrüksiyonunda ₺/m² perakende ilan edilmez; referans: 2 araçlık hazır solar
             carport ≈ 572 bin ₺ (Ağu 2026). Öğlen üretimin mesai saati şarjıyla örtüşmesi en kârlı
             senaryodur; yapı ruhsatı/statik gerekir.</li>
@@ -374,7 +379,7 @@ export default function Maliyet() {
 
   const ekAlt = sonuc.batarya + (ip?.alt ?? 0);
   const ekUst = sonuc.batarya + (ip?.ust ?? 0);
-  const ortalama = (sonuc.alt + sonuc.ust) / 2 + (ekAlt + ekUst) / 2;
+  const gesOrtalama = (sonuc.alt + sonuc.ust) / 2; // dağılım grafiği yalnız GES bandını anlatır
 
   const panelAdet = Math.ceil((kw * 1000) / EKIPMAN.panelWp);
   const catiAlani = Math.round(panelAdet * EKIPMAN.panelM2);
@@ -524,7 +529,7 @@ export default function Maliyet() {
           {ip && (
             <div className="ro">
               <div className="rv">{binTl(ip.alt)} – {binTl(ip.ust)}</div>
-              <div className="rk">Isı pompası cihaz + montaj (ayrı kalem)</div>
+              <div className="rk">Isı pompası cihaz + montaj (toplama dahil)</div>
             </div>
           )}
         </div>
@@ -548,8 +553,16 @@ export default function Maliyet() {
 
       <div>
         <p className="tanim" style={{ marginBottom: 12 }}>
-          Ortalama {binTl(ortalama)} bütçenin kalemlere dağılımı:
+          Ortalama {binTl(gesOrtalama)} GES bütçesinin kalemlere dağılımı:
         </p>
+        {(bataryali || ip) && (
+          <p className="tanim" style={{ marginBottom: 12 }}>
+            Seçtiğiniz ek kalemler bu dağılıma dahil değildir:
+            {bataryali ? ` + batarya ${binTl(sonuc.batarya)}` : ""}
+            {bataryali && ip ? "," : ""}
+            {ip ? ` + ısı pompası ${binTl((ip.alt + ip.ust) / 2)} (ortalama)` : ""}.
+          </p>
+        )}
         <svg viewBox="0 0 360 196" role="img"
           aria-label={MALIYET_KALEMLERI.map(([ad, o]) => `${ad}: yüzde ${o}`).join("; ")}>
           {MALIYET_KALEMLERI.map(([ad, oran], i) => {

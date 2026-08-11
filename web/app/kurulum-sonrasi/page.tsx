@@ -187,7 +187,9 @@ export default function KurulumSonrasi() {
                 <b>Hasarda 5 iş günü içinde sigorta ihbarı</b>
                 <p><Aciklamali>Fırtına/dolu hasarında süreyi kaçırmayın; eksper ataması artık otomatik ve
                   bağımsızdır. Bataryalı sistemi sigortacıya yazılı bildirmemek ret
-                  gerekçesidir.</Aciklamali></p>
+                  gerekçesidir.</Aciklamali>{" "}
+                  Poliçenizin GES'i gerçekten kapsayıp kapsamadığından emin değilseniz{" "}
+                  <a href="/police-analizi">poliçenizi ücretsiz analiz edin</a>.</p>
               </div>
             </div>
           </div>

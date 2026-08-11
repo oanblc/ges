@@ -1,7 +1,7 @@
 ---
 konu: Depolama tekniği — kimya, mimari, backup, boyutlandırma, TR mevzuatı, ekonomi
-guncelleme: 2026-08-06
-durum: yayin (Ozan onayi 6 Agu 2026)
+guncelleme: 2026-08-11
+durum: yayin (Ozan onayi 6 Agu 2026; 11 Agu 2026 tutarlilik duzeltmesi: off-grid batarya formulu tekillestirildi)
 ---
 # Depolama Tekniği (2026)
 ## Kimya
@@ -14,7 +14,7 @@ durum: yayin (Ozan onayi 6 Agu 2026)
 ## Boyutlandırma
 - Konut: Batarya = akşam tüketimi × 1,15 ÷ DoD → TR tipik 5-10 kWh. Pratik: 1 kWp'e 1-1,5 kWh.
 - İşletme (saatlik mahsup): 15 dk sayaç profili → load-shifting kWh = mahsuplaşamayan fazla; peak-shaving ayrıca; geri dönüş 3-5 yıl.
-- Off-grid: günlük × otonomi (2-3 gün) ÷ DoD ÷ 0,85.
+- Off-grid (kb ORTAK FORMÜL, 11 Ağu 2026): Batarya (kWh) = günlük tüketim × otonomi (2-3 gün) ÷ 0,8 (LFP DoD) ÷ 0,85 (inverter+kablo verimi) ≈ günlük × otonomi × 1,47. Neden iki ayrı katsayı: günlük tüketim AC tarafında ölçülür, bataryadan inverter/kablo kaybı kadar fazla enerji çekilir; DoD ise kullanılabilir kapasiteyi sınırlar — iki kayıp bağımsızdır, tek "÷0,8" yazmak bataryayı ~%15 küçük boyutlandırır. (Aynı formül: sistem-turleri-fiyatlar.md, teknik-ozel-uygulamalar.md.)
 ## TR mevzuatı (kritik)
 - Depolama ≤ üretim tesisi kurulu gücü (Lisanssız Yön. md.37/6; RG 29.12.2025 değişikliğiyle detay).
 - DEPODAN ŞEBEKEYE VERİLEN ENERJİYE ÖDEME YOK; depo çıkışı ölçülemiyorsa fazlanın TAMAMI bedelsiz → projede depo çıkış ölçümü zorunlu; iş modeli öz tüketim maksimizasyonu.
