@@ -16,32 +16,60 @@ export const metadata: Metadata = {
 const tl = (v: number, hane = 2) =>
   v.toLocaleString("tr-TR", { minimumFractionDigits: hane, maximumFractionDigits: hane });
 
-/** Temsili gün — 100 kWp GES'li, gündüz yoğun ticarethane (kWh/dilim) */
-const GUN: Array<[string, number, number]> = [
-  ["00–06", 0, 90],
-  ["06–09", 60, 120],
-  ["09–12", 180, 150],
-  ["12–15", 200, 140],
-  ["15–18", 120, 130],
-  ["18–21", 10, 100],
-  ["21–24", 0, 60],
+/** Temsili gün — 100 kWp GES'li, gündüz yoğun ticarethane: [saat, üretim kWh, tüketim kWh] */
+const SAAT: Array<[string, number, number]> = [
+  ["00–01", 0, 15],
+  ["01–02", 0, 15],
+  ["02–03", 0, 15],
+  ["03–04", 0, 15],
+  ["04–05", 0, 15],
+  ["05–06", 0, 15],
+  ["06–07", 5, 30],
+  ["07–08", 20, 40],
+  ["08–09", 35, 50],
+  ["09–10", 50, 50],
+  ["10–11", 60, 50],
+  ["11–12", 70, 50],
+  ["12–13", 70, 45],
+  ["13–14", 70, 45],
+  ["14–15", 60, 50],
+  ["15–16", 55, 55],
+  ["16–17", 45, 45],
+  ["17–18", 20, 30],
+  ["18–19", 8, 40],
+  ["19–20", 2, 35],
+  ["20–21", 0, 25],
+  ["21–22", 0, 25],
+  ["22–23", 0, 20],
+  ["23–24", 0, 15],
+];
+
+/** Özet görünüm için saat blokları: [etiket, başlangıç indeksi, bitiş indeksi (hariç)] */
+const BLOKLAR: Array<[string, number, number]> = [
+  ["00–06", 0, 6],
+  ["06–09", 6, 9],
+  ["09–12", 9, 12],
+  ["12–15", 12, 15],
+  ["15–18", 15, 18],
+  ["18–21", 18, 21],
+  ["21–24", 21, 24],
 ];
 
 export default function AylikSaatlikFark() {
   const alis = FIYATLAR.ticarethane; // vergiler dahil perakende (₺/kWh)
   const satis = FIYATLAR.ticarethaneSatis; // çıplak enerji bedeli (₺/kWh)
 
-  const toplamUretim = GUN.reduce((a, [, u]) => a + u, 0);
-  const toplamTuketim = GUN.reduce((a, [, , t]) => a + t, 0);
+  const toplamUretim = SAAT.reduce((a, [, u]) => a + u, 0);
+  const toplamTuketim = SAAT.reduce((a, [, , t]) => a + t, 0);
 
   // Eski rejim: ay (örnekte gün) içinde toplam üretim toplam tüketimi siler
   const aylikNetCekis = Math.max(0, toplamTuketim - toplamUretim);
   const aylikTutar = aylikNetCekis * alis;
 
-  // Yeni rejim: her dilim kendi içinde mahsuplaşır
-  const ozTuketim = GUN.reduce((a, [, u, t]) => a + Math.min(u, t), 0);
-  const fazla = GUN.reduce((a, [, u, t]) => a + Math.max(0, u - t), 0);
-  const eksik = GUN.reduce((a, [, u, t]) => a + Math.max(0, t - u), 0);
+  // Yeni rejim: her saat kendi içinde mahsuplaşır
+  const ozTuketim = SAAT.reduce((a, [, u, t]) => a + Math.min(u, t), 0);
+  const fazla = SAAT.reduce((a, [, u, t]) => a + Math.max(0, u - t), 0);
+  const eksik = SAAT.reduce((a, [, u, t]) => a + Math.max(0, t - u), 0);
   const saatlikTutar = eksik * alis - fazla * satis;
 
   const fark = saatlikTutar - aylikTutar;
@@ -193,13 +221,14 @@ export default function AylikSaatlikFark() {
 
         <h2 id="karsilastirma">Aynı gün, iki rejim: TL karşılaştırması</h2>
         <p><Aciklamali>Temsili örneğimiz: 100 kWp çatı GES'i olan, mesai saatleri yoğun çalışan bir
-          ticarethane ve güneşli bir yaz günü. Aşağıdaki tablo günün yedi dilimindeki üretim
-          ve tüketimi, her dilimin saatlik mahsuptaki sonucuyla birlikte gösteriyor:</Aciklamali></p>
-        <div className="tablo-kaydir">
+          ticarethane ve güneşli bir yaz günü. Aşağıdaki tablo günün 24 saatini, her saatin
+          saatlik mahsuptaki sonucuyla birlikte gösteriyor. <b>Saatlik rejimde her satır
+          kendi içinde kapanır; bir saatin fazlası başka bir saatin eksiğini silemez.</b></Aciklamali></p>
+        <div className="tablo-kaydir saat-tablo">
           <table>
             <thead>
               <tr>
-                <th>Saat dilimi</th>
+                <th>Saat</th>
                 <th>Üretim (kWh)</th>
                 <th>Tüketim (kWh)</th>
                 <th>Öz tüketim (kWh)</th>
@@ -208,12 +237,12 @@ export default function AylikSaatlikFark() {
               </tr>
             </thead>
             <tbody>
-              {GUN.map(([saat, u, t]) => (
+              {SAAT.map(([saat, u, t]) => (
                 <tr key={saat}>
                   <td>{saat}</td>
-                  <td>{tl(u, 0)}</td>
+                  <td>{u > 0 ? tl(u, 0) : "—"}</td>
                   <td>{tl(t, 0)}</td>
-                  <td>{tl(Math.min(u, t), 0)}</td>
+                  <td>{Math.min(u, t) > 0 ? tl(Math.min(u, t), 0) : "—"}</td>
                   <td>{u > t ? tl(u - t, 0) : "—"}</td>
                   <td>{t > u ? tl(t - u, 0) : "—"}</td>
                 </tr>
@@ -226,6 +255,42 @@ export default function AylikSaatlikFark() {
                 <td><b>{tl(fazla, 0)}</b></td>
                 <td><b>{tl(eksik, 0)}</b></td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><Aciklamali>Aynı günün üçer saatlik özet görünümü (yalnız okuma kolaylığı için — hesap yukarıdaki
+          gibi saat saat yapılır, bloklar içinde netleşme yoktur):</Aciklamali></p>
+        <div className="tablo-kaydir saat-tablo">
+          <table>
+            <thead>
+              <tr>
+                <th>Dilim</th>
+                <th>Üretim (kWh)</th>
+                <th>Tüketim (kWh)</th>
+                <th>Öz tüketim (kWh)</th>
+                <th>Fazla → satış (kWh)</th>
+                <th>Eksik → alış (kWh)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BLOKLAR.map(([ad, bas, son]) => {
+                const dilim = SAAT.slice(bas, son);
+                const u = dilim.reduce((a, [, x]) => a + x, 0);
+                const t = dilim.reduce((a, [, , x]) => a + x, 0);
+                const oz = dilim.reduce((a, [, x, y]) => a + Math.min(x, y), 0);
+                const f = dilim.reduce((a, [, x, y]) => a + Math.max(0, x - y), 0);
+                const e = dilim.reduce((a, [, x, y]) => a + Math.max(0, y - x), 0);
+                return (
+                  <tr key={ad}>
+                    <td>{ad}</td>
+                    <td>{u > 0 ? tl(u, 0) : "—"}</td>
+                    <td>{tl(t, 0)}</td>
+                    <td>{oz > 0 ? tl(oz, 0) : "—"}</td>
+                    <td>{f > 0 ? tl(f, 0) : "—"}</td>
+                    <td>{e > 0 ? tl(e, 0) : "—"}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

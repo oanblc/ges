@@ -1266,6 +1266,9 @@ a.yp-kart:hover{border-color:var(--theme)}
 .tablo-kaydir td{padding:11px 16px; border-top:1px solid #E9ECE5; vertical-align:top;
   line-height:1.5; max-width:34ch}
 .tablo-kaydir td:first-child{font-weight:600; color:#252525}
+.saat-tablo table{font-size:12.5px}
+.saat-tablo th{padding:8px 14px}
+.saat-tablo td{padding:5px 14px; line-height:1.4}
 .yazi-yan .cta p{font-size:13px}
 .chart-legend{display:flex; gap:18px; font-size:12.5px; color:var(--text); margin-bottom:12px; flex-wrap:wrap}
 .chart-legend span{display:inline-flex; align-items:center}
