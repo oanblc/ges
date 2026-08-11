@@ -22,7 +22,15 @@ SORULAR = [
     ("apartman", "kiracıyım, oturduğum evin çatısına panel taktırabilir miyim?"),
     ("depolama", "elektrik kesilince panellerim evi beslemeye devam eder mi?"),
     ("dolandiricilik", "bir firma güneş tarlasından aylık 2000 TL kira garantisi veriyor, yatırayım mı?"),
+    ("mevzuat-2kat", "ges kurmak istiyorum ama saatlik mahsuplaşmaya geçtikten sonra çok "
+                     "maliyetli olduğunu söylediler doğru mu"),
 ]
+
+# Denetçiden bağımsız, koddan doğrulanan zorunlu ifadeler (11 Ağu 2026 canlı hatası:
+# satış tavanı "tüketim kadar" denmişti; doğrusu 2 katı — kategori bazlı sabit kontrol).
+ZORUNLU_IFADELER = {
+    "mevzuat-2kat": ["2 kat"],
+}
 
 
 def main() -> None:
@@ -42,6 +50,10 @@ def main() -> None:
             karar = _denetle(soru, metin, istemci)
             durum = "ONAY ✓" if karar.startswith("ONAY") else "SORUN ✗"
             not_ = "" if durum.startswith("ONAY") else karar.splitlines()[1][:80]
+            eksik = [e for e in ZORUNLU_IFADELER.get(kategori, [])
+                     if e.lower() not in metin.lower()]
+            if eksik and durum.startswith("ONAY"):
+                durum, not_ = "SORUN ✗", f"zorunlu ifade eksik: {', '.join(eksik)}"
         except Exception as hata:  # tek soru düşerse rapor devam etsin
             metin, durum, not_ = f"HATA: {hata}", "HATA ✗", str(hata)[:80]
         sure = f"{time.time() - t0:.0f} sn"

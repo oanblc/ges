@@ -32,6 +32,9 @@ Dayanak: RG 2 Nisan 2026 sayı 33212 + 11415 sayılı CB Kararı (RG 13 Haziran 
 - 10 yılı dolan tesisler: min(0,9 × YEKDEM fiyatı; saatlik PTF).
 - Bedelsiz YEKDEM devri: (a) yıllık üretim > önceki yıl tüketiminin 2 katı → aşan kısım,
   (b) depolamadan şebekeye verilen enerji.
+- SIK YAPILAN HATA (11 Ağu 2026 canlı tespiti): satış tavanı önceki yıl tüketiminin
+  KENDİSİ değil 2 KATIdır — "tüketimini geçemez" ifadesi YANLIŞTIR, kullanıcıyı
+  yatırımdan haksız yere caydırır.
 - Öz tüketim makası: örtüşmeyen her kWh, alış (~4,3–5,3) ile satış (~2,25) farkı kadar değer kaybeder.
   "kWp × üretim × tarife" formülü geliri ABARTIR.
 
