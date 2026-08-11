@@ -100,11 +100,17 @@ ILLER = {
 }
 
 
-def _maliyet_kw(kw: float) -> int:
-    for maks, tl in [(10, 38000), (100, 31500), (1000, 25500)]:
+def _maliyet_kw(kw: float, tip: str = "isletme") -> int:
+    # web/data/kb.ts bantOrtaMaliyet ile aynı model: MALIYET_BANT orta noktaları
+    if tip == "konut":
+        bantlar = [(4, 33000), (7, 30000), (float("inf"), 26000)]
+    else:
+        bantlar = [(50, 37000), (100, 31500), (250, 25000), (500, 24750),
+                   (float("inf"), 22750)]
+    for maks, tl in bantlar:
         if kw <= maks:
             return tl
-    return 22500
+    return bantlar[-1][1]
 
 
 def fizibilite(tip: str, aylik_fatura_tl: float, il: str, oz_tuketim_orani: float = 0.8) -> dict:
@@ -139,7 +145,7 @@ def fizibilite(tip: str, aylik_fatura_tl: float, il: str, oz_tuketim_orani: floa
         oz = min(uretim * oz_tuketim_orani, yillik)
         satis = max(0.0, min(uretim - oz, 2 * yillik - oz))
         deger = oz * FIYAT["ticarethane"] + satis * FIYAT["ticarethane_satis"]
-    maliyet = kw * _maliyet_kw(kw)
+    maliyet = kw * _maliyet_kw(kw, "konut" if tip == "konut" else "isletme")
     if deger <= 0:
         return {"hata": "Bu girdilerle yıllık kazanç hesaplanamadı; girdileri kullanıcıyla teyit et."}
     sonuc = {

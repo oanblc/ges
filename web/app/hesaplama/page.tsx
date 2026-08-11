@@ -77,7 +77,7 @@ export default async function Hesaplama() {
           <p className="tanim">
             Faturanız ve ilinize göre önerilen kapasite, tahmini yatırım ve geri ödeme süresi.
           </p>
-          {uye && <Roi />}
+          <Roi />
         </section>
 
         <section className="tool" id="batarya" aria-labelledby="batBaslik">
@@ -88,7 +88,7 @@ export default async function Hesaplama() {
             GES'inize batarya eklemek mantıklı mı, kaç kWh gerekir? Konutta akşam tüketiminizden
             hesaplayın; işletmede sayaç profilinizle asistana hesaplatın.
           </p>
-          {uye && <Batarya />}
+          <Batarya />
         </section>
       </div>
 

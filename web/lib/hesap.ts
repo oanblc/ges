@@ -12,7 +12,7 @@
  * - Yıllık üretimin, tüketimin 2 katını aşan kısmı bedelsiz (YEKDEM'e devir).
  */
 
-import { TARIFE, LIMITLER, MALIYET_KADEMELERI } from "@/data/kb";
+import { TARIFE, LIMITLER, bantOrtaMaliyet } from "@/data/kb";
 
 const krToTl = (kr: number) => kr / 100;
 
@@ -29,9 +29,8 @@ export const FIYATLAR = {
   ticarethaneSatis: krToTl(TARIFE.ticarethane.enerjiK1),
 };
 
-function birimMaliyet(kw: number): number {
-  for (const [maksKw, tl] of MALIYET_KADEMELERI) if (kw <= maksKw) return tl;
-  return MALIYET_KADEMELERI[MALIYET_KADEMELERI.length - 1][1];
+function birimMaliyet(kw: number, segment: "konut" | "ticari"): number {
+  return bantOrtaMaliyet(segment, kw);
 }
 
 export interface HesapSonuc {
@@ -77,7 +76,7 @@ export function konutHesap(aylikFatura: number, ilVerimi: number, aylikKwhGirdi?
   const satisGeliri = Math.max(0, bedelliFazla) * FIYATLAR.meskenSatis;
 
   const yillikDeger = mahsupDegeri + satisGeliri;
-  const maliyet = kw * birimMaliyet(kw);
+  const maliyet = kw * birimMaliyet(kw, "konut");
 
   const notlar = [
     "Konutlar saatlik mahsuplaşmadan muaftır; hesap aylık mahsuplaşma esasıyla yapılmıştır.",
@@ -127,7 +126,7 @@ export function isletmeHesap(
   const satisGeliri = Math.max(0, satisKwh) * FIYATLAR.ticarethaneSatis;
 
   const yillikDeger = ozDeger + satisGeliri;
-  const maliyet = kw * birimMaliyet(kw);
+  const maliyet = kw * birimMaliyet(kw, "ticari");
 
   return {
     kw: kw >= 100 ? Math.round(kw) : Math.round(kw * 10) / 10,

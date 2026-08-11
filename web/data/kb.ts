@@ -48,12 +48,13 @@ export const LIMITLER = {
 };
 
 /** Anahtar teslim maliyet kademeleri [maksKw, ₺/kW] — 2026 piyasa araştırması */
-export const MALIYET_KADEMELERI: Array<[number, number]> = [
-  [10, 38000],
-  [100, 31500],
-  [1000, 25500],
-  [Infinity, 22500],
-];
+/** Segment + güce göre bant orta noktası (₺/kW) — MALIYET_BANT tek doğruluk kaynağıdır. */
+export function bantOrtaMaliyet(segment: "konut" | "ticari", kw: number): number {
+  const b = MALIYET_BANT[segment];
+  for (const [maks, alt, ust] of b) if (kw <= maks) return (alt + ust) / 2;
+  const son = b[b.length - 1];
+  return (son[1] + son[2]) / 2;
+}
 
 /**
  * Kurulum maliyeti aracı — piyasa bantları [maksKw, alt ₺/kW, üst ₺/kW].

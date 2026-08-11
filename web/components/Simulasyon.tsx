@@ -846,7 +846,13 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
         const res = await fetch("/api/saatlik", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ il: S.il, dosya: saatlikDosyaVeri, kwpListe: [S.guc] }),
+          // Fiyat tabanı simülasyonla aynı olsun: grup vergili alış fiyatı tasarrufa,
+          // efektif kWp (cephe/gölge/arazi çarpanlı) üretime — kart ile karne çelişmesin.
+          body: JSON.stringify({
+            il: S.il, dosya: saatlikDosyaVeri,
+            kwpListe: [Math.max(0.5, Math.round(S.guc * (S.tip === "cati" ? CEPHE[S.cephe] : ARAZI) * GOLGE[S.golge] * 100) / 100)],
+            aktif_tl_kwh: fiyatlar().alis, dagitim_tl_kwh: 0,
+          }),
         });
         const d: { hata?: string; senaryolar?: Array<{ kwp: number; ozTuketimOrani: number;
           ozTuketimKwh: number; yillikTasarrufTl: number; yillikSatisTl: number }> } = await res.json();
