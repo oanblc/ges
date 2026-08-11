@@ -45,3 +45,9 @@ durum: yayin
 - Çok zamanlı: gündüz 06-17, puant 17-22, gece 22-06.
 - Mesken AG tek zamanlıda kademe eşiği 8 kWh/gün (~240 kWh/ay).
 - Şehit aileleri/muharip gaziler: 7,6988 kr enerji (özel indirimli).
+
+## Hane eşdeğeri katsayısı (içerik/araç çevirileri için)
+- Ortalama mesken tüketimi: **≈2.824 kWh/yıl** (aile başına) — hesap: EPDK 2024 sektör
+  istatistiği mesken toplam tüketimi 75,091 milyar kWh ÷ TÜİK 2024 aile sayısı 26.599.261.
+  Kaynak: EPDK 2024 Elektrik Piyasası verisi + TÜİK aile istatistikleri (web teyidi 11 Ağu 2026).
+  Kullanım: "X kWh üretim ≈ Y hanenin yıllık tüketimi" çevirisi; web/data/kb.ts `HANE_YILLIK_KWH` ile senkron.

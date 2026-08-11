@@ -179,7 +179,10 @@ export default function Anasayfa() {
             <a className="gt-btn small" href="/hesaplama">
               Tüm Hesaplama Araçları <Ok className="i" />
             </a>
-            <p><Aciklamali>Batarya boyutlandırma aracı da hesaplama sayfasında; destek uygunluğu Destekler sayfasında.</Aciklamali></p>
+            <p>
+              <Aciklamali>Batarya boyutlandırma aracı da hesaplama sayfasında; destek uygunluğu Destekler sayfasında.</Aciklamali>{" "}
+              Araçların gerçek çıktılarından örnekler: <a className="b-link" href="/vakalar">Analiz Vakaları</a>.
+            </p>
           </div>
         </div>
       </section>

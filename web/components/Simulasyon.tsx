@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { CATI_CARPANI, EKIPMAN, LIMITLER, MALIYET_BANT, TARIFE } from "@/data/kb";
+import { haneEsdegeri } from "@/lib/format";
 import PVGIS from "@/data/pvgis.json";
 
 /**
@@ -385,7 +386,9 @@ export default function Simulasyon() {
       const dusus = (d: Donem) => (d.gessiz ? Math.max(0, Math.min(100, Math.round((1 - d.gesli / d.gessiz) * 100))) : 0);
       const emanetAd = S.grup === "mesken" ? "Şebekeye emanet" : "Şebekeye satış";
       const satirlar: Array<[string, (d: Donem) => string]> = [
-        ["Üretim (kWh)", (d) => f(d.uretim)],
+        // yıllık sütunda üretim, hane eşdeğeriyle somutlaşır (Enerjisa kıyas çalışması, Ağu 2026)
+        ["Üretim (kWh)", (d) => f(d.uretim) +
+          (d === yil && haneEsdegeri(d.uretim) ? `<small class="hane-not">${haneEsdegeri(d.uretim)}</small>` : "")],
         ["Tüketim (kWh)", (d) => f(d.tuketim)],
         ["Öz tüketim (kWh)", (d) => `${f(d.oz)} · %${oran(d)}`],
         ...(S.batarya ? [["Bataryadan beslenen (kWh)", (d: Donem) => f(d.batVer)] as [string, (d: Donem) => string]] : []),
@@ -858,7 +861,8 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
           }),
         });
         const d: { hata?: string; senaryolar?: Array<{ kwp: number; ozTuketimOrani: number;
-          ozTuketimKwh: number; yillikTasarrufTl: number; yillikSatisTl: number }> } = await res.json();
+          ozTuketimKwh: number; yillikTasarrufTl: number; yillikSatisTl: number;
+          batarya?: { kwh: number; ozTuketimOrani: number; ekOzKwh: number } }> } = await res.json();
         if (no !== saatlikIstekNo) return; // arada güç değişti — yeni istek yolda
         if (!res.ok || d.hata || !d.senaryolar?.length) {
           if (res.status === 503) throw new Error(d.hata ?? "Analiz servisi şu an çalışmıyor; lütfen daha sonra deneyin.");
@@ -871,6 +875,7 @@ Bu rapor bilgilendirme amaçlıdır; bağlayıcı fizibilite niteliği taşımaz
         el("saatlikKiyas").innerHTML = `
           <div><span>Öz tüketim<small>standart profil</small></span><b>${stdOran !== null ? "%" + stdOran : "—"}</b></div>
           <div class="aktif"><span>Öz tüketim<small>saatlik verinize göre</small></span><b>%${Math.round(sn.ozTuketimOrani * 100)} · ${f2(sn.ozTuketimKwh)} kWh</b></div>
+          ${sn.batarya ? `<div class="aktif"><span>Öz tüketim (bataryalı)<small>${sn.batarya.kwh.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} kWh batarya ile</small></span><b>%${Math.round(sn.ozTuketimOrani * 100)} → %${Math.round(sn.batarya.ozTuketimOrani * 100)}</b></div>` : ""}
           <div><span>Yıllık kazanç<small>standart profil</small></span><b>${stdKazanc !== null ? f2(stdKazanc) + " ₺" : "—"}</b></div>
           <div class="aktif"><span>Yıllık tasarruf + satış<small>saatlik verinize göre</small></span><b>${f2(sn.yillikTasarrufTl + sn.yillikSatisTl)} ₺</b></div>`;
         el("saatlikKiyas").hidden = false;

@@ -27,6 +27,19 @@ const ASAMALAR = [
       "Ciddi kurulumcu yerinde keşif yapar: gölge analizi, bağlantı noktası, statik ön bakış. Keşifsiz telefon fiyatı risk işaretidir.",
       "Fizibiliteyi yıllık ortalama üretimle isteyin; 'kışın da aynı üretir' vaadi gerçek dışıdır.",
     ],
+    roller: {
+      kurulumcu: [
+        "Yerinde keşif: gölge analizi, bağlantı noktası ve statik ön bakış; tüketiminize uygun kapasite önerisi.",
+      ],
+      resmi: [
+        "Bu aşamada resmî kurum devrede değildir; dağıtım şirketi süreci başvuruyla başlar.",
+      ],
+      siz: [
+        "Keşifte ölçüm ve çatı fotoğraflarının dosyalanmasını isteyin — teklif bu ölçümlere dayanmalı.",
+        "Teklifte panel/inverter marka, model ve Wp değerinin yazılı olduğunu teyit edin; 'muadili' ifadesini kabul etmeyin.",
+        "Fizibilitenin yıllık ortalama üretimle yapıldığını kontrol edin.",
+      ],
+    },
   },
   {
     ad: "Bağlantı Başvurusu",
@@ -43,6 +56,18 @@ const ASAMALAR = [
       "Eksik belge en sık gecikme nedenidir — başvuru öncesi kontrol listesini asistanla üzerinden geçin.",
       "Başvuruyu kurulumcu yapacaksa sözleşmede 'izin sorumluluğu' yazılı olsun.",
     ],
+    roller: {
+      kurulumcu: [
+        "Başvuru dosyasını hazırlar ve sunar — sözleşmenizde 'izin sorumluluğu' yazılıysa takibi de üstlenir.",
+      ],
+      resmi: [
+        "Dağıtım şirketi (OSB'de OSB müdürlüğü) dosyayı inceler, eksik varsa bildirir.",
+      ],
+      siz: [
+        "Eksik belgelerin 15 takvim günü içinde tamamlandığını takip edin — süre aşılırsa dosya iade edilir.",
+        "Belgelerin ıslak imzalı aslı veya noter onaylı suretinin dosyada olduğunu kontrol edin.",
+      ],
+    },
   },
   {
     ad: "Çağrı Mektubu",
@@ -54,6 +79,18 @@ const ASAMALAR = [
       "Süre sınırlarını takvime işleyin; proje onayı adımındaki gecikmeler hakkın düşmesine yol açabilir.",
       "'İzin gerekmez, tak-çalıştır' söylemi yanlıştır — şebekeye bağlı her sistemde bu süreç zorunludur (muafiyet yalnız off-grid/balkon tipi).",
     ],
+    roller: {
+      kurulumcu: [
+        "Bağlantı anlaşması ve proje takvimini hazırlar; proje firmasıyla süreci başlatır.",
+      ],
+      resmi: [
+        "Dağıtım şirketi çağrı mektubunu düzenler; mektup bildirim tarihinden itibaren 180 gün geçerlidir.",
+      ],
+      siz: [
+        "Mektup tarihini takvime işleyin: ilk 90 gün içinde proje onaya sunulmazsa hak kaybı riski doğar.",
+        "Bağlantı anlaşmasının bir nüshasını dosyalayın — bazı banka kredilerinin ön şartıdır.",
+      ],
+    },
   },
   {
     ad: "Proje Onayı",
@@ -70,6 +107,18 @@ const ASAMALAR = [
       "Panel sertifika numarasını TÜV Certipedia/VDE veritabanından sorgulatın; model kodu etiketle birebir eşleşmeli.",
       "Projede yazan marka/model ile sahaya gelen malzeme aynı olmalı — kabulde seri no eşleşmesi aranır.",
     ],
+    roller: {
+      kurulumcu: [
+        "EMO kayıtlı serbest müşavir mühendise projeyi hazırlatır ve TEDAŞ onayına sunar.",
+      ],
+      resmi: [
+        "TEDAŞ bölge birimleri projeyi inceler ve onaylar.",
+      ],
+      siz: [
+        "Projedeki panel/inverter marka-modelinin teklifinizle birebir aynı olduğunu teyit edin.",
+        "Panel sertifika numarasını TÜV Certipedia/VDE veritabanından sorgulatın; model kodu etiketle eşleşmeli.",
+      ],
+    },
   },
   {
     ad: "Kurulum",
@@ -84,6 +133,19 @@ const ASAMALAR = [
       "Ödemeyi iş kalemine bağlayın: küçük avans → teslimatta ara ödeme → kabulde bakiye. %50+ peşinat ve elden ödeme isteyenden kaçının.",
       "Kiremitte kanca kullanılır (kiremit delinmez); her delik contalanır. Sızdırmazlık garantisini yazılı isteyin.",
     ],
+    roller: {
+      kurulumcu: [
+        "Montajı yetkili ekiple 1-3 günde tamamlar; işçilik standartlarından (MC4, EN 50618 kablo, sızdırmazlık) sorumludur.",
+      ],
+      resmi: [
+        "Bu aşamada saha denetimi yoktur — resmî kontrol kabul aşamasında yapılır.",
+      ],
+      siz: [
+        "Teslim öncesi fotoğraf kontrol listesini uygulatın (konnektörler, kablo kanalları, delik contaları).",
+        "Sahaya gelen ekipmanın seri numaralarını fatura ve garanti belgeleriyle eşleştirip teslim alın.",
+        "Ödemeyi iş kalemine bağlı tutun; kabulden önce bakiyenin tamamını ödemeyin.",
+      ],
+    },
   },
   {
     ad: "Kabul ve Sayaç",
@@ -99,6 +161,18 @@ const ASAMALAR = [
       "Devreye alma raporu ileride garanti ve sigorta taleplerinizin temel kanıtıdır — dosyalayın.",
       "Paralel ithal inverterde Türkiye garantisi olmayabilir; distribütör onaylı belge şart.",
     ],
+    roller: {
+      kurulumcu: [
+        "IEC 62446-1 devreye alma testlerini yapar, raporu hazırlar ve kabule katılır.",
+      ],
+      resmi: [
+        "Dağıtım şirketi tesisi yerinde kontrol eder; kabul kurulu oluşturulduktan sonra 10 gün içinde toplanır, muayene raporu tebliğinden itibaren 10 iş günü içinde sayaç takılır.",
+      ],
+      siz: [
+        "Kabul öncesi test raporunu (string Voc/Isc, izolasyon, topraklama ölçümü) mutlaka isteyin ve dosyalayın — garanti/sigorta taleplerinin kanıtıdır.",
+        "Tutanağa geçen seri numaralarını sahadaki ekipmanla karşılaştırın.",
+      ],
+    },
   },
   {
     ad: "Üretim Dönemi",
@@ -113,6 +187,19 @@ const ASAMALAR = [
       "İlk faturanızda mahsubun işlediğini kontrol edin; detaylı takip için Kurulum Sonrası rehberine geçin.",
       "Ev satışında sistem mütemmim cüz gibi devredilir; satış sözleşmesine 'GES bedele dahil' yazdırın.",
     ],
+    roller: {
+      kurulumcu: [
+        "Sözleşmedeki işçilik garantisi süresince (en az 2 yıl isteyin) arıza müdahalesinden sorumludur.",
+      ],
+      resmi: [
+        "Dağıtım şirketi sayacı 25-35 günlük dönemlerle okur; fazla üretim bedelini görevli tedarik şirketi öder (tebliğden itibaren en geç 10 iş günü).",
+      ],
+      siz: [
+        "İlk faturanızda mahsubun işlediğini kontrol edin.",
+        "Üretimi inverter uygulamasından kWh/kWp kıyasıyla izleyin (Türkiye bandı 1.300-1.500).",
+        "Fatura itirazınız haklı bulunursa fark sonraki faturada mahsup edilir; isterseniz 3 iş günü içinde nakit iade hakkınız vardır.",
+      ],
+    },
   },
 ];
 
@@ -166,6 +253,30 @@ export default function Surec() {
                   <b>Dikkat</b>
                   <ul>
                     {a.dikkat.map((x) => (
+                      <li key={x}><Aciklamali>{x}</Aciklamali></li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="sr-kutu" style={{ marginTop: 14 }} aria-label="Bu adımda kim ne yapar">
+                <div>
+                  <b>Kurulumcu yapar</b>
+                  <ul>
+                    {a.roller.kurulumcu.map((x) => (
+                      <li key={x}><Aciklamali>{x}</Aciklamali></li>
+                    ))}
+                  </ul>
+                  <b style={{ marginTop: 10 }}>Resmî taraf yapar</b>
+                  <ul>
+                    {a.roller.resmi.map((x) => (
+                      <li key={x}><Aciklamali>{x}</Aciklamali></li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <b>Siz kontrol edin</b>
+                  <ul>
+                    {a.roller.siz.map((x) => (
                       <li key={x}><Aciklamali>{x}</Aciklamali></li>
                     ))}
                   </ul>

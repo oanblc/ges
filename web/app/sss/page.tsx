@@ -4,6 +4,7 @@ import SiteHead from "@/components/SiteHead";
 import { Aciklamali } from "@/components/Terim";
 import { Ok, SunDolu } from "@/components/Icons";
 import SSS from "@/data/sss.json";
+import { ANA_SORU_SLUG, SSS_DETAY } from "@/data/sss-detay";
 
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular — Çatı GES",
@@ -68,6 +69,14 @@ export default function SikSorulanlar() {
                   <summary>{s.soru}</summary>
                   <p>
                     <Aciklamali>{s.cevap}</Aciklamali>
+                    {ANA_SORU_SLUG[s.soru] && (
+                      <>
+                        {" "}
+                        <a className="b-link" href={`/sss/${ANA_SORU_SLUG[s.soru]}`}>
+                          detaylı cevap →
+                        </a>
+                      </>
+                    )}
                   </p>
                 </details>
               ))}
@@ -99,6 +108,16 @@ export default function SikSorulanlar() {
             {kategoriler.map((k) => (
               <a key={k.ad} className="q" href={`#${kimlik(k.ad)}`}>
                 {k.ad} ({k.sorular.length})
+              </a>
+            ))}
+          </div>
+          <div className="side-card">
+            <h3>
+              <SunDolu className="i" /> Detaylı cevaplar
+            </h3>
+            {SSS_DETAY.map((d) => (
+              <a key={d.slug} className="q" href={`/sss/${d.slug}`}>
+                {d.soru}
               </a>
             ))}
           </div>

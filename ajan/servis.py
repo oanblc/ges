@@ -1431,19 +1431,38 @@ async def saatlik_analiz(istek: Request):
         else:
             adaylar = [round(gunduz_ort_kw * oran, 1) for oran in (0.5, 0.75, 1.0, 1.25)]
 
+    # Batarya kıyası: ≈1 kWh/kWp (kb/teknik-depolama.md "1 kWp'e 1-1,5 kWh" bandının
+    # alt ucu, muhafazakâr); gün içi kaydırma — fazla üretim şarj, aynı günün sonraki
+    # saatlerindeki eksik deşarj; tur verimi 0,9 (kb AC-coupled %90-94 bandının alt ucu).
+    BATARYA_TUR_VERIM = 0.9
+    sirali = sorted(seri.items())  # (gün, saat) kronolojik — batarya durumu için şart
     senaryolar = []
     for kwp in adaylar:
         if kwp_ozel:
             kwp = round(kwp, 2)
-        uret_top, oz_top = 0.0, 0.0
-        for (gun, saat), kwh in seri.items():
+        bat_kap = round(kwp * 1.0, 2)
+        uret_top, oz_top, desarj_oz = 0.0, 0.0, 0.0
+        soc, onceki_gun = 0.0, None
+        for (gun, saat), kwh in sirali:
+            if gun != onceki_gun:
+                soc, onceki_gun = 0.0, gun  # gün içi kaydırma: her gün boş başlar
             u = kwp * verim * profil.get((gun.month, saat), 0.0)
             uret_top += u
-            oz_top += min(u, kwh)
+            oz = min(u, kwh)
+            oz_top += oz
+            fazla_saat, eksik_saat = u - oz, kwh - oz
+            if fazla_saat > 0:
+                soc += min(fazla_saat, bat_kap - soc)
+            elif eksik_saat > 0 and soc > 0:
+                cekilen = min(soc, eksik_saat / BATARYA_TUR_VERIM)
+                soc -= cekilen
+                desarj_oz += cekilen * BATARYA_TUR_VERIM
         oz_oran = oz_top / uret_top if uret_top else 0.0
+        bat_oran = min(1.0, (oz_top + desarj_oz) / uret_top) if uret_top else 0.0
         yillik_uretim = kwp * verim
         oz_kwh = yillik_uretim * oz_oran
         fazla_kwh = yillik_uretim - oz_kwh
+        ek_oz_kwh = yillik_uretim * (bat_oran - oz_oran)
         tasarruf = oz_kwh * (aktif + dagitim)
         satis = fazla_kwh * satis_birim
         yatirim = kwp * _maliyet_kw(kwp)
@@ -1458,6 +1477,11 @@ async def saatlik_analiz(istek: Request):
             "yillikSatisTl": round(satis),
             "yatirimTl": round(yatirim),
             "geriOdemeYil": round(yatirim / fayda, 1) if fayda > 0 else None,
+            "batarya": {
+                "kwh": bat_kap,
+                "ozTuketimOrani": round(bat_oran, 3),
+                "ekOzKwh": round(ek_oz_kwh),
+            },
         })
 
     ilk, son = min(gunler), max(gunler)
@@ -1486,6 +1510,7 @@ async def saatlik_analiz(istek: Request):
         "dahil edilmedi.",
         "Yatırım maliyeti güncel anahtar teslim ₺/kW bandından (Ağu 2026, OG ölçeği); "
         "kesin tutar için teklif alın. Tüm tutarlar vergiler hariçtir.",
+        "Batarya kıyası ≈1 kWh/kWp varsayımıyla kaba tahmindir.",
     ]
     if fiyat_varsayilan:
         notlar.append(f"Birim fiyat verilmediği için EPDK 4 Nisan 2026 {tarife['ad']} "

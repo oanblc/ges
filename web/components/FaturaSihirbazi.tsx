@@ -5,6 +5,7 @@ import { Atac, Ok } from "./Icons";
 import { Aciklamali } from "./Terim";
 import { ILLER, MALIYET_BANT, CATI_CARPANI } from "@/data/kb";
 import { konutHesap, isletmeHesap, type HesapSonuc } from "@/lib/hesap";
+import { haneEsdegeri } from "@/lib/format";
 
 /**
  * Fatura sihirbazı: fatura yükle → alanlar okunur → eksikleri tamamla →
@@ -257,6 +258,9 @@ export default function FaturaSihirbazi() {
             <div className="ro">
               <div className="rv">{kwh(sonuc.yillikUretimKwh)}</div>
               <div className="rk">Yıllık üretim ({il})</div>
+              {haneEsdegeri(sonuc.yillikUretimKwh) && (
+                <div className="hane-not">{haneEsdegeri(sonuc.yillikUretimKwh)}</div>
+              )}
             </div>
             <div className="ro">
               <div className="rv">{kwh(sonuc.ozKwh)}</div>

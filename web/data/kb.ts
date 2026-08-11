@@ -105,6 +105,15 @@ export const EKIPMAN = {
 /** Ev tipi LFP batarya, kurulum hariç liste fiyatı (5 kWh ≈ 113.000 ₺, 2026) */
 export const BATARYA_TL_KWH = 22600;
 
+/**
+ * Türkiye ortalama mesken (hane) elektrik tüketimi, kWh/yıl.
+ * Hesap: EPDK 2024 mesken toplam tüketimi 75,091 milyar kWh ÷ TÜİK 2024 aile
+ * sayısı 26.599.261 ≈ 2.824 kWh/yıl. Kaynak kaydı: kb/tarifeler.md
+ * "Hane eşdeğeri katsayısı" bölümü (web teyidi 11 Ağustos 2026).
+ * Kullanım: "X kWh ≈ Y hanenin yıllık tüketimi" çevirileri.
+ */
+export const HANE_YILLIK_KWH = 2824;
+
 /** EPİAŞ gerçekleşen veriler — data/piyasa-canli.json'dan (cron her gün tazeler) */
 export const PIYASA = {
   ay: canli.site_ozet.ay, // örn. "2026-07" (son tam ay)

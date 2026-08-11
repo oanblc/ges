@@ -14,6 +14,16 @@ export const metadata: Metadata = {
 
 const YAZILAR = [
   {
+    yol: "/blog/esco-eps-teklifi-nasil-okunur",
+    baslik: "\"İlk yatırım bizden\" GES teklifi: ESCO / EPS sözleşmesi nasıl okunur?",
+    ozet:
+      "Enerji performans sözleşmesi (EPS) modeli nasıl çalışır: üretime endeksli fatura, 10 yıla varan süre, süre sonu devir. Yedi maddelik sözleşme kontrol listesi ve öz kaynak-kredi-EPS karşılaştırma tablosu.",
+    tarih: "11 Ağustos 2026",
+    etiket: "Finansman",
+    gorsel: "/roof-solar.jpg",
+    gorselAlt: "İşletme çatısında güneş paneli kurulumu",
+  },
+  {
     yol: "/blog/aylik-saatlik-mahsuplasma-farki",
     baslik: "Aylıktan saatliğe: mahsuplaşma değişikliği faturanızı ne kadar etkiledi?",
     ozet:

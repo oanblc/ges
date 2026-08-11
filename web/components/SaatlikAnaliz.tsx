@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Atac, Ok } from "./Icons";
 import { Aciklamali } from "./Terim";
 import { ILLER } from "@/data/kb";
+import { haneEsdegeri } from "@/lib/format";
 
 /**
  * Saatlik tüketim analizi: dağıtım şirketi/EPİAŞ saatlik döküm dosyası (CSV/XLSX)
@@ -27,6 +28,8 @@ type Senaryo = {
   yillikSatisTl: number;
   yatirimTl: number;
   geriOdemeYil: number | null;
+  /** Bataryalı öz tüketim kıyası; eski cevaplarda bulunmayabilir. */
+  batarya?: { kwh: number; ozTuketimOrani: number; ekOzKwh: number };
 };
 type Cikti = { ozet: Ozet; senaryolar: Senaryo[]; notlar: string[] };
 type Grup = "mesken" | "ticarethane" | "sanayi" | "osb";
@@ -136,6 +139,8 @@ export default function SaatlikAnaliz() {
     adaylar.length > 0
       ? adaylar.reduce((a, b) => ((b.geriOdemeYil ?? 0) < (a.geriOdemeYil ?? 0) ? b : a))
       : null;
+  const enIyiHane = enIyi ? haneEsdegeri(enIyi.yillikUretimKwh) : null;
+  const bataryaVar = sonuc?.senaryolar.some((s) => s.batarya) ?? false;
 
   return (
     <div className="fs">
@@ -262,6 +267,9 @@ export default function SaatlikAnaliz() {
               <div className="rk">
                 Toplam tüketim — {sonuc.ozet.gunSayisi.toLocaleString("tr-TR")} günlük saatlik veriden
               </div>
+              {enIyi && enIyiHane && (
+                <div className="hane-not">★ senaryonun yıllık üretimi {enIyiHane}</div>
+              )}
             </div>
             <div className="ro">
               <div className="rv">{kwh(sonuc.ozet.aylikOrtKwh)}</div>
@@ -288,6 +296,7 @@ export default function SaatlikAnaliz() {
                     <th scope="col">Güç</th>
                     <th scope="col">Yıllık üretim</th>
                     <th scope="col">Öz tüketim</th>
+                    {bataryaVar && <th scope="col">Öz tüketim (bataryalı)</th>}
                     <th scope="col">Yıllık fayda</th>
                     <th scope="col">Yatırım</th>
                     <th scope="col">Geri ödeme</th>
@@ -304,6 +313,13 @@ export default function SaatlikAnaliz() {
                       <td>
                         {yuzde(s.ozTuketimOrani)} · {kwh(s.ozTuketimKwh)}
                       </td>
+                      {bataryaVar && (
+                        <td>
+                          {s.batarya
+                            ? `${yuzde(s.ozTuketimOrani)} → ${yuzde(s.batarya.ozTuketimOrani)} (${s.batarya.kwh.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} kWh batarya ile)`
+                            : "—"}
+                        </td>
+                      )}
                       <td>{tl(s.yillikTasarrufTl + s.yillikSatisTl)}/yıl</td>
                       <td>{binTl(s.yatirimTl)}</td>
                       <td>
@@ -316,6 +332,12 @@ export default function SaatlikAnaliz() {
                 </tbody>
               </table>
             </div>
+          )}
+          {bataryaVar && (
+            <p className="fs-not">
+              Batarya önerisi kb kuralıyla (≈1 kWh/kWp) hesaplanmış kaba tahmindir; yatırım kararı için
+              batarya maliyetini <a href="/hesaplama">/hesaplama</a>&apos;daki batarya ekiyle kıyaslayın.
+            </p>
           )}
           {enIyi && (
             <p className="fs-not">

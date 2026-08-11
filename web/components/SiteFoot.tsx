@@ -51,6 +51,12 @@ export default function SiteFoot({ notu }: { yol?: string; notu?: string }) {
         <span>{notu ?? "Yanıtlar bilgilendirme amaçlıdır; bağlayıcı görüş niteliği taşımaz."}</span>
         <Link href="/gizlilik">Gizlilik ve KVKK Aydınlatma Metni</Link>
       </div>
+      <div className="seffaflik">
+        <b>Şeffaflık:</b> Kurulum satmıyoruz; analizleriniz ve iletişim bilgileriniz kurulum
+        firmalarına satılmaz, aktarılmaz. Sorularınız için:{" "}
+        <a href="mailto:iletisim@gesdanismani.com">iletisim@gesdanismani.com</a>
+        {/* unvan/MERSİS: Ozan'dan bilgi gelince eklenecek */}
+      </div>
     </footer>
   );
 }
