@@ -50,12 +50,13 @@ export default function SikSorulanlar() {
           Sık Sorulan Sorular
         </span>
         <h1>
-          Merak edilenler, <span className="hl-g">denetimli cevaplarla</span>
+          GES kurmadan önce <span className="hl-g">herkesin sorduğu</span> sorular
         </h1>
         <p>
-          Bu sayfadaki {toplam} soru, internette gerçek kullanıcıların sorduklarından
-          derlendi; her cevap asistanımızın bilgi tabanına dayanır ve yayınlanmadan önce
-          ikinci bir yapay zekâ denetiminden geçti. Güncelleme: {SSS.guncelleme}.
+          "Kiracıyım, kurabilir miyim?" "Faturam gerçekten sıfırlanır mı?" "Devlet hibe
+          veriyor mu?" — Aşağıdaki {toplam} cevap, güncel mevzuata ve gerçek piyasa
+          rakamlarına dayanır; kurallar değiştiğinde burası da güncellenir (son kontrol:{" "}
+          {SSS.guncelleme}). Durumunuza özel cevap için asistana sormanız yeterli.
         </p>
       </div>
 
