@@ -14,6 +14,16 @@ export const metadata: Metadata = {
 
 const YAZILAR = [
   {
+    yol: "/blog/aylik-saatlik-mahsuplasma-farki",
+    baslik: "Aylıktan saatliğe: mahsuplaşma değişikliği faturanızı ne kadar etkiledi?",
+    ozet:
+      "1 Mayıs 2026 öncesi ve sonrası aynı işletme günü üzerinden hesaplandı: aylık mahsupta net kWh, saatlik mahsupta saat saat sonuç — fark TL ve yüzde olarak. Kim etkilendi tablosu ve yeni dönemde boyutlandırma/batarya dersleri.",
+    tarih: "11 Ağustos 2026",
+    etiket: "Mevzuat + Hesap",
+    gorsel: "/hero-solar.jpg",
+    gorselAlt: "İşletme çatısında güneş paneli dizisi",
+  },
+  {
     yol: "/blog/arazi-ges-mi-cati-ges-mi",
     baslik: "Arazi GES mi, çatı GES mi? Farklar, maliyetler, karar rehberi",
     ozet:
