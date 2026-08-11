@@ -526,7 +526,7 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .simx .cip.on{background:var(--theme); border-color:var(--theme); color:#fff; font-weight:600}
 .simx select{border:1px solid var(--border); border-radius:9px; padding:5px 8px; font:inherit;
   font-size:12.5px; background:#F3F5F0; max-width:100%}
-.simx .kaydirici{display:flex; align-items:center; gap:8px}
+.simx .kaydirici{display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-width:0}
 .simx .kaydirici output{font-family:ui-monospace,Menlo,monospace; font-size:12px; font-weight:600; min-width:70px}
 .simx input[type=range]{accent-color:var(--theme); width:100%; min-width:70px; flex:1}
 .simx .terim{position:relative; display:inline-flex; align-items:center; justify-content:center;
@@ -608,8 +608,9 @@ h1{font-size:clamp(30px,4.6vw,48px); line-height:1.08; margin:0 0 18px; font-wei
 .simx .karne-cta .gt-btn{flex:1; justify-content:center}
 .simx .sayi-kutu{display:inline-flex; align-items:center; gap:4px; border:1px solid var(--border);
   border-radius:9px; background:#fff; padding:3px 8px 3px 4px}
+.simx .sayi-kutu{min-width:0}
 .simx .sayi-kutu input{border:none; background:none; font-family:ui-monospace,monospace;
-  font-size:12.5px; font-weight:600; width:74px; text-align:right; padding:3px 0}
+  font-size:12.5px; font-weight:600; width:74px; max-width:100%; min-width:0; flex:1 1 46px; text-align:right; padding:3px 0}
 .simx .sayi-kutu input:focus{outline:none}
 .simx .sayi-kutu i{font-style:normal; font-size:10.5px; color:var(--text); white-space:nowrap}
 .simx .panel-sayi.uyari{color:#A5620D; font-weight:600}
