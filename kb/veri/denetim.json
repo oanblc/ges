@@ -1,59 +1,59 @@
 {
-  "guncelleme": "2026-08-10",
+  "guncelleme": "2026-08-13",
   "kaynak": "ajan/sayfa_denetim.py — sayfa içeriği bilgi tabanıyla günlük karşılaştırılır",
   "sayfalar": [
     {
       "yol": "/",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/asistan",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/surec",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/hesaplama",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/destekler",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/rehber",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/kurulum-sonrasi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/blog",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     },
     {
       "yol": "/blog/saatlik-mahsuplasma-rehberi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-10",
+      "sonKontrol": "2026-08-13",
       "bulgular": []
     }
   ]
