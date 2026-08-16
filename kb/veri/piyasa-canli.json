@@ -1,11 +1,11 @@
 {
-  "cekim_zamani": "2026-08-15T05:19:47",
+  "cekim_zamani": "2026-08-16T05:22:30",
   "kaynak": "EPİAŞ Şeffaflık Platformu (birincil kaynak, gerçekleşen veri)",
   "ptf_aylik": {
     "2026-06": {
-      "ortalama": 1268.21,
-      "gunes_saatleri_ortalama": 432.69,
-      "gunes_orani": 0.341
+      "ortalama": 1261.38,
+      "gunes_saatleri_ortalama": 426.88,
+      "gunes_orani": 0.338
     },
     "2026-07": {
       "ortalama": 2699.61,
@@ -13,9 +13,9 @@
       "gunes_orani": 0.656
     },
     "2026-08": {
-      "ortalama": 2880.95,
-      "gunes_saatleri_ortalama": 2142.74,
-      "gunes_orani": 0.744
+      "ortalama": 2848.96,
+      "gunes_saatleri_ortalama": 2097.79,
+      "gunes_orani": 0.736
     }
   },
   "yekdem_gerceklesen_aylik": {
