@@ -1,59 +1,61 @@
 {
-  "guncelleme": "2026-08-13",
+  "guncelleme": "2026-08-17",
   "kaynak": "ajan/sayfa_denetim.py — sayfa içeriği bilgi tabanıyla günlük karşılaştırılır",
   "sayfalar": [
     {
       "yol": "/",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/asistan",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/surec",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-17",
+      "bulgular": [
+        "Aşama 1: 'Konutta üst sınır 25 kW'tır' bilgisi güncelliğini yitirmiştir. ESKİ (25 kW) → DOĞRU (50 kW - KB finans-rehberi.md ve destekler.md uyarınca GVK Mükerrer 9. madde muafiyet sınırı 50 kW'a yükseltilmiştir)"
+      ]
     },
     {
       "yol": "/hesaplama",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/destekler",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/rehber",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/kurulum-sonrasi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/blog",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     },
     {
       "yol": "/blog/saatlik-mahsuplasma-rehberi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-13",
+      "sonKontrol": "2026-08-17",
       "bulgular": []
     }
   ]
