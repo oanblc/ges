@@ -1,62 +1,77 @@
 {
-  "guncelleme": "2026-08-17",
+  "guncelleme": "2026-08-20",
   "kaynak": "ajan/sayfa_denetim.py — sayfa içeriği bilgi tabanıyla günlük karşılaştırılır",
   "sayfalar": [
     {
       "yol": "/",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
+      ]
     },
     {
       "yol": "/asistan",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)",
+        "YEKDEM (2026-07): ESKİ (0,49 ₺/kWh) → DOĞRU (0,424 ₺/kWh)"
+      ]
     },
     {
       "yol": "/surec",
       "durum": "uyari",
-      "sonKontrol": "2026-08-17",
+      "sonKontrol": "2026-08-20",
       "bulgular": [
-        "Aşama 1: 'Konutta üst sınır 25 kW'tır' bilgisi güncelliğini yitirmiştir. ESKİ (25 kW) → DOĞRU (50 kW - KB finans-rehberi.md ve destekler.md uyarınca GVK Mükerrer 9. madde muafiyet sınırı 50 kW'a yükseltilmiştir)"
+        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
       ]
     },
     {
       "yol": "/hesaplama",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "Tarife verisi güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
+      ]
     },
     {
       "yol": "/destekler",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
+      "sonKontrol": "2026-08-20",
       "bulgular": []
     },
     {
       "yol": "/rehber",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
+      ]
     },
     {
       "yol": "/kurulum-sonrasi",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
+      ]
     },
     {
       "yol": "/blog",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
+      ]
     },
     {
       "yol": "/blog/saatlik-mahsuplasma-rehberi",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-17",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-20",
+      "bulgular": [
+        "YEKDEM Temmuz 2026 maliyeti: ESKİ (486 ₺/MWh) → DOĞRU (423,99 ₺/MWh)"
+      ]
     }
   ]
 }
