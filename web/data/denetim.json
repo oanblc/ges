@@ -1,76 +1,63 @@
 {
-  "guncelleme": "2026-08-20",
+  "guncelleme": "2026-08-24",
   "kaynak": "ajan/sayfa_denetim.py — sayfa içeriği bilgi tabanıyla günlük karşılaştırılır",
   "sayfalar": [
     {
       "yol": "/",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-20",
-      "bulgular": [
-        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-24",
+      "bulgular": []
     },
     {
       "yol": "/asistan",
       "durum": "uyari",
-      "sonKontrol": "2026-08-20",
+      "sonKontrol": "2026-08-24",
       "bulgular": [
-        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)",
-        "YEKDEM (2026-07): ESKİ (0,49 ₺/kWh) → DOĞRU (0,424 ₺/kWh)"
+        "YEKDEM (2026-07) 0,49 ₺/kWh → 0,424 ₺/kWh"
       ]
     },
     {
       "yol": "/surec",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-20",
-      "bulgular": [
-        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-24",
+      "bulgular": []
     },
     {
       "yol": "/hesaplama",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-20",
-      "bulgular": [
-        "Tarife verisi güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-24",
+      "bulgular": []
     },
     {
       "yol": "/destekler",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-20",
+      "sonKontrol": "2026-08-24",
       "bulgular": []
     },
     {
       "yol": "/rehber",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-20",
-      "bulgular": [
-        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-24",
+      "bulgular": []
     },
     {
       "yol": "/kurulum-sonrasi",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-20",
-      "bulgular": [
-        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-24",
+      "bulgular": []
     },
     {
       "yol": "/blog",
-      "durum": "uyari",
-      "sonKontrol": "2026-08-20",
-      "bulgular": [
-        "Mevzuat güncelliği: ESKİ (7 Ağustos 2026) → DOĞRU (11 Ağustos 2026)"
-      ]
+      "durum": "dogrulandi",
+      "sonKontrol": "2026-08-24",
+      "bulgular": []
     },
     {
       "yol": "/blog/saatlik-mahsuplasma-rehberi",
       "durum": "uyari",
-      "sonKontrol": "2026-08-20",
+      "sonKontrol": "2026-08-24",
       "bulgular": [
-        "YEKDEM Temmuz 2026 maliyeti: ESKİ (486 ₺/MWh) → DOĞRU (423,99 ₺/MWh)"
+        "YEKDEM (2026-07) 486 ₺/MWh → 423,99 ₺/MWh"
       ]
     }
   ]
