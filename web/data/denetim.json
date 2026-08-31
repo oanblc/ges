@@ -1,65 +1,67 @@
 {
-  "guncelleme": "2026-08-27",
+  "guncelleme": "2026-08-31",
   "kaynak": "ajan/sayfa_denetim.py — sayfa içeriği bilgi tabanıyla günlük karşılaştırılır",
   "sayfalar": [
     {
       "yol": "/",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": []
     },
     {
       "yol": "/asistan",
       "durum": "uyari",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": [
-        "YEKDEM (2026-07) 0,49 ₺/kWh ESKİ → 0,42399 ₺/kWh (Karar 14718 Öngörülen Birim Maliyeti) DOĞRU"
+        "YEKDEM (2026-07) 0,49 ₺/kWh ESKİ → 0,424 ₺/kWh DOĞRU (Kaynak: yekdem-kararlari.md)"
       ]
     },
     {
       "yol": "/surec",
       "durum": "uyari",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": [
-        "Konutta üst sınır 25 kW ESKİ → 50 kW (GVK Mükerrer 9. madde kapsamında güncellenen esnaf muaflığı sınırı) DOĞRU"
+        "Konutta üst sınır 25 kW ESKİ → 50 kW DOĞRU (Kaynak: finans-rehberi.md, GVK md.9 güncel sınırı)"
       ]
     },
     {
       "yol": "/hesaplama",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": []
     },
     {
       "yol": "/destekler",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": []
     },
     {
       "yol": "/rehber",
-      "durum": "dogrulandi",
-      "sonKontrol": "2026-08-27",
-      "bulgular": []
+      "durum": "uyari",
+      "sonKontrol": "2026-08-31",
+      "bulgular": [
+        "mesken limiti 25 kW ESKİ → 50 kW DOĞRU (Kaynak: finans-rehberi.md)"
+      ]
     },
     {
       "yol": "/kurulum-sonrasi",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": []
     },
     {
       "yol": "/blog",
       "durum": "dogrulandi",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": []
     },
     {
       "yol": "/blog/saatlik-mahsuplasma-rehberi",
       "durum": "uyari",
-      "sonKontrol": "2026-08-27",
+      "sonKontrol": "2026-08-31",
       "bulgular": [
-        "Temmuz 2026 YEKDEM birim maliyeti 486 ₺/MWh ESKİ → 423,99 ₺/MWh (Karar 14718 resmî öngörü tutarı) DOĞRU"
+        "YEKDEM birim maliyeti 486 ₺/MWh ESKİ → 423,99 ₺/MWh DOĞRU (Kaynak: yekdem-kararlari.md Karar No. 14718)"
       ]
     }
   ]
