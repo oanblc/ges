@@ -1,6 +1,6 @@
 ---
 konu: EPİAŞ gerçekleşen PTF ve YEKDEM (canlı veri)
-guncelleme: 2026-09-06
+guncelleme: 2026-09-07
 kaynak: EPİAŞ Şeffaflık API (otomatik çekim — ajan/epias_veri.py)
 durum: yayin
 ---
@@ -9,8 +9,8 @@ durum: yayin
 
 | Ay | Ortalama PTF | Güneş saatleri (10-17) PTF | Oran |
 |---|---|---|---|
-| 2026-07 | 2,710 | 1,735 | %64 |
+| 2026-07 | 2,703 | 1,722 | %64 |
 | 2026-08 | 2,908 | 2,174 | %75 |
-| 2026-09 | 2,956 | 2,180 | %74 |
+| 2026-09 | 2,857 | 2,079 | %73 |
 
 YEKDEM gerçekleşen (canli): {'2026-07': 486.31}
